@@ -1,4 +1,6 @@
+import { Button } from "@mui/material";
 import { Outlet } from "@remix-run/react";
+import CustomTabs from "~/components/CustomTabs";
 
 
 const handleBackButton = () => {
@@ -9,11 +11,11 @@ const handleBackButton = () => {
 export default function DashboardRoute() {
     return (
         <div>
-            <h1>Dashboard Page</h1>
+            <CustomTabs />
             <Outlet />
+            {/* <br />
             <br />
-            <br />
-            <button type='button' onClick={handleBackButton}>Go Back</button>
+            <Button type='button' onClick={handleBackButton}>Go Back</Button> */}
         </div>
     );
 }
