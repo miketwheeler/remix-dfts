@@ -15,7 +15,7 @@ import MailIcon from "@mui/icons-material/Mail";
 import MenuIcon from "@mui/icons-material/Menu";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
-import { Outlet, useNavigate } from "@remix-run/react";
+import { Link, Outlet, useNavigate } from "@remix-run/react";
 
 
 
@@ -47,6 +47,8 @@ export default function AppBarAndNav(props: any) {
 
     const handleNavClick = (path?: string) => {
         if(path) navi(path);
+		if(mobileOpen)
+			handleDrawerToggle();
     };
 
 	const drawer = (
@@ -58,6 +60,7 @@ export default function AppBarAndNav(props: any) {
 					(link, index) => (
 						<ListItem key={link.name} disablePadding>
 							<ListItemButton onClick={() => handleNavClick(link.path)}>
+							{/* <ListItemButton component={Link} to={link.path}> */}
 								<ListItemIcon>
 									{index % 2 === 0 ? (
 										<InboxIcon />
@@ -112,7 +115,7 @@ export default function AppBarAndNav(props: any) {
 						<MenuIcon />
 					</IconButton>
 					<Typography variant="h6" noWrap component="div" sx={{marginLeft: '8px'}}>
-						Responsive drawer
+						App Bar
 					</Typography>
 				</Toolbar>
 			</AppBar>

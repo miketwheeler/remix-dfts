@@ -9,7 +9,7 @@ export default function DashboardTasksRoute() {
             <h3 style={{color: 'purple'}}>Dashboard - Tasks Tab</h3>
             <br />
             <br />
-            <button type='button' onClick={handleBackButton}>Go Back</button>
+            
         </div>
     );
 }

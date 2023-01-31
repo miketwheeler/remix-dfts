@@ -4,6 +4,9 @@ import Tab from "@mui/material/Tab";
 import Box from "@mui/material/Box";
 import { useNavigate } from "@remix-run/react";
 
+
+const drawerWidth = 240;
+
 const links = [
 	{
 		name: "dashboard",
@@ -44,8 +47,10 @@ export default function CustomTabs() {
 				indicatorColor="secondary"
 				aria-label="secondary tabs example"
 				centered
-				sx={{ width: '100%' }}
-			>
+				sx={{}}
+				// sx={{width: `100%`}}
+				// sx={{width: '100%', display: 'flex', justifyContent: 'center'}}
+				>
 				{links.map((link, index) => (
 					<Tab 
 						key={ `tab-${index}` } 
