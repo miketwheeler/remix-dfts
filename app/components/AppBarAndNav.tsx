@@ -4,89 +4,153 @@ import Box from "@mui/material/Box";
 import CssBaseline from "@mui/material/CssBaseline";
 import Divider from "@mui/material/Divider";
 import Drawer from "@mui/material/Drawer";
-import IconButton from "@mui/material/IconButton";
-import InboxIcon from "@mui/icons-material/MoveToInbox";
-import List from "@mui/material/List";
-import ListItem from "@mui/material/ListItem";
-import ListItemButton from "@mui/material/ListItemButton";
-import ListItemIcon from "@mui/material/ListItemIcon";
-import ListItemText from "@mui/material/ListItemText";
-import MailIcon from "@mui/icons-material/Mail";
-import MenuIcon from "@mui/icons-material/Menu";
+// import InboxIcon from "@mui/icons-material/MoveToInbox";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
-import { Link, Outlet, useNavigate } from "@remix-run/react";
+import { Link, Outlet } from "@remix-run/react";
+import { Tab, Tabs, Button } from "@mui/material";
+import IconButton from '@mui/material/IconButton';
+import MenuIcon from '@mui/icons-material/Menu';
+import ErrorIcon from '@mui/icons-material/Error';
+import GridViewIcon from '@mui/icons-material/GridView';
+import CategoryIcon from '@mui/icons-material/Category';
+import GroupsIcon from '@mui/icons-material/Groups';
+import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
+import MailIcon from '@mui/icons-material/Mail';
+import HistoryEduIcon from '@mui/icons-material/HistoryEdu';
+import NewspaperIcon from '@mui/icons-material/Newspaper';
+import { buttonClasses } from "@mui/joy";
 
 
 
 const drawerWidth = 240;
 
-const links = [
+
+// const linksMain = undefined;
+// const linksSecondary = undefined;
+
+const primaryLinksEndIndex = 2;
+const navLinks = [
     {
         name: "dashboard",
         path: "/dashboard",
+		icon: <GridViewIcon />,
+		enabled: true,
     },
     {
         name: "project hub",
         path: "/projecthub",
+		icon: <CategoryIcon />,
+		enabled: true,
     },
     {
         name: "member hall",
         path: "/memberhall",
+		icon: <GroupsIcon />,
+		enabled: true,
     },
+	{
+		name: "funding tree",
+		path: "/fundingtree",
+		icon: <AttachMoneyIcon />,
+		enabled: false,
+	},
+	{
+		name: "messages",
+		path: "/messages",
+		icon: <MailIcon />,
+		enabled: false,
+	},
+	{
+		name: "documents",
+		path: "/documents",
+		icon: <HistoryEduIcon />,
+		enabled: false,
+	},
+	{
+		name: "news",
+		path: "/news",
+		icon: <NewspaperIcon />,
+		enabled: false,
+	}
 ];
 
+const tabStyles = {
+	color: "primary",
+	textTransform: 'none',
+	mr: 'auto',
+	minHeight: 55.98,
+	width: "100%",
+	justifyContent: 'flex-start',
+	cursor: 'pointer',
+	"& .MuiTab-iconWrapper": {
+		mr: 3,
+	},
+	"&:hover": {
+		background: "primary",
+	}
+}
+
+
 export default function AppBarAndNav(props: any) {
-    const navi = useNavigate();
 	const { window } = props;
+	const [navTabValue, setNavTabValue] = React.useState(0);
 	const [mobileOpen, setMobileOpen] = React.useState(false);
 
 	const handleDrawerToggle = () => {
 		setMobileOpen(!mobileOpen);
 	};
 
-    const handleNavClick = (path?: string) => {
-        if(path) navi(path);
+	const handleChange = (event: React.SyntheticEvent, newValue: number) => {
+		setNavTabValue(newValue);
 		if(mobileOpen)
 			handleDrawerToggle();
-    };
+	};
 
 	const drawer = (
 		<div>
 			<Toolbar />
 			<Divider />
-			<List>
-				{links.map(
-					(link, index) => (
-						<ListItem key={link.name} disablePadding>
-							<ListItemButton onClick={() => handleNavClick(link.path)}>
-							{/* <ListItemButton component={Link} to={link.path}> */}
-								<ListItemIcon>
-									{index % 2 === 0 ? (
-										<InboxIcon />
-									) : (
-										<MailIcon />
-									)}
-								</ListItemIcon>
-								<ListItemText primary={link.name} />
-							</ListItemButton>
-						</ListItem>
+			<Tabs
+				orientation="vertical"
+				value={navTabValue}
+				onChange={handleChange}
+				aria-label="Primary Navigation Tabs"
+				>
+				{
+					navLinks.map((link, index) => (
+						// <>
+							<Tab
+								key={ `tab-${index}` }
+								id={ link.name }
+								label={ link.name }
+								icon={ link.icon }
+								iconPosition="start"
+								component={ Link }
+								to={ link.path }
+								disabled={ !link.enabled }
+								sx={ tabStyles }
+							/>
+						// 	<Divider sx={{ display: (index === primaryLinksEndIndex) ? "flex" : "none" }} />
+						//  </> 
+						)
 					)
-				)}
-			</List>
-			<Divider />
-			<List>
-				{["All mail", "Trash", "Spam"].map((text, index) => (
-					<ListItem key={text} disablePadding disabled>
-						<ListItemButton>
-							<ListItemIcon>
-								{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-							</ListItemIcon>
-							<ListItemText primary={text} />
-						</ListItemButton>
-					</ListItem>
-				))}
-			</List>
+				}
+				{
+					(!navLinks) ?
+						<Tab
+							key={ 'tab-empty' }
+							id={ 'empty-tab' }
+							label={ 'blank tap' }
+							icon={ <ErrorIcon /> }
+							iconPosition="start"
+							component={ Link }
+							to={ '/' }
+							sx={ tabStyles }
+						/>
+					: null
+				}
+			</Tabs>
 		</div>
 	);
 
@@ -162,17 +226,13 @@ export default function AppBarAndNav(props: any) {
 				sx={{
 					flexGrow: 1,
 					p: 0,
-					// p: 3,
-					// pt: 0, // so the hidden <Toolbar /> placeholder can sit at the top of the page
 					width: { sm: `calc(100% - ${drawerWidth}px)` },
 				}}
 				>
 				<Toolbar />
 				
-
-					{/* The main contents of the Nav links */}
-					<Outlet />
-
+				{/* The main contents of the Nav links */}
+				<Outlet />
 
 			</Box>
 		</Box>

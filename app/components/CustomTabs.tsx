@@ -2,7 +2,7 @@ import * as React from "react";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import Box from "@mui/material/Box";
-import { useNavigate } from "@remix-run/react";
+import { Link, useNavigate } from "@remix-run/react";
 
 
 const drawerWidth = 240;
@@ -27,42 +27,37 @@ const links = [
 ];
 
 export default function CustomTabs() {
-	const [value, setValue] = React.useState("dashboard");
-	const navi = useNavigate();
+	const [dashTabValue, setDashTabValue] = React.useState(0);
 
-	const handleChange = (event: React.SyntheticEvent, newValue: string) => {
-		setValue(newValue);
+	const handleChange = (event: React.SyntheticEvent, newValue: number) => {
+		setDashTabValue(newValue);
 	};
 
-	const handleClick = (path: string) => {
-		navi(path);
-	}
+	// TESTING
+	// React.useEffect(() => {
+	// 	console.log(`dashTab current value: ${dashTabValue}`)
+	// })
 
 	return (
 		<Box sx={{ width: "100%", bgcolor: "background.paper", top: '100px'}}>
 			<Tabs
-				value={value}
+				value={dashTabValue}
 				onChange={handleChange}
-				textColor="secondary"
-				indicatorColor="secondary"
-				aria-label="secondary tabs example"
+				aria-label="nested tabs"
 				centered
-				sx={{}}
-				// sx={{width: `100%`}}
-				// sx={{width: '100%', display: 'flex', justifyContent: 'center'}}
 				>
-				{links.map((link, index) => (
-					<Tab 
-						key={ `tab-${index}` } 
-						value={ link.name } 
-						label={ link.name } 
-						onClick={ () => handleClick(link.path) } 
-						sx={{ textTransform: 'none' }}
+				{
+					links.map((link, index) => (
+						<Tab 
+							key={ `tab-${index}` } 
+							id={ link.name }
+							label={ link.name } 
+							component={Link}
+							to={link.path}
+							sx={{ textTransform: 'none' }}
 						/>
-				))}
-				{/* <Tab value="one" label="Item One" />
-				<Tab value="two" label="Item Two" />
-				<Tab value="three" label="Item Three" /> */}
+					))
+				}
 			</Tabs>
 		</Box>
 	);
