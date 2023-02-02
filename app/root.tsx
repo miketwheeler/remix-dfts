@@ -16,6 +16,9 @@ import "@fontsource/roboto/700.css";
 
 import styles from "~/styles/global.css";
 import AppBarAndNav from "~/components/AppBarAndNav";
+import theme from "~/styles/theme";
+import { ThemeProvider } from "@mui/material/styles";
+
 
 export const links: LinksFunction = () => {
 	return [{ rel: "stylesheet", href: styles }];
@@ -30,42 +33,18 @@ export const meta: MetaFunction = () => ({
 export default function App() {
 	return (
 		<html lang="en">
+			<ThemeProvider theme={theme}>
 			<head>
 				<Meta />
 				<Links />
 			</head>
 			<body>
-        <AppBarAndNav />
-				{/* <div className="appbarContainer">
-					<div className="appbarContent">
-						<h1>Root Route - Top Parent</h1>
-					</div>
-				</div>
-				<div className="navigationContainer">
-					<h1>Navigation</h1>
-					<ul>
-						<li>
-							<Link to="/dashboard">Dashboard</Link>
-						</li>
-						<li>
-							<Link to="/projecthub">ProjectHub</Link>
-						</li>
-						<li>
-							<Link to="/memberhall">MemberHall</Link>
-						</li>
-					</ul>
-				</div>
-				<div className="contentContainer">
-					<Outlet />
-				</div>
-				<div className="footerContainer">
-					<h4>This is the footer</h4>
-				</div> */}
-
-				<ScrollRestoration />
-				<Scripts />
-				<LiveReload />
+        	<AppBarAndNav />
+			<ScrollRestoration />
+			<Scripts />
+			<LiveReload />
 			</body>
+			</ThemeProvider>
 		</html>
 	);
 }

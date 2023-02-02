@@ -1,13 +1,19 @@
+import { Box, Button, Paper } from "@mui/material";
 import { Link } from "@remix-run/react";
 import { Outlet } from "@remix-run/react";
 
 
 import CustomTabs from "~/components/CustomTabs";
 
-// dashboard default component
+
+const containerStyles = {
+    padding: '2rem',
+}
+
+// dashboard default or "home" component/page
 export default function DashboardHomeRoute() {
     return (
-        <div>
+        <Box style={containerStyles}>
             <h3 style={{color: 'purple'}}>Dashboard - Home Tab</h3>
             <p>We'll include this index dashboard component when landing on Dashboard.</p>
             <br />
@@ -17,6 +23,9 @@ export default function DashboardHomeRoute() {
             <div>
                 <p>This is the dashboard home page. </p>
             </div>
-        </div>
+            <div>
+                <Button variant="contained" color="primary" >Mui Button</Button>
+            </div>
+        </Box>
     );
 }

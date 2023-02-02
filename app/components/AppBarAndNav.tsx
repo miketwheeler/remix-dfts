@@ -86,9 +86,15 @@ const tabStyles = {
 	"& .MuiTab-iconWrapper": {
 		mr: 3,
 	},
-	"&:hover": {
-		background: "primary",
-	}
+	// '&.MuiTab-root': {
+	// 	"&:hover": {
+	// 		// backgroundColor: "primary",
+	// 		borderRight: '2.75px solid rgb(181, 179, 179, 0.2)',
+	// 		// boxShadow: "inset 0px 0px 30px 1px rgb(25, 118, 210, .05)",
+	// 		// boxShadow: "inset 0 0 30px 1px rgb(181, 179, 179, .1)"
+	// 		// opacity: 0.5,
+	// 	}
+	// }
 }
 
 
@@ -107,6 +113,7 @@ export default function AppBarAndNav(props: any) {
 			handleDrawerToggle();
 	};
 
+
 	const drawer = (
 		<div>
 			<Toolbar />
@@ -119,20 +126,17 @@ export default function AppBarAndNav(props: any) {
 				>
 				{
 					navLinks.map((link, index) => (
-						// <>
-							<Tab
-								key={ `tab-${index}` }
-								id={ link.name }
-								label={ link.name }
-								icon={ link.icon }
-								iconPosition="start"
-								component={ Link }
-								to={ link.path }
-								disabled={ !link.enabled }
-								sx={ tabStyles }
-							/>
-						// 	<Divider sx={{ display: (index === primaryLinksEndIndex) ? "flex" : "none" }} />
-						//  </> 
+						<Tab
+							key={ `tab-${index}` }
+							id={ link.name }
+							label={ link.name }
+							icon={ link.icon }
+							iconPosition="start"
+							component={ Link }
+							to={ link.path }
+							disabled={ !link.enabled }
+							sx={ tabStyles }
+						/>
 						)
 					)
 				}
@@ -151,8 +155,11 @@ export default function AppBarAndNav(props: any) {
 					: null
 				}
 			</Tabs>
+			
 		</div>
 	);
+	
+
 
 	const container =
 		window !== undefined ? () => window().document.body : undefined;
