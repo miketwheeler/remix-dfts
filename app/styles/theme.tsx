@@ -1,11 +1,12 @@
 import { createTheme } from '@mui/material/styles';
 // import { purple } from '@mui/material/colors';
-import { grey, red, purple } from '@mui/material/colors';
-import { withTheme } from '@emotion/react';
+import { grey, purple, blue } from '@mui/material/colors';
+
 
 
 // Creates the theme instance.
 const theme = createTheme({
+    // Global MUI colorway settings
     palette: {
         // mode to dark will make the theme dark by default - still uses other settings below
         mode: 'dark',
@@ -26,7 +27,7 @@ const theme = createTheme({
         text: {
             // primary: grey[50],
             // secondary: grey[50],
-            disabled: grey[700],
+            disabled: grey[800],
         },
     },
     // typography: {
@@ -35,10 +36,20 @@ const theme = createTheme({
     //     },
     // },
     components: { 
+        // changes all MUI appbar styles
         MuiAppBar: {
             styleOverrides: {
                 root: {
-                    backgroundColor: purple[800],
+                    background: `linear-gradient(45deg, ${purple[800]}, ${purple[600]}, ${purple[500]}, ${blue[500]})`,
+                    // backgroundColor: purple[700],
+                },
+            },
+        },
+        // changes all MUI buttons styles
+        MuiButton: {
+            styleOverrides: {
+                root: {
+                    textTransform: 'none',
                 },
             },
         }
