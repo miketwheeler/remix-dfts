@@ -1,4 +1,4 @@
-import Grid2 from "@mui/material/Unstable_Grid2";
+import Grid from "@mui/material/Unstable_Grid2";
 import {
 	Box,
 	Stack,
@@ -12,22 +12,26 @@ import {
 } from "@mui/material";
 import type { Theme } from "@mui/material/styles";
 import React from "react";
+import GridColumn from "./GridColumn";
 
 
-interface PageProps<T> {
-	title?: T;
-	heading?: T;
-	columnCount: number;
-	rowCount: number;
-	children?: React.ReactNode[];
+
+interface PageProps {
+	title?: string;
+	heading?: string;
+	columnWidths: number[];
+	children: Array<any>;
 }
+
 
 const styles = {
     root: {
         flexGrow: 1,
-        padding: 3,
-		border: '1px dotted lightblue',
+        padding: '3rem',
+		// border: '1px dotted lightblue',
 		height: '100%',
+		width: '100%',
+		border: '1px dashed yellow'
     },
     title: {
         marginBottom: 2,
@@ -38,60 +42,32 @@ const styles = {
 };
 
 
-const GridColumn = ({ columnCount, rowCount, children }: { columnCount: number, rowCount: number, children: React.ReactNode[] }) => {
-	// return (
-		children.map((child, index) => {
-			return (
-				<Grid2 key={`grid-section-${index}`} xs={12 / columnCount}>
-					{child}
-				</Grid2>
-			)
-		})
-	// );
-};
-
-
 // Generic Page Component
-const GenericPage = <T extends string | number | []>({
-        title,
-        heading,
-        columnCount,
-        rowCount,
-        children,
-    }: PageProps<T>) => {
-        // const theme = useTheme();
-
+const GenericPage: React.FC<PageProps> = ({ title, heading, columnWidths, children }) => {
 	return (
-		<Box sx={styles.root}>
-			{/* divide the entire body into columns & rows (as passed) */}
-			
-			{/* <Grid2 container spacing={3} sx={{border: '1px solid white'}}>
-				{
-					<GridColumn columnCount={columnCount} rowCount={rowCount} children={children} />
-				}
-			</Grid2>
-			<Grid2 container spacing={3} sx={{border: '1px solid green'}}>
-				<Grid2>
-					<div>
-						<p>This is a second section</p>
-					</div>
-				</Grid2>
-			</Grid2> */}
-			<Grid2 container spacing={3} xs={12} sx={{border: '1px solid red'}}>
-			<Typography variant="h4" sx={styles.title}>{title}</Typography>
-            <Typography variant="h5" sx={styles.heading}>{heading}</Typography>
-				<Grid2 xs={6} sx={{border: '1px dotted white'}}>
-					{/* {
-						<GridColumn columnCount={columnCount} rowCount={rowCount} children={children} />
-					} */}
-				</Grid2>
-				<Grid2 xs={6}  sx={{border: '1px dotted orange'}}>
-					<p>This is a 2nd section</p>
-				</Grid2>
-			</Grid2>
-		
-		</Box>
+		<>
+			{
+				columnWidths.map((columnWidth, index) => (
+					<React.Fragment key={`column-${index}`}>
+						<h5>Hello</h5>
+						<GridColumn columnWidth={columnWidth} children={children[index]} />
+						{/* <p>{children[0].title}</p> */}
+					</React.Fragment>
+				))
+			}
+		</>
+		// <Box sx={styles.root}>
+		// {/* <div style={{height: '100%', width: '100%', border: '1px solid yellow', padding: '3rem'}}> */}
+		// 	<h4>{title}</h4>
+		// 	<h5>{heading}</h5>
+		// 	<Grid container xs={4} spacing={3} sx={{border: '1px solid white'}}>
+		// 		<GridColumn columnWidth={columnWidth} children={children} />
+		// 		<GridColumn columnWidth={columnWidth} children={children} />
+		// 	</Grid>
+		// {/* </div> */}
+		// </Box>
 	);
 };
+
 
 export default GenericPage;

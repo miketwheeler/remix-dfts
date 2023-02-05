@@ -1,0 +1,15 @@
+.gridContainer {
+    display: grid;
+    grid-template-columns: 2fr 5fr 3fr;
+    grid-template-rows:  repeat(12 1fr);
+    grid-gap: 1;
+    grid-template-areas: 
+        "gridItem1 header header" 
+        "main main main" 
+        "footer footer footer";
+}
+
+
+.gridItem1 {
+    grid-area: gridItem1;
+}

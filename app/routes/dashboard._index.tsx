@@ -11,8 +11,29 @@ const containerStyles = {
     padding: '2rem',
 }
 
+class ColumnData {
+    constructor(init?: Partial<ColumnData>) {
+        Object.assign(this, init)
+    }
+    title?: string;
+    heading?: string;
+    elements?: JSX.Element[];
+}
+
 // dashboard default or "home" component/page
 export default function DashboardHomeRoute() {
+
+    const data = [];
+    const testElementArr = [
+        <div key="child-1">This is a passed child for testing generic Page component.</div>,
+        <div key="child-2">This is a passed child for testing generic Page component.</div>,
+        <div key="child-3">This is a passed child for testing generic Page component.</div>   
+    ]
+    data.push(new ColumnData({title: '1st column', heading: '1st column heading', elements: testElementArr}));
+    data.push(new ColumnData({title: '2nd column', heading: '2nd column heading', elements: testElementArr}));
+    data.push(new ColumnData({title: '3rd column', heading: '3rd column heading', elements: testElementArr}));
+
+
     return (
         // <Box style={containerStyles}>
         //     <h3 style={{color: 'purple'}}>Dashboard - Home Tab</h3>
@@ -32,17 +53,16 @@ export default function DashboardHomeRoute() {
             <GenericPage 
                 title="Dashboard-Home Tab" 
                 heading="Dashboard home generic component displayed"
-                columnCount={3}
-                rowCount={1}
-                children={[<div>This is a passed child for testing generic Page component.</div>, <div>This is a passed child for testing generic Page component.</div>, <div>This is a passed child for testing generic Page component.</div>]} 
+                columnWidths={[3, 5, 4]}
+                children={data}
                 />
-            <GenericPage 
+            {/* <GenericPage 
                 title="Dashboard-Home Tab" 
                 heading="Dashboard home generic component displayed"
                 columnCount={3}
                 rowCount={1}
                 children={[<div>This is a passed child for testing generic Page component.</div>, <div>This is a passed child for testing generic Page component.</div>, <div>This is a passed child for testing generic Page component.</div>]} 
-                />
+                /> */}
         </>
     );
 }
