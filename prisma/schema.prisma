@@ -12,19 +12,41 @@ datasource db {
 
 
 model Project {
-  id        Int      @id @default(autoincrement())
-  name      String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  
+  id          Int         @id @default(autoincrement())
+  projOwnerId Int
+  // owner       User        @relation(fields: [projOwnerId], references: [id])  
+  name        String
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  description String
+  synopsis    String
+  active      Boolean     @default(false)
+  team        Team[]
+}
+
+model Team {
+  id          Int         @id @default(autoincrement())
+  teamId      String      @unique
+  name        String
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  projects    Project[]
+  members     User[]
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
-  name      String
-  email     String   @unique
-  password  String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  // projects  Project[]
+  id          Int         @id @default(autoincrement())
+  // role        Role        @default(USER)
+  userId      String      @unique
+  name        String
+  email       String      @unique
+  password    String   
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  teams       Team[]
 }
+
+// enum Role {
+//   USER
+//   ADMIN
+// }
