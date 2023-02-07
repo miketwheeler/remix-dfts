@@ -10,43 +10,74 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-
-model Project {
-  id          Int         @id @default(autoincrement())
-  projOwnerId Int
-  // owner       User        @relation(fields: [projOwnerId], references: [id])  
-  name        String
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
-  description String
-  synopsis    String
-  active      Boolean     @default(false)
-  team        Team[]
-}
-
-model Team {
-  id          Int         @id @default(autoincrement())
-  teamId      String      @unique
-  name        String
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
-  projects    Project[]
-  members     User[]
-}
-
+// skills - 1 user can have many skills
+// teamLead - 1 user can only be a team lead of 1 team
+// teams - 1 user can be a member of many teams
+// posts - 1 user can have many posts
 model User {
-  id          Int         @id @default(autoincrement())
-  // role        Role        @default(USER)
-  userId      String      @unique
-  name        String
-  email       String      @unique
-  password    String   
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
-  teams       Team[]
+  id              Int         @id @default(autoincrement())
+  role            Role        @relation(fields: [roleId], references: [id])
+  roleId          Int
+  userId          String      @unique
+  name            String
+  email           String      @unique
+  passwordHash    String   
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+  skills          Skills[]
+  teamLead        Team?       @relation(name: "TeamLead")
+  teams           Team[]
+  posts           Post[]
 }
 
-// enum Role {
-//   USER
-//   ADMIN
-// }
+// team & teamId - 1 project can only belong to 1 team
+model Project {
+  id              Int             @id @default(autoincrement())
+  name            String
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+  description     String
+  synopsis        String
+  active          Boolean         @default(false)
+  progress        Int             @default(0)
+  team            Team            @relation(fields: [teamId], references: [id])
+  teamId          Int             @unique
+}
+
+// teamLead - 1 team can only have 1 team lead (user)
+// project - 1 team can have many projects
+// members - 1 team can have many members
+model Team {
+  id              Int             @id @default(autoincrement())
+  teamId          String          @unique
+  name            String
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+  teamLead        User?           @relation(name: "TeamLead", fields: [teamLeadId], references: [id])
+  teamLeadId      Int             @unique
+  project         Project[]   
+  members         User[]
+}
+
+// user & userId - 1 post can only belong to 1 user
+model Post {
+  id          Int         @id @default(autoincrement())
+  title       String
+  body        String
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  author      User        @relation(fields: [authorId], references: [id])
+  authorId    Int
+}
+
+model Skills {
+  id          Int         @id @default(autoincrement())
+  name        String
+  users       User[]
+}
+
+model Role {
+  id          Int         @id @default(autoincrement())
+  name        String
+  users       User[]
+}
