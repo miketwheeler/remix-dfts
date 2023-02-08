@@ -15,69 +15,89 @@ datasource db {
 // teams - 1 user can be a member of many teams
 // posts - 1 user can have many posts
 model User {
-  id              Int         @id @default(autoincrement())
-  role            Role        @relation(fields: [roleId], references: [id])
-  roleId          Int
-  userId          String      @unique
-  name            String
+  id              String      @id @default(uuid())
+  // role            Role        @relation(fields: [roleId], references: [id]])
+  // roleId          Int         
+  name            String      
   email           String      @unique
+  username        String      @unique
   passwordHash    String   
+  devType         String?
+  available       Boolean?     @default(true)
+  bio             String?
   createdAt       DateTime    @default(now())
   updatedAt       DateTime    @updatedAt
-  skills          Skills[]
-  teamLead        Team?       @relation(name: "TeamLead")
-  teams           Team[]
-  posts           Post[]
+  // skills          Skills[]
+  // teamLead        Team?       @relation(name: "TeamLead")
+  // teams           Team[]
+  // posts           Post[]
 }
 
 // team & teamId - 1 project can only belong to 1 team
 model Project {
-  id              Int             @id @default(autoincrement())
+  id              String          @id @default(uuid())
   name            String
+  type            String
   createdAt       DateTime        @default(now())
   updatedAt       DateTime        @updatedAt
-  description     String
   synopsis        String
+  description     String
+  techStack       String?
+  beginDate       DateTime
+  endDate         DateTime?
   active          Boolean         @default(false)
-  progress        Int             @default(0)
-  team            Team            @relation(fields: [teamId], references: [id])
-  teamId          Int             @unique
+  milestone       Int             @default(0)
+  deployed        Boolean         @default(false)
+  funded          Boolean         @default(false)
+  fundingGoal     Int             @default(0)
+  fundingCurrent  Decimal         @default(0.0)
+  // category        Category[]      
+  // team            Team            @relation(fields: [teamId], references: [id])
+  teamId          String          
 }
 
 // teamLead - 1 team can only have 1 team lead (user)
 // project - 1 team can have many projects
 // members - 1 team can have many members
-model Team {
-  id              Int             @id @default(autoincrement())
-  teamId          String          @unique
-  name            String
-  createdAt       DateTime        @default(now())
-  updatedAt       DateTime        @updatedAt
-  teamLead        User?           @relation(name: "TeamLead", fields: [teamLeadId], references: [id])
-  teamLeadId      Int             @unique
-  project         Project[]   
-  members         User[]
-}
+// model Team {
+//   id              String          @id @default(uuid())
+//   // teamId          String          @unique
+//   name            String
+//   createdAt       DateTime        @default(now())
+//   updatedAt       DateTime        @updatedAt
+//   teamLead        User?           @relation(name: "TeamLead", fields: [teamLeadId], references: [id])
+//   teamLeadId      String?         @unique
+//   project         Project[]   
+//   members         User[]
+// }
 
 // user & userId - 1 post can only belong to 1 user
-model Post {
-  id          Int         @id @default(autoincrement())
-  title       String
-  body        String
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
-  author      User        @relation(fields: [authorId], references: [id])
-  authorId    Int
-}
+// model Post {
+//   id          String      @id @default(uuid())
+//   title       String
+//   body        String
+//   createdAt   DateTime    @default(now())
+//   updatedAt   DateTime    @updatedAt
+//   author      User        @relation(fields: [authorId], references: [id])
+//   authorId    String
+//   category    Category[]  
+// }
 
-model Skills {
-  id          Int         @id @default(autoincrement())
-  name        String
-  users       User[]
-}
+// model Skills {
+//   id          Int         @id @default(autoincrement())
+//   name        String
+//   users       User[]
+// }
 
-model Role {
-  id          Int         @id @default(autoincrement())
-  name        String
-  users       User[]
-}
+// model Category {
+//   id          Int         @id @default(autoincrement())
+//   name        String
+//   // projects    Project[]
+//   // posts       Post[]
+// }
+
+// model Role {
+//   id          Int         @id @default(autoincrement())
+//   name        String
+//   // users       User[]
+// }
