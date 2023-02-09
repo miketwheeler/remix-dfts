@@ -17,6 +17,20 @@ async function seed() {
     // )
 }
 
+// EXAMPLE:: 
+// The following query creates a User record and two connected Post records:
+//
+// const userAndPosts = await prisma.user.create({
+//     data: {
+//       posts: {
+//         create: [
+//           { title: 'Prisma Day 2020' }, // Populates authorId with user's id
+//           { title: 'How to write a Prisma schema' }, // Populates authorId with user's id
+//         ],
+//       },
+//     },
+//   })
+
 
 seed();
 
@@ -44,7 +58,6 @@ seed();
 //         },
 //     ]
 // }
-
 
 function getUsers() {
     return [
