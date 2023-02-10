@@ -1,5 +1,7 @@
 import LayoutPage from "~/components/reusable-components/major/LayoutPage";
 
+// This user's dashboard home page - loaded components
+import  AcctOverviewCard from "~/components/reusable-components/minor/AcctOverviewCard";
 
 
 // Class constructor for passing data & data-shape to LayoutPage component
@@ -22,7 +24,7 @@ export default function DashboardHomeRoute() {
         <div key="child-2">This is a passed child for testing generic Page component.</div>,
         <div key="child-3">This is a passed child for testing generic Page component.</div>
     ]
-    data.push(new ColumnData({title: '1st column', heading: '1st column heading', elements: testElementArr}));
+    data.push(new ColumnData({title: 'profile', heading: 'hi', elements: [<AcctOverviewCard />]}));
     data.push(new ColumnData({title: '2nd column', heading: '2nd column heading', elements: testElementArr}));
     data.push(new ColumnData({title: '3rd column', heading: '3rd column heading', elements: testElementArr}));
 

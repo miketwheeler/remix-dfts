@@ -10,13 +10,15 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// skills - 1 user can have many skills
-// teamLead - 1 user can only be a team lead of 1 team
-// teams - 1 user can be a member of many teams
-// posts - 1 user can have many posts
+// skills - A user can have many skills, and a skill can be used by many users
+// teamLead - A user can only be a team lead of 1 team
+// teams - A User can be a member of many teams, and a team can have many members(users)
+// posts - A user can have many posts, a post can only belong to 1 user
 model User {
   id              String      @id @default(uuid())
   role            Role?        
+  firstName       String
+  lastName        String
   email           String      @unique
   username        String      @unique
   passwordHash    String   
@@ -31,7 +33,7 @@ model User {
   posts           Post[]
 }
 
-// teamLead - 1 team can only have 1 team lead (user)
+// teamLead - 1 team can only have 1 team lead(user)
 // project - 1 team can have many projects
 // members - A team can have many members(users), and a member(user) can be a member of many teams
 model Team {
@@ -43,14 +45,12 @@ model Team {
   teamLeadId      String?         @unique
   projects        Project[]
   members         User[]   
-  // team            User[]          @relation(fields: [teamId], references: [id])
-  // teamId          String
 }
 
 // category - A project can have many categories
 // team & teamId - A project can only belong to 1 team
 model Project {
-  id              String          @id @default(uuid())
+  id              Int          @id @default(autoincrement())
   name            String
   type            String
   createdAt       DateTime        @default(now())
@@ -59,12 +59,12 @@ model Project {
   description     String
   techStack       String?
   beginDate       DateTime
-  endDate         DateTime?
+  endDate         DateTime
   active          Boolean         @default(false)
   milestone       Int             @default(0)
   deployed        Boolean         @default(false)
   funded          Boolean         @default(false)
-  fundingGoal     Int             @default(0)
+  fundingGoal     Decimal         @default(0.0)
   fundingCurrent  Decimal         @default(0.0)
   category        Category[]      
   team            Team            @relation(fields: [teamId], references: [id])
@@ -76,9 +76,10 @@ model Project {
 // user & userId - 1 post can only belong to 1 user
 // category - A post can have many categories
 model Post {
-  id          String      @id @default(uuid())
+  id          Int      @id @default(autoincrement())
   title       String
   body        String
+  published   Boolean     @default(true)
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
   author      User        @relation(fields: [authorId], references: [id])
