@@ -3,21 +3,15 @@ import { Link, useSearchParams, Form, useActionData } from "@remix-run/react";
 import Grid from "@mui/material/Unstable_Grid2";
 import { json } from "@remix-run/node";
 // import { Link, Outlet, useLoaderData } from "@remix-run/react";
-import { Box, Stack, Skeleton, Typography, Divider } from "@mui/material";
+import { Box, Typography, Divider, Button, Paper, TextField, FormControlLabel, Radio, RadioGroup } from "@mui/material";
 
 // import for data from DB
 import { db } from "~/utils/db.server";
 import { badRequest } from "~/utils/request.server";
 import { createUserSession, login, register } from "~/utils/session.server";
 
-const styles = {
-	container: {
-		flexGrow: 1,
-		padding: ".5rem",
-		borderRadius: "4px",
-		boxShadow: "0 0 10px 0 rgba(0,0,0,.1)",
-	},
-};
+
+
 
 export const meta: MetaFunction = () => ({
 	description: "Login to access your dashboard and account.",
@@ -139,82 +133,163 @@ export const action = async ({ request }: ActionArgs) => {
 	}
 };
 
+const styles = {
+	container: {
+		flexGrow: 1,
+		padding: ".5rem",
+		borderRadius: "4px",
+        maxWidth: "400px",
+        mx: "auto",
+        my: "2rem",
+		boxShadow: "0 0 10px 0 rgba(0,0,0,.1)",
+	},
+    paper: {
+        padding: "1rem 2rem 2rem",
+    }
+};
+
 export default function Login() {
     const actionData = useActionData<typeof action>();
 	const [searchParams] = useSearchParams();
 	// const username = searchParams.get('username') || '';
 	// const password = searchParams.get('password') || '';
 	return (
-		// <Grid container>
-		//     <Grid sx={styles.container}>
-		//         <h5>Login</h5>
-		//         <form method="post">
-		//             <label>
-		//                 Username
-		//                 <input type="text" name="username" defaultValue={username} />
-		//             </label>
-		//             <label>
-		//                 Password
-		//                 <input type="password" name="password" defaultValue={password} />
-		//             </label>
-		//             <button type="submit">Login</button>
-		//         </form>
-		//         <Link to="/signup">Sign Up</Link>
-
-		//     </Grid>
-		// </Grid>
-
-		<div className="container">
+		<Box sx={styles.container}>
+            <Paper sx={styles.paper}>
 			<div className="content" data-light="">
-				<h1>Login</h1>
+				<Typography variant="h4">Login</Typography>
 				<form method="post">
 					<input
 						type="hidden"
 						name="redirectTo"
 						value={searchParams.get("redirectTo") ?? undefined}
 					/>
-					<fieldset>
-						<legend className="sr-only">Login or Register</legend>
-						<label>
+					<fieldset style={{ borderRadius: '4px', alignItems: 'center'}}>
+						<legend className="sr-only">Sign-in or Sign up</legend>
+                        <RadioGroup
+                            row={true}
+                            aria-label="loginType"
+                            name="loginType"
+                            defaultValue="login"
+                            >
+                            <FormControlLabel 
+                                value="login" 
+                                control={<Radio />} 
+                                label="login" 
+                                defaultChecked={ !actionData?.fields?.loginType || actionData?.fields?.loginType === "login" } 
+                                />
+                            <FormControlLabel 
+                                value="register" 
+                                control={<Radio />} 
+                                label="register" 
+                                defaultChecked={ actionData?.fields?.loginType === "register" } 
+                                />
+                        </RadioGroup>
+						{/* <label>
 							<input
 								type="radio"
 								name="loginType"
 								value="login"
-								defaultChecked
+								defaultChecked={ !actionData?.fields?.loginType || actionData?.fields?.loginType === "login" }
 							/>{" "}
-							Login
+							login
 						</label>
 						<label>
 							<input
 								type="radio"
 								name="loginType"
 								value="register"
+                                defaultChecked={ actionData?.fields?.loginType === "register" }
 							/>{" "}
-							Register
-						</label>
+							register
+						</label> */}
 					</fieldset>
-					<div>
-						<label htmlFor="username-input">Username</label>
+					<Box sx={{ my: 2 }}>
+                        <TextField 
+                            id="username-input" 
+                            name="username"
+                            variant="outlined" 
+                            label="username" 
+                            type="text" 
+                            fullWidth={ true }
+                            defaultValue={ actionData?.fields?.username } 
+                            aria-invalid={ Boolean(actionData?.fieldErrors?.username) }
+                            aria-errormessage={ actionData?.fieldErrors?.username ? "username-error" : undefined }
+                            />
+						{/* <label htmlFor="username-input">username</label>
 						<input
 							type="text"
 							id="username-input"
 							name="username"
-						/>
-					</div>
-					<div>
-						<label htmlFor="password-input">Password</label>
+                            defaultValue={actionData?.fields?.username}
+                            aria-invalid={Boolean(actionData?.fieldErrors?.username)}
+                            aria-errormessage={actionData?.fieldErrors?.username ? "username-error" : undefined }
+						/> */}
+                        {
+                            actionData?.fieldErrors?.username 
+                            ? (
+                                <p
+                                    className="form-validation-error"
+                                    role="alert"
+                                    id="username-error"
+                                    >
+                                    {actionData.fieldErrors.username}
+                                </p>
+                            ) : null
+                        }
+					</Box>
+					<Box sx={{ my: 2 }}>
+                        <TextField 
+                            id="password-input" 
+                            name="password"
+                            variant="outlined" 
+                            label="password" 
+                            type="password" 
+                            fullWidth={ true }
+                            color="secondary"
+                            defaultValue={ actionData?.fields?.password } 
+                            aria-invalid={ Boolean(actionData?.fieldErrors?.password) }
+                            aria-errormessage={ actionData?.fieldErrors?.password ? "password-error" : undefined }
+                            />
+						{/* <label htmlFor="password-input">password</label>
 						<input
 							id="password-input"
 							name="password"
 							type="password"
-						/>
-					</div>
-					<button type="submit" className="button">
+                            defaultValue={actionData?.fields?.password}
+                            aria-invalid={Boolean(actionData?.fieldErrors?.password)}
+                            aria-errormessage={actionData?.fieldErrors?.password ? "password-error" : undefined }
+						/> */}
+                        {
+                            actionData?.fieldErrors?.password ? (
+                                <p
+                                    className="form-validation-error"
+                                    role="alert"
+                                    id="password-error"
+                                    >
+                                    {actionData.fieldErrors.password}
+                                </p>
+                            ) : null
+                        }
+					</Box>
+                    <div id="form-error-message">
+                        {
+                            actionData?.formError ? (
+                                <p
+                                    className="form-validation-error"
+                                    role="alert"
+                                    >
+                                    {actionData.formError}
+                                </p>
+                            ) : null
+                        }
+                    </div>
+					<Button variant="outlined" type="submit" className="button" sx={{ mt: '1rem'}}>
 						Submit
-					</button>
+					</Button>
 				</form>
 			</div>
-			<div className="links">
+			{/* <div className="links">
 				<ul>
 					<li>
 						<Link to="/">Home</Link>
@@ -223,7 +298,8 @@ export default function Login() {
 						<Link to="/jokes">Jokes</Link>
 					</li>
 				</ul>
-			</div>
-		</div>
+			</div> */}
+            </Paper>
+		</Box>
 	);
 }

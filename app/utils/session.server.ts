@@ -1,8 +1,7 @@
 import bcrypt from "bcryptjs";
-
 import { createCookieSessionStorage, redirect } from "@remix-run/node";
-
 import { db } from "./db.server";
+
 
 type LoginForm = {
 	username: string;
@@ -44,7 +43,7 @@ const storage = createCookieSessionStorage({
 		// normally you want this to be `secure: true`
 		// but that doesn't work on localhost for Safari
 		// https://web.dev/when-to-use-local-https/
-		secure: process.env.NODE_ENV === "production",
+		secure: process.env.NODE_ENV === "production",  // not in production ? false : true
 		secrets: [sessionSecret],
 		sameSite: "lax",
 		path: "/",
@@ -63,6 +62,7 @@ export async function getUserId(request: Request) {
 	const session = await getUserSession(request);
 	const userId = session.get("userId");
 	if (!userId || typeof userId !== "string") return null;
+
 	return userId;
 }
 
