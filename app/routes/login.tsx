@@ -57,7 +57,7 @@ export const action = async ({ request }: ActionArgs) => {
 	const username = form.get("username");
 	const password = form.get("password");
 	const redirectTo = validateUrl(
-		form.get("redirectTo")?.toString() ?? "/login"
+		form.get("redirectTo")?.toString() ?? "/"
 	);
 
 	if (
@@ -98,7 +98,7 @@ export const action = async ({ request }: ActionArgs) => {
 				});
 			}
 
-			return createUserSession(user.id, redirectTo);
+			return createUserSession(user.id, "/dashboard");
 		}
 		case "register": {
 			const userExists = await db.user.findFirst({

@@ -24,7 +24,7 @@ export default function DashboardHomeRoute() {
         <div key="child-2">This is a passed child for testing generic Page component.</div>,
         <div key="child-3">This is a passed child for testing generic Page component.</div>
     ]
-    data.push(new ColumnData({title: 'profile', heading: 'hi', elements: [<AcctOverviewCard />]}));
+    data.push(new ColumnData({title: 'profile', heading: 'hi', elements: [<AcctOverviewCard key="acct-overview-card" />]}));
     data.push(new ColumnData({title: '2nd column', heading: '2nd column heading', elements: testElementArr}));
     data.push(new ColumnData({title: '3rd column', heading: '3rd column heading', elements: testElementArr}));
 

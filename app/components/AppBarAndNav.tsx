@@ -86,15 +86,6 @@ const tabStyles = {
 	"& .MuiTab-iconWrapper": {
 		mr: 3,
 	},
-	// '&.MuiTab-root': {
-	// 	"&:hover": {
-	// 		// backgroundColor: "primary",
-	// 		borderRight: '2.75px solid rgb(181, 179, 179, 0.2)',
-	// 		// boxShadow: "inset 0px 0px 30px 1px rgb(25, 118, 210, .05)",
-	// 		// boxShadow: "inset 0 0 30px 1px rgb(181, 179, 179, .1)"
-	// 		// opacity: 0.5,
-	// 	}
-	// }
 }
 
 
@@ -174,7 +165,7 @@ export default function AppBarAndNav(props: any) {
 					ml: { sm: `${drawerWidth}px` },
                     zIndex: (theme) => theme.zIndex.drawer + 1,
 				}}
-			>
+				>
 				<Toolbar>
 					<IconButton
 						color="inherit"
