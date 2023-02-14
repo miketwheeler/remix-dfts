@@ -158,7 +158,7 @@ export default function Login() {
             <Paper sx={styles.paper}>
 			<div className="content" data-light="">
 				<Typography variant="h4">Login</Typography>
-				<form method="post">
+				<Form method="post">
 					<input
 						type="hidden"
 						name="redirectTo"
@@ -287,7 +287,7 @@ export default function Login() {
 					<Button variant="outlined" type="submit" className="button" sx={{ mt: '1rem'}}>
 						Submit
 					</Button>
-				</form>
+				</Form>
 			</div>
 			{/* <div className="links">
 				<ul>

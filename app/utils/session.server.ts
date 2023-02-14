@@ -40,20 +40,20 @@ if (!sessionSecret) {
 const storage = createCookieSessionStorage({
 	cookie: {
 		name: "RJ_session",
+		httpOnly: true,
+		maxAge: 60 * 60 * 24 * 30,
+		path: "/",
+		sameSite: "lax",
+		secrets: [sessionSecret],
 		// normally you want this to be `secure: true`
 		// but that doesn't work on localhost for Safari
 		// https://web.dev/when-to-use-local-https/
 		secure: process.env.NODE_ENV === "production",  // not in production ? false : true
-		secrets: [sessionSecret],
-		sameSite: "lax",
-		path: "/",
-		maxAge: 60 * 60 * 24 * 30,
-		httpOnly: true,
 	},
 });
 
 // get the current user session
-function getUserSession(request: Request) {
+async function getUserSession(request: Request) {
 	return storage.getSession(request.headers.get("Cookie"));
 }
 
@@ -94,7 +94,7 @@ export async function getUser(request: Request) {
 		});
 		return user;
 	} catch {
-		throw logout(request);
+		throw await logout(request);
 	}
 }
 

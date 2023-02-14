@@ -1,4 +1,5 @@
 import * as React from "react";
+import { useContext } from "react";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import CssBaseline from "@mui/material/CssBaseline";
@@ -7,7 +8,7 @@ import Drawer from "@mui/material/Drawer";
 // import InboxIcon from "@mui/icons-material/MoveToInbox";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
-import { Link, Outlet } from "@remix-run/react";
+import { Link, Outlet, useLoaderData } from "@remix-run/react";
 import { Tab, Tabs, Button } from "@mui/material";
 import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
@@ -21,14 +22,17 @@ import HistoryEduIcon from '@mui/icons-material/HistoryEdu';
 import NewspaperIcon from '@mui/icons-material/Newspaper';
 import { buttonClasses } from "@mui/joy";
 
+import { AuthContext } from "~/auth";
+import type { LoaderArgs } from "@remix-run/node";
+import { json, redirect } from "@remix-run/node";
+
+// import { getUserSession } from "~/utils/session.server";
+
 
 
 const drawerWidth = 240;
-
-
 // const linksMain = undefined;
 // const linksSecondary = undefined;
-
 const primaryLinksEndIndex = 2;
 const navLinks = [
     {
@@ -87,6 +91,7 @@ const tabStyles = {
 		mr: 3,
 	},
 }
+
 
 
 export default function AppBarAndNav(props: any) {
@@ -179,6 +184,18 @@ export default function AppBarAndNav(props: any) {
 					<Typography variant="h6" noWrap component="div" sx={{marginLeft: '8px'}}>
 						App Bar
 					</Typography>
+					
+						
+						<Link color="inherit" style={{marginLeft: '1rem', textDecoration: 'none'}} to="logout">logout</Link>
+						
+						<Link color="inherit" style={{marginLeft: 'auto', textDecoration: 'none'}} to="login">login</Link>
+					
+					<Link color="inherit" style={{marginLeft: '1rem', textDecoration: 'none'}} to="account">account</Link>
+					
+					{/* <Button color="inherit" sx={{ml: 'auto'}}>login</Button>
+					<Button color="inherit" sx={{ml: '1rem'}}>logout</Button>
+					<Button color="inherit" sx={{ml: '1rem'}}>account</Button> */}
+				
 				</Toolbar>
 			</AppBar>
 			<Box

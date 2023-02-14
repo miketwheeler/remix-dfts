@@ -13,17 +13,17 @@ import {
 import { db } from "~/utils/db.server";
 
 
-export const loader = async () => {
-    const user = await db.user.findUnique({
-        where: { username: 'awonder' },
-        select: { username: true, email: true, name: true, id: true, },
-    });
-    if(!user) {
-        throw new Error('User not found');
-    }
-    console.log(`the data returned from the loader is: ${JSON.stringify(user)}`)
-    return json(user);
-}
+// export const loader = async () => {
+//     const user = await db.user.findUnique({
+//         where: { username: 'awonder' },
+//         select: { username: true, email: true, name: true, id: true, },
+//     });
+//     if(!user) {
+//         throw new Error('User not found');
+//     }
+//     console.log(`the data returned from the loader is: ${JSON.stringify(user)}`)
+//     return json(user);
+// }
 
 const styles = {
     container: {
@@ -37,8 +37,8 @@ const styles = {
 }
 
 const AcctOverviewCard = () => {
-    const data = useLoaderData<typeof loader>();
-    console.log(`the data returned from the loader is: ${JSON.stringify(data)}`)
+    // const data = useLoaderData<typeof loader>();
+    // console.log(`the data returned from the loader is: ${JSON.stringify(data)}`)
 
     return (
         <Box sx={styles.container}>
