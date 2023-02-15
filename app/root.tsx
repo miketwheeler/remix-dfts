@@ -10,7 +10,7 @@ import {
 	LiveReload,
 	Meta,
 	Scripts,
-	// useLoaderData,
+	useLoaderData,
 	ScrollRestoration,
 } from "@remix-run/react";
 
@@ -50,8 +50,7 @@ export async function loader({ request }: LoaderArgs) {
 
 
 export default function App() {
-
-	
+	const data = useLoaderData<typeof loader>();
 	return (
 		<html lang="en">
 			<ThemeProvider theme={theme}>

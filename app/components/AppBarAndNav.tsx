@@ -1,16 +1,21 @@
 import * as React from "react";
-import { useContext } from "react";
+import type { 
+	LoaderArgs 
+} from "@remix-run/node";
+import { json } from "@remix-run/node";
+import { Link, Outlet, useLoaderData } from "@remix-run/react";
+
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import CssBaseline from "@mui/material/CssBaseline";
 import Divider from "@mui/material/Divider";
 import Drawer from "@mui/material/Drawer";
-// import InboxIcon from "@mui/icons-material/MoveToInbox";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
-import { Link, Outlet, useLoaderData } from "@remix-run/react";
-import { Tab, Tabs, Button } from "@mui/material";
+
+import { Tab, Tabs } from "@mui/material";
 import IconButton from '@mui/material/IconButton';
+
 import MenuIcon from '@mui/icons-material/Menu';
 import ErrorIcon from '@mui/icons-material/Error';
 import GridViewIcon from '@mui/icons-material/GridView';
@@ -20,13 +25,12 @@ import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 import MailIcon from '@mui/icons-material/Mail';
 import HistoryEduIcon from '@mui/icons-material/HistoryEdu';
 import NewspaperIcon from '@mui/icons-material/Newspaper';
-import { buttonClasses } from "@mui/joy";
 
-import { AuthContext } from "~/auth";
-import type { LoaderArgs } from "@remix-run/node";
-import { json, redirect } from "@remix-run/node";
 
-// import { getUserSession } from "~/utils/session.server";
+// import { db } from "~/utils/db.server";
+import { getUser } from "~/utils/session.server";
+
+
 
 
 
@@ -92,9 +96,16 @@ const tabStyles = {
 	},
 }
 
+export const loader = async ({ request }: LoaderArgs) => {
+	const user = await getUser(request);
+	return json({ user });
+};
+
 
 
 export default function AppBarAndNav(props: any) {
+	// const user = useOptionalUser();
+	const data = useLoaderData<typeof loader>();
 	const { window } = props;
 	const [navTabValue, setNavTabValue] = React.useState(0);
 	const [mobileOpen, setMobileOpen] = React.useState(false);
@@ -184,17 +195,35 @@ export default function AppBarAndNav(props: any) {
 					<Typography variant="h6" noWrap component="div" sx={{marginLeft: '8px'}}>
 						App Bar
 					</Typography>
-					
-						
-						<Link color="inherit" style={{marginLeft: '1rem', textDecoration: 'none'}} to="logout">logout</Link>
-						
-						<Link color="inherit" style={{marginLeft: 'auto', textDecoration: 'none'}} to="login">login</Link>
-					
-					<Link color="inherit" style={{marginLeft: '1rem', textDecoration: 'none'}} to="account">account</Link>
-					
-					{/* <Button color="inherit" sx={{ml: 'auto'}}>login</Button>
-					<Button color="inherit" sx={{ml: '1rem'}}>logout</Button>
-					<Button color="inherit" sx={{ml: '1rem'}}>account</Button> */}
+
+						{
+							data.user ? (
+								<div style={{ marginLeft: 'auto', display: 'flex', flexDirection: 'row', flexWrap: 'nowrap'}}>
+									<span style={{ marginRight: '1rem' }}>{`hi, ${data.user.username}`}</span>
+									<div style={{ marginRight: '1rem', color: '#2d2d2d'}}>|</div>
+									<form action="logout" method="post">
+										<button 
+											type="submit" 
+											color="inherit" 
+											style={{ 
+												background: 'none',
+												border: 'none',
+												margin: '0',
+												padding: '0',
+												cursor: 'pointer',
+												fontSize: '1rem',
+												textDecoration: 'none' 
+											}} 
+											>
+												logout
+											</button>
+									</form>
+								</div> 
+							) : (
+								<Link color="inherit" style={{marginLeft: 'auto', textDecoration: 'none'}} to="login">login</Link>
+							)
+						}
+						<Link color="inherit" style={{marginLeft: '1rem', textDecoration: 'none'}} to="">account</Link>
 				
 				</Toolbar>
 			</AppBar>
