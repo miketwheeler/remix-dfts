@@ -1,3 +1,8 @@
+import {
+    Link,
+    useLoaderData,
+    useParams,
+} from '@remix-run/react';
 import LayoutPage from "~/components/reusable-components/major/LayoutPage";
 
 // This user's dashboard home page - loaded components
@@ -13,6 +18,7 @@ class ColumnData {
     heading?: string;
     elements?: JSX.Element[];
 }
+
 
 
 // Dashboard default or "home" component/page
@@ -34,5 +40,16 @@ export default function DashboardHomeRoute() {
         <>
             <LayoutPage columnWidths={[3, 6, 3]} children={data} />
         </>
+    );
+}
+
+export function ErrorBoundary() {
+    const { data } = useParams();
+    return (
+        <div className="error-container">
+            <h1>Something went wrong</h1>
+            {`There was an error loading the data for ${data}.`}
+            <Link to="/">Go home</Link>
+        </div>
     );
 }

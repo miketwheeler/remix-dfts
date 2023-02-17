@@ -1,7 +1,8 @@
-import type { 
+import { 
 	LinksFunction, 
 	MetaFunction, 
-	LoaderArgs 
+	LoaderArgs, 
+	redirect
 } from "@remix-run/node";
 // import { React } from "@remix-run/node";
 import React from 'react'
@@ -12,6 +13,8 @@ import {
 	Scripts,
 	useLoaderData,
 	ScrollRestoration,
+	Outlet,
+	useCatch,
 } from "@remix-run/react";
 
 import "@fontsource/roboto/300.css";
@@ -35,13 +38,25 @@ export const links: LinksFunction = () => {
 	return [{ rel: "stylesheet", href: styles }];
 };
 
-export const meta: MetaFunction = () => ({
-	charset: "utf-8",
-	title: "New Remix App",
-	viewport: "width=device-width,initial-scale=1",
-});
+export const meta: MetaFunction = () => {
+	const description = "welcome to the dev foyer";
+	return {
+		charset: "utf-8",
+		description,
+		// can add more keywords here
+		keywords: "dev foyer,devlopment,web development,software development,software engineer,application, projects, community",
+		viewport: "width=device-width,initial-scale=1",
+	}
+};
 
 // get the user from the session (at the top)
+// export async function loader({ request }: LoaderArgs) {
+// 	const user = await getUser(request);
+// 	if(!user) {
+// 		console.log('no user')
+// 	}
+// 	return json({  });
+// }
 export async function loader({ request }: LoaderArgs) {
 	return json({
 		user: await getUser(request),
@@ -49,8 +64,13 @@ export async function loader({ request }: LoaderArgs) {
 }
 
 
-export default function App() {
-	const data = useLoaderData<typeof loader>();
+function Document({
+	children,
+	title = "dev foyer",
+}: {
+	children: React.ReactNode;
+	title?: string;
+}) {
 	return (
 		<html lang="en">
 			<ThemeProvider theme={theme}>
@@ -66,5 +86,36 @@ export default function App() {
 				</body>
 			</ThemeProvider>
 		</html>
+	)
+}
+
+export default function App() {
+	return (
+		<Document>
+			<Outlet />
+		</Document>
+	);
+}
+
+export function CatchBoundary() {
+	const caught = useCatch();
+
+	return (
+		<Document title={`${caught.status} ${caught.statusText}`}>
+			<div className="error-container">
+				<h1>{caught.status} {caught.statusText}</h1>
+			</div>
+		</Document>
+	);
+}
+
+export function ErrorBoundary({ error }: { error: Error }) {
+	return (
+		<Document title="Error">
+			<div className="error-container">
+				<h1>{error.message}</h1>
+				<pre>{error.stack}</pre>
+			</div>
+		</Document>
 	);
 }

@@ -1,6 +1,11 @@
-const handleBackButton = () => {
-    window.history.back();
-}
+import {
+    Link,
+    useLoaderData,
+    useParams,
+} from '@remix-run/react';
+
+
+
 
 export default function DashboardMessagesRoute() {
     return (
@@ -8,6 +13,17 @@ export default function DashboardMessagesRoute() {
             <h3 style={{color: 'purple'}}>Dashboard - Messages Tab</h3>
             <br />
             <br />
+        </div>
+    );
+}
+
+export function ErrorBoundary() {
+    const { data } = useParams();
+    return (
+        <div className="error-container">
+            <h1>Something went wrong</h1>
+            {`There was an error loading the data for ${data}.`}
+            <Link to="/">Go home</Link>
         </div>
     );
 }

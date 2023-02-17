@@ -25,12 +25,11 @@ import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 import MailIcon from '@mui/icons-material/Mail';
 import HistoryEduIcon from '@mui/icons-material/HistoryEdu';
 import NewspaperIcon from '@mui/icons-material/Newspaper';
+// import Slide from '@mui/material/Slide';
 
 
 // import { db } from "~/utils/db.server";
 import { getUser } from "~/utils/session.server";
-
-
 
 
 
@@ -96,8 +95,17 @@ const tabStyles = {
 	},
 }
 
+// export const loader = async ({ request }: LoaderArgs) => {
+// 	const user = await getUser(request);
+// 	if(!user)
+// 		console.log("no user");
+// 	return json({ user });
+// };
+
 export const loader = async ({ request }: LoaderArgs) => {
 	const user = await getUser(request);
+	// if(!user)
+	// 	console.log("no user");
 	return json({ user });
 };
 
@@ -199,7 +207,9 @@ export default function AppBarAndNav(props: any) {
 						{
 							data.user ? (
 								<div style={{ marginLeft: 'auto', display: 'flex', flexDirection: 'row', flexWrap: 'nowrap'}}>
-									<span style={{ marginRight: '1rem' }}>{`hi, ${data.user.username}`}</span>
+									<span style={{ marginRight: '1rem' }}>
+										{`hi, ${data.user.username}`}
+									</span>
 									<div style={{ marginRight: '1rem', color: '#2d2d2d'}}>|</div>
 									<form action="logout" method="post">
 										<button 
@@ -223,7 +233,9 @@ export default function AppBarAndNav(props: any) {
 								<Link color="inherit" style={{marginLeft: 'auto', textDecoration: 'none'}} to="login">login</Link>
 							)
 						}
-						<Link color="inherit" style={{marginLeft: '1rem', textDecoration: 'none'}} to="">account</Link>
+						{/* <Link color="inherit" style={{marginLeft: 'auto', textDecoration: 'none'}} to="/login">login</Link>
+						<Link color="inherit" style={{marginLeft: '1rem', textDecoration: 'none'}} to="/logout">logout</Link> */}
+						<Link color="inherit" style={{marginLeft: '1rem', textDecoration: 'none'}} to="/">account</Link>
 				
 				</Toolbar>
 			</AppBar>

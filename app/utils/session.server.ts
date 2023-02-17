@@ -7,18 +7,28 @@ type LoginForm = {
 	username: string;
 	password: string;
 };
+type RegisterForm = LoginForm & {
+    email: string;
+    firstName: string;
+    lastName: string;
+    devType: string;
+}
 
-// register a new user
-export async function register({ username, password }: LoginForm) {
+export async function register({ 
+    username, password, email, firstName, lastName, devType
+}: RegisterForm) {
 	const passwordHash = await bcrypt.hash(password, 10);
 	const user = await db.user.create({
-		data: { username, passwordHash },
+		data: { username, passwordHash, email, firstName, lastName, devType },
 	});
+
 	return { id: user.id, username };
 }
 
 // login an existing user
-export async function login({ username, password }: LoginForm) {
+export async function login({ 
+	username, password 
+}: LoginForm) {
 	const user = await db.user.findUnique({
 		where: { username },
 	});
@@ -45,9 +55,8 @@ const storage = createCookieSessionStorage({
 		path: "/",
 		sameSite: "lax",
 		secrets: [sessionSecret],
-		// normally you want this to be `secure: true`
-		// but that doesn't work on localhost for Safari
-		// https://web.dev/when-to-use-local-https/
+		// normally you want this to be `secure: true` but that doesn't work on localhost for 
+		// Safari https://web.dev/when-to-use-local-https/
 		secure: process.env.NODE_ENV === "production", // not in production ? false : true
 	},
 });
@@ -80,10 +89,21 @@ export async function requireUserId(
 	return userId;
 }
 
+// check if there is a users session (alt to requireUserId)
+export async function requireUserSession(request: Request) {
+    const cookie = request.headers.get("Cookie");
+    const session = await storage.getSession(cookie);
+    //validate session
+    if(!session.has("userId")) {
+        return redirect("/login");
+    }
+    return session;
+}
+
 // export async function requireUser(request: Request) {
 // 	const userId = await requireUserId(request);
 
-// 	const user = await getUserId(userId);
+// 	const user = await getUserId(request);
 // 	if (user) return user;
 
 // 	throw await logout(request);
@@ -118,6 +138,7 @@ export async function logout(request: Request) {
 }
 
 // create a new user session
+// export async function createUserSession(userId: string, redirectTo: string) {
 export async function createUserSession(userId: string, redirectTo: string) {
 	const session = await storage.getSession();
 	session.set("userId", userId);
