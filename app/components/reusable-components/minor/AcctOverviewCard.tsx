@@ -9,21 +9,7 @@ import {
 	Divider,
 } from "@mui/material";
 
-// import for data from DB
-import { db } from "~/utils/db.server";
 
-
-// export const loader = async () => {
-//     const user = await db.user.findUnique({
-//         where: { username: 'awonder' },
-//         select: { username: true, email: true, name: true, id: true, },
-//     });
-//     if(!user) {
-//         throw new Error('User not found');
-//     }
-//     console.log(`the data returned from the loader is: ${JSON.stringify(user)}`)
-//     return json(user);
-// }
 
 const styles = {
     container: {
@@ -33,24 +19,43 @@ const styles = {
         boxShadow: '0 0 10px 0 rgba(0,0,0,.1)',
         // backgroundColor: 'background.paper',
     },
-
 }
 
-const AcctOverviewCard = () => {
-    // const data = useLoaderData<typeof loader>();
-    // console.log(`the data returned from the loader is: ${JSON.stringify(data)}`)
+const RowData = ({ props }: any) => {
+    return (
+        <div style={{
+            display: 'flex', 
+            flexDirection: 'row', 
+            flexWrap: 'nowrap', 
+            justifyContent: 'space-between'
+            }}> 
+            <Typography variant="body2">{props.what}</Typography>
+            <Typography variant="body2">{props.data.toString().toLowerCase()}</Typography>
+        </div>
+    )
+}
 
+function AcctOverviewCard({props}: any) {
+    // const userData = props.userdata;
+    const userCurrentTeam = props.userAffiliated.usersTeams.teams[0];
+    const userCurrentProject = userCurrentTeam.projects[0];
+
+    // console.log(props.userAffiliated.usersTeams.teams[0].name)
     return (
         <Box sx={styles.container}>
-            <Typography variant="h6">Account Overview</Typography>
-            <Divider />
-            <Stack spacing={1}>
-                <p>This is acct card</p>
-                {/* <Typography variant="body1">Hi, {data.user.username}!</Typography>
-                <Typography variant="body1">Email: {data.user.email}</Typography> */}
+            <Typography variant="h6">{userCurrentProject.name.toLowerCase()}</Typography>
+            <Divider sx={{my:.5}} />
+            <Stack spacing={.5}>
+                {/* <p>This is acct card</p> */}
+                <RowData props={{what: "team: ", data: userCurrentTeam.name}} />
+                <RowData props={{ what: "app type: ", data: userCurrentProject.type }} />
+                <RowData props={{ what: "active: ", data: userCurrentProject.active }} />
+                <RowData props={{ what: "milestone: ", data: userCurrentProject.milestone }} />
+                <RowData props={{ what: "deployed: ", data: userCurrentProject.deployed }} />
+                <RowData props={{ what: "funded: ", data: userCurrentProject.fundingCurrent }} />
+                <RowData props={{ what: "fund. goal: ", data: userCurrentProject.fundingGoal }} />
             </Stack>
         </Box>
-
     )
 }
 

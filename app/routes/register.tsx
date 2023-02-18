@@ -86,9 +86,7 @@ export const action = async ({ request }: ActionArgs) => {
     const firstName = form.get("firstName");
     const lastName = form.get("lastName");
     const devType = form.get("devType");                                        
-	const redirectTo = validateUrl(
-		form.get("redirectTo")?.toString() ?? "/dashboard"
-	);
+	const redirectTo = validateUrl(form.get("redirectTo")?.toString() ?? "/dashboard");
 
 	if (
 		typeof username !== "string" ||
@@ -239,6 +237,7 @@ export default function Login() {
                                 type="password" 
                                 fullWidth={ true }
                                 color="secondary"
+                                // not server side, calc'd on the client (right way?) - avoids round trip
                                 // defaultValue={ actionData?.fields?.passwordConfirm } 
                                 aria-invalid={ Boolean(actionData?.fieldErrors?.passwordConfirm) }
                                 aria-errormessage={ actionData?.fieldErrors?.passwordConfirm ? "passwordConfirm-error" : undefined }

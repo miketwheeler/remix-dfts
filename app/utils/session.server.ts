@@ -3,6 +3,7 @@ import { createCookieSessionStorage, redirect } from "@remix-run/node";
 import { db } from "./db.server";
 // import { getUserById } from '~/utils/user.server';
 
+
 type LoginForm = {
 	username: string;
 	password: string;
@@ -13,6 +14,7 @@ type RegisterForm = LoginForm & {
     lastName: string;
     devType: string;
 }
+
 
 export async function register({ 
     username, password, email, firstName, lastName, devType

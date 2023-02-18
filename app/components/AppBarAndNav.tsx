@@ -95,17 +95,10 @@ const tabStyles = {
 	},
 }
 
-// export const loader = async ({ request }: LoaderArgs) => {
-// 	const user = await getUser(request);
-// 	if(!user)
-// 		console.log("no user");
-// 	return json({ user });
-// };
 
 export const loader = async ({ request }: LoaderArgs) => {
 	const user = await getUser(request);
-	// if(!user)
-	// 	console.log("no user");
+
 	return json({ user });
 };
 
@@ -170,7 +163,6 @@ export default function AppBarAndNav(props: any) {
 					: null
 				}
 			</Tabs>
-			
 		</div>
 	);
 	
