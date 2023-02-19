@@ -32,7 +32,11 @@ const LayoutGridColumn: React.FC<Props> = (props) => {
 	return (
 		<>
             {
-                props.children.title ? <Typography variant="h6">{props.children.title}</Typography> : null
+                props.children.title ? 
+					<Typography variant="h6" sx={{ml: .25}}>
+						{props.children.title}
+					</Typography> 
+					: null
             }
             {
                 props.children.heading ? <>{props.children.heading}</> : null
