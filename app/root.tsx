@@ -1,8 +1,8 @@
-import { 
+import type { 
 	LinksFunction, 
 	MetaFunction, 
 	LoaderArgs, 
-	redirect
+	// redirect
 } from "@remix-run/node";
 // import { React } from "@remix-run/node";
 import React from 'react'
@@ -11,7 +11,7 @@ import {
 	LiveReload,
 	Meta,
 	Scripts,
-	useLoaderData,
+	// useLoaderData,
 	ScrollRestoration,
 	Outlet,
 	useCatch,

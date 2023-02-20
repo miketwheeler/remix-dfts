@@ -7,7 +7,7 @@ import {
 
 
 
-export default function DashboardTasksRoute() {
+export default function DashboardTeamsRoute() {
     return (
         <div>
             <h3 style={{color: 'purple'}}>Dashboard - Tasks Tab</h3>
