@@ -13,8 +13,12 @@ const links = [
 		path: "/dashboard",
 	},
 	{
-		name: "teams",
-		path: "/dashboard/teams",
+		name: "team",
+		path: "/dashboard/team",
+	},
+	{
+		name: 'project',
+		path: '/dashboard/project',
 	},
 	{
 		name: "messages",

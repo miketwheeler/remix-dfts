@@ -25,6 +25,9 @@ import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 import MailIcon from '@mui/icons-material/Mail';
 import HistoryEduIcon from '@mui/icons-material/HistoryEdu';
 import NewspaperIcon from '@mui/icons-material/Newspaper';
+import PolylineIcon from '@mui/icons-material/Polyline';
+import AddBoxIcon from '@mui/icons-material/AddBox';
+import AddCircleIcon from '@mui/icons-material/AddCircle';
 // import Slide from '@mui/material/Slide';
 
 
@@ -36,51 +39,84 @@ import { getUser } from "~/utils/session.server";
 const drawerWidth = 240;
 // const linksMain = undefined;
 // const linksSecondary = undefined;
-const primaryLinksEndIndex = 2;
+// const primaryLinksEndIndex = 2;
 const navLinks = [
     {
+		index: 0,
         name: "dashboard",
         path: "/dashboard",
 		icon: <GridViewIcon />,
 		enabled: true,
     },
     {
+		index: 1,
         name: "project hub",
         path: "/projecthub",
 		icon: <CategoryIcon />,
 		enabled: true,
     },
     {
+		index: 2,
         name: "member hall",
         path: "/memberhall",
 		icon: <GroupsIcon />,
 		enabled: true,
     },
 	{
+		index: 3,
 		name: "funding tree",
 		path: "/fundingtree",
 		icon: <AttachMoneyIcon />,
 		enabled: false,
 	},
+];
+const secondaryLinks = [
 	{
+		index: 4,
 		name: "messages",
 		path: "/messages",
 		icon: <MailIcon />,
 		enabled: false,
 	},
 	{
+		index: 5,
 		name: "documents",
 		path: "/documents",
 		icon: <HistoryEduIcon />,
 		enabled: false,
 	},
 	{
+		index: 6,
 		name: "news",
 		path: "/news",
 		icon: <NewspaperIcon />,
 		enabled: false,
 	}
 ];
+
+const tertiaryLinks = [
+	{
+		index: 7,
+		name: "create project",
+		path: "/project",
+		icon: <AddBoxIcon />,
+		enabled: true,
+	},
+	{
+		index: 8,
+		name: "create team",
+		path: "/team",
+		icon: <AddCircleIcon />,
+		enabled: true,
+	},
+];
+
+// const allLinks = [
+// 	navLinks,
+// 	secondaryLinks,
+// 	tertiaryLinks,
+// ]
+
 
 const tabStyles = {
 	color: "primary",
@@ -109,6 +145,7 @@ export default function AppBarAndNav(props: any) {
 	const data = useLoaderData<typeof loader>();
 	const { window } = props;
 	const [navTabValue, setNavTabValue] = React.useState(0);
+	// const [navTabValue, setNavTabValue] = React.useState("/dashboard");
 	const [mobileOpen, setMobileOpen] = React.useState(false);
 
 	const handleDrawerToggle = () => {
@@ -126,6 +163,7 @@ export default function AppBarAndNav(props: any) {
 		<div>
 			<Toolbar />
 			<Divider />
+
 			<Tabs
 				orientation="vertical"
 				value={navTabValue}
@@ -135,8 +173,45 @@ export default function AppBarAndNav(props: any) {
 				{
 					navLinks.map((link, index) => (
 						<Tab
-							key={ `tab-${index}` }
+							key={ `tab-${link.index}` }
 							id={ link.name }
+							// value={ link.path }
+							label={ link.name }
+							icon={ link.icon }
+							iconPosition="start"
+							component={ Link }
+							to={ link.path }
+							disabled={ !link.enabled }
+							sx={ tabStyles }
+						/>
+						)
+					)
+				}
+				<Divider />
+				{
+					secondaryLinks.map((link, index) => (
+						<Tab
+							key={ `tab-${link.index}` }
+							id={ link.name }
+							// value={ link.path }
+							label={ link.name }
+							icon={ link.icon }
+							iconPosition="start"
+							component={ Link }
+							to={ link.path }
+							disabled={ !link.enabled }
+							sx={ tabStyles }
+						/>
+						)
+					)
+				}
+				<Divider />
+				{
+					tertiaryLinks.map((link, index) => (
+						<Tab
+							key={ `tab-${link.index}` }
+							id={ link.name }
+							// value={ link.path }
 							label={ link.name }
 							icon={ link.icon }
 							iconPosition="start"
@@ -149,7 +224,7 @@ export default function AppBarAndNav(props: any) {
 					)
 				}
 				{
-					(!navLinks) ?
+					(!navLinks ?? !secondaryLinks ?? !tertiaryLinks) ?
 						<Tab
 							key={ 'tab-empty' }
 							id={ 'empty-tab' }
@@ -227,7 +302,7 @@ export default function AppBarAndNav(props: any) {
 						}
 						{/* <Link color="inherit" style={{marginLeft: 'auto', textDecoration: 'none'}} to="/login">login</Link>
 						<Link color="inherit" style={{marginLeft: '1rem', textDecoration: 'none'}} to="/logout">logout</Link> */}
-						<Link color="inherit" style={{marginLeft: '1rem', textDecoration: 'none'}} to="/">account</Link>
+						<Link color="inherit" style={{marginLeft: '1rem', textDecoration: 'none'}} to="/account">account</Link>
 				
 				</Toolbar>
 			</AppBar>
@@ -235,7 +310,7 @@ export default function AppBarAndNav(props: any) {
 				component="nav"
 				sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
 				aria-label="mailbox folders"
-			>
+				>
 				{/* The implementation can be swapped with js to avoid SEO duplication of links. */}
 				<Drawer
 					container={container}
@@ -279,10 +354,51 @@ export default function AppBarAndNav(props: any) {
 				>
 				<Toolbar />
 				
-				{/* The main contents of the Nav links */}
+				{/* The main contents determined by the Nav links */}
 				<Outlet />
 
 			</Box>
 		</Box>
 	);
 }
+
+
+
+// {/* ORIGINAL DRAWER CODE 
+// <Tabs
+// 	orientation="vertical"
+// 	value={navTabValue}
+// 	onChange={handleChange}
+// 	aria-label="Primary Navigation Tabs"
+// 	>
+// 	{
+// 		navLinks.map((link, index) => (
+// 			<Tab
+// 				key={ `tab-${index}` }
+// 				id={ link.name }
+// 				label={ link.name }
+// 				icon={ link.icon }
+// 				iconPosition="start"
+// 				component={ Link }
+// 				to={ link.path }
+// 				disabled={ !link.enabled }
+// 				sx={ tabStyles }
+// 			/>
+// 			)
+// 		)
+// 	}
+// 	{
+// 		(!navLinks) ?
+// 			<Tab
+// 				key={ 'tab-empty' }
+// 				id={ 'empty-tab' }
+// 				label={ 'blank tap' }
+// 				icon={ <ErrorIcon /> }
+// 				iconPosition="start"
+// 				component={ Link }
+// 				to={ '/' }
+// 				sx={ tabStyles }
+// 			/>
+// 		: null
+// 	}
+// </Tabs> */}
