@@ -22,9 +22,9 @@ export function ErrorBoundary() {
     const { data } = useParams();
     return (
         <div className="error-container">
-            <h1>Something went wrong</h1>
+            <h1>...something went wrong</h1>
             {`There was an error loading the data for ${data}.`}
-            <Link to="/">Go home</Link>
+            <Link to="/">go home</Link>
         </div>
     );
 }

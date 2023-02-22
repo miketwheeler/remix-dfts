@@ -13,8 +13,9 @@ import Drawer from "@mui/material/Drawer";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 
-import { Tab, Tabs } from "@mui/material";
+import { Tab, Tabs, Button } from "@mui/material";
 import IconButton from '@mui/material/IconButton';
+import theme from "~/styles/theme";
 
 import MenuIcon from '@mui/icons-material/Menu';
 import ErrorIcon from '@mui/icons-material/Error';
@@ -134,7 +135,6 @@ const tabStyles = {
 
 export const loader = async ({ request }: LoaderArgs) => {
 	const user = await getUser(request);
-
 	return json({ user });
 };
 
@@ -147,6 +147,7 @@ export default function AppBarAndNav(props: any) {
 	const [navTabValue, setNavTabValue] = React.useState(0);
 	// const [navTabValue, setNavTabValue] = React.useState("/dashboard");
 	const [mobileOpen, setMobileOpen] = React.useState(false);
+	// const theme = useTheme();
 
 	const handleDrawerToggle = () => {
 		setMobileOpen(!mobileOpen);
@@ -289,7 +290,9 @@ export default function AppBarAndNav(props: any) {
 												padding: '0',
 												cursor: 'pointer',
 												fontSize: '1rem',
-												textDecoration: 'none' 
+												textDecoration: 'none',
+												color: 'white',
+												textTransform: 'none',
 											}} 
 											>
 												logout
@@ -297,13 +300,29 @@ export default function AppBarAndNav(props: any) {
 									</form>
 								</div> 
 							) : (
-								<Link color="inherit" style={{marginLeft: 'auto', textDecoration: 'none'}} to="login">login</Link>
+								<Link 
+									style={{
+										marginLeft: 'auto', 
+										textDecoration: 'none', 
+										color: 'inherit',
+									}} 
+									to="/login"
+									>
+										login
+								</Link>
 							)
 						}
-						{/* <Link color="inherit" style={{marginLeft: 'auto', textDecoration: 'none'}} to="/login">login</Link>
-						<Link color="inherit" style={{marginLeft: '1rem', textDecoration: 'none'}} to="/logout">logout</Link> */}
-						<Link color="inherit" style={{marginLeft: '1rem', textDecoration: 'none'}} to="/account">account</Link>
-				
+						<Link 
+							color="inherit" 
+							style={{
+								marginLeft: '1rem', 
+								textDecoration: 'none', 
+								color: 'inherit'
+							}} 
+							to="/account"
+							>
+								account
+						</Link>
 				</Toolbar>
 			</AppBar>
 			<Box
