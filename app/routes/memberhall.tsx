@@ -9,6 +9,9 @@ import DetailsCard from "~/components/reusable-components/minor/DetailsCard";
 
 // server-side imports
 import { requireUserId } from "~/utils/session.server";
+import RedirectQButton from "~/components/reusable-components/minor/RedirectQButton";
+
+import MessageCard from "~/components/reusable-components/minor/MessageCard";
 
 
 
@@ -29,11 +32,27 @@ export default function MemberHallRoute() {
 
     return (
         <Grid2 container spacing={2} sx={{height: '100%', m: 2, mt: 2.5}}>
-            <Grid2 sm={12} md={7} sx={{border: '1px dotted lightblue'}}>
-                <div style={{display: 'flex', flexBasis: 'row', flexWrap: 'nowrap', justifyContent: 'space-between', marginBottom: 1}}>
+            <Grid2 
+                xs={12}
+                md={7} 
+                // sx={{border: '1px dotted lightblue'}}
+                >
+                <div style={{
+                        display: 'flex', 
+                        flexBasis: 'row', 
+                        flexWrap: 'nowrap', 
+                        justifyContent: 'space-between', 
+                        marginBottom: 1,
+                        position: 'sticky',
+                        top: 80,
+                        boxShadow: '0px 0px 8px 2px rgba(23,23,23,0.85)',
+                        background: 'rgba(23,23,23,0.85)',
+                        // background: 'linear-gradient(0deg, rgba(23,23,23,0.14627100840336138) 0%, rgba(23,23,23,0.6084558823529411) 14%, rgba(23,23,23,0.7961309523809523) 42%, rgba(23,23,23,0.8605567226890756) 75%)'                        
+                        }}>
                     <Typography variant="h5" sx={{ml: .25}}>members</Typography>
                     <Typography variant="body2" sx={{mr: .25, mt: 'auto', mb: .5}}>select to add</Typography>
                 </div>
+                
                 <Stack direction="column" spacing={1.5}>
                     {/* TODO: FUTURE: assemble the components, pasing the loader data via props/prop names */}
                     <MiniThinCard props={{heading: 'username', data1: 'devtype', data2: 'skill1, skill2...+4 more', availability: 'available'}} />
@@ -47,28 +66,47 @@ export default function MemberHallRoute() {
                     <MiniThinCard props={{heading: 'username', data1: 'devtype', data2: 'skill1, skill2...+4 more', availability: 'available'}} />
                     <MiniThinCard props={{heading: 'username', data1: 'devtype', data2: 'skill1, skill2...+4 more', availability: 'available'}} />
                     <MiniThinCard props={{heading: 'username', data1: 'devtype', data2: 'skill1, skill2...+4 more', availability: 'available'}} />
+                    <MiniThinCard props={{heading: 'username', data1: 'devtype', data2: 'skill1, skill2...+4 more', availability: 'available'}} />
+                    <MiniThinCard props={{heading: 'username', data1: 'devtype', data2: 'skill1, skill2...+4 more', availability: 'available'}} />
+                    <MiniThinCard props={{heading: 'username', data1: 'devtype', data2: 'skill1, skill2...+4 more', availability: 'available'}} />
+                    <MiniThinCard props={{heading: 'username', data1: 'devtype', data2: 'skill1, skill2...+4 more', availability: 'available'}} />
+                    <MiniThinCard props={{heading: 'username', data1: 'devtype', data2: 'skill1, skill2...+4 more', availability: 'available'}} />
+                    <MiniThinCard props={{heading: 'username', data1: 'devtype', data2: 'skill1, skill2...+4 more', availability: 'available'}} />
+                    <MiniThinCard props={{heading: 'username', data1: 'devtype', data2: 'skill1, skill2...+4 more', availability: 'available'}} />
+                    <MiniThinCard props={{heading: 'username', data1: 'devtype', data2: 'skill1, skill2...+4 more', availability: 'available'}} />
+                    <MiniThinCard props={{heading: 'username', data1: 'devtype', data2: 'skill1, skill2...+4 more', availability: 'available'}} />
+                    <MiniThinCard props={{heading: 'username', data1: 'devtype', data2: 'skill1, skill2...+4 more', availability: 'available'}} />
+                    <MiniThinCard props={{heading: 'username', data1: 'devtype', data2: 'skill1, skill2...+4 more', availability: 'available'}} />
                 </Stack>
             </Grid2>
-            <Grid2 md={5} sx={{display: { sm: 'none', md: "block"}, border: '1px dotted pink'}}>
-                <div style={{display: 'flex', flexBasis: 'row', flexWrap: 'nowrap', width: '100%', justifyContent: 'space-between'}}>
-                    <Typography variant="h5" sx={{ml: .25}}>details</Typography>
-                </div>
-                <div style={{display: 'block'}}>
-                    <Stack direction="column" spacing={2}>
-                        <DetailsCard props={{
-                            heading: 'username', 
-                            devType: 'devtype', 
-                            activeSince: "11/01/23", 
-                            teamsOn: '3', 
-                            projectsOn: '2', 
-                            rating: '4.5',
-                            skills: "skill1, skill2, skill3, skill4, skill5",
-                            bio: "lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
-                        }}
-                        />
-                    </Stack>
+            <Grid2 md={5} sx={{display: { xs: 'none', sm: "none", md: "block"}, border: '1px dotted pink'}}>
+                <div style={{position: 'sticky', top: 80}}>
+                    <div style={{display: 'flex', flexBasis: 'row', flexWrap: 'nowrap', width: '100%', justifyContent: 'space-between'}}>
+                        <Typography variant="h5" sx={{ml: .25}}>details</Typography>
+                    </div>
+                    <div style={{display: 'block'}}>
+                        <Stack direction="column" spacing={2}>
+                            <DetailsCard props={{
+                                heading: 'username',
+                                availability: 'available', 
+                                devType: 'devtype', 
+                                activeSince: "11/01/23", 
+                                teamsOn: '3', 
+                                projectsOn: '2', 
+                                rating: '4.5',
+                                skills: "skill1, skill2, skill3, skill4, skill5",
+                                bio: "lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitat."
+                            }}
+                            />
+                            <RedirectQButton props={{redirectHeader: "assembling a new crew?", whereTo: "team"}} />
+
+
+                            
+                        </Stack>
+                    </div>
                 </div>
             </Grid2>
+            <MessageCard />
         </Grid2>
     );
 }

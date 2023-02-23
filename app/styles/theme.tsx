@@ -40,7 +40,7 @@ const theme = createTheme({
         MuiAppBar: {
             styleOverrides: {
                 root: {
-                    background: `linear-gradient(45deg, ${purple[800]}, ${purple[600]}, ${purple[500]}, ${blue[500]})`,
+                    background: `linear-gradient(45deg, ${purple[800]}, ${purple[700]}, ${purple[500]}, ${blue[500]})`,
                     // backgroundColor: purple[700],
                 },
             },

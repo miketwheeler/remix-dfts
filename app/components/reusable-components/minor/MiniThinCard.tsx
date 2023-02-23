@@ -14,6 +14,7 @@ const cardContainer = {
     pl: 2,
     pr: 1.5,
     borderRadius: 2,
+    minWidth: '350px'
 }
 
 
