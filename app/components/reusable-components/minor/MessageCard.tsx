@@ -7,8 +7,10 @@ import {
     // Paper,
     TextField,
     Chip,
-    Slide
+    Slide,
+    useMediaQuery
 } from "@mui/material";
+import { useTheme } from '@mui/material/styles';
 
 // import { Link } from "@remix-run/react";
 
@@ -22,34 +24,14 @@ const ListItem = styled('li')(({ theme }) => ({
     margin: theme.spacing(.5),
 }));
 
-// styles
-const containerStyle = { 
-    display: 'block', 
-    flexBasis: "column", 
-    flexWrap: 'nowrap', 
-    boxShadow: '1px 3px 13px black',
-    p: 2,
-    borderRadius: '22px 22px 0 22px',
-    background: 'white',
-    position: 'fixed',
-    bottom: 10,
-    right: 10,
-    width: '340px'
 
-}
 
-const chipContainer = {
-    display: 'flex', 
-    flexWrap: 'wrap', 
-    listStyle: 'none', 
-    p: .25, 
-    m: 0,
-    minHeight: '40px',  
-    // width: '100%', 
-    // border: '1px dotted black'
-}
+
 
 const MessageCard = ({props}: any) => {
+    const theme = useTheme();
+    const mdAndDown = useMediaQuery(theme.breakpoints.down("sm"));
+
     // TODO: pass selected users' switch data to this component
     const [chipData, setChipData] = useState<ChipData[]>([
         { key: 0, label: 'username1' },
@@ -60,6 +42,37 @@ const MessageCard = ({props}: any) => {
     const handleDelete = (chipToDelete: ChipData) => () => {
         setChipData((chips) => chips.filter((chip) => chip.key !== chipToDelete.key));
     };
+
+
+    // TODO:  need logic for card click to shrink and expand 
+    //          as well as logic for whether there are username chips being displayed
+    //          and slide-in animation for chips
+
+    // TODO: logic, action, and implementation for the form data (server side also)
+
+    // styles
+    const containerStyle = { 
+        display: 'block', 
+        flexBasis: "column", 
+        flexWrap: 'nowrap', 
+        boxShadow: '1px 3px 13px black',
+        p: 2,
+        borderRadius: '22px 22px 0 22px',
+        background: 'white',
+        position: 'fixed',
+        bottom: 10,
+        right: 20,
+        width: mdAndDown ? '92%' : '340px',
+    }
+
+    const chipContainer = {
+        display: 'flex', 
+        flexWrap: 'wrap', 
+        listStyle: 'none', 
+        p: .25, 
+        m: 0,
+        minHeight: '40px',  
+    }
 
 
     return (
