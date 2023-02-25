@@ -2,7 +2,9 @@ import type {
     LoaderArgs,
 } from "@remix-run/node";
 import { json } from "@remix-run/node"
-import { Stack, Paper, Typography, Box } from "@mui/material";
+import { Stack, Paper, Typography, Box, useMediaQuery, useTheme } from "@mui/material";
+// import { useTheme } from '@mui/material/styles';
+
 import Grid2 from "@mui/material/Unstable_Grid2";
 import MiniThinCard from "~/components/reusable-components/minor/MiniThinCard";
 import DetailsCard from "~/components/reusable-components/minor/DetailsCard";
@@ -28,20 +30,20 @@ export async function loader({ request }: LoaderArgs) {
 
 // exports the 'index' page of the member hall route - the parent of subsequent member hall content
 export default function MemberHallRoute() {    
+    const theme = useTheme();
+    const smAndDown = useMediaQuery(theme.breakpoints.down('sm'));
     // TODO: get the loader data and save to local variable
+    // TODO: manage a variable that is the state of selected users
+    // TODO: manage a variable that is the state of selected user's details
 
 
-    // TODO: use theme & mediaQuery to get the current width, then use to determine the hieght of the 
-    //          gradient background component *& the height of the 'sticky-header' component
-
-    
     return (
         <>
-        {/* Fade at the top, displays under header but over scrolled content for effect */}
+        {/* Fade at the top, displays under header but over scrolled content for dissappearing effect */}
             <div style={{
                 display: 'flex', 
                 position: 'sticky', 
-                    top: 64, 
+                    top: smAndDown ? 56 : 62, 
                     height: 60, 
                     marginBottom: '-60px', 
                     width: '100%', 
@@ -52,7 +54,7 @@ export default function MemberHallRoute() {
                 <Grid2 
                     xs={12}
                     md={7} 
-                    sx={{border: '1px dotted lightblue'}}
+                    // sx={{border: '1px dotted lightblue'}}
                     >
                     {/* Container for the heading on the 'sticky-header' with scrollable content children */}
                     <div style={{
@@ -64,8 +66,8 @@ export default function MemberHallRoute() {
                             // borderBottom: '1px solid lightblue',
                             background: 'linear-gradient(0deg, rgba(18,18,18,0.2667191876750701) 0%, rgba(18,18,18,0.6252626050420168) 14%, rgba(18,18,18,0.84375) 42%, rgba(18,18,18,1) 75%)'
                             }}>
-                        <Typography variant="h5" sx={{ml: .25, mt: '.auto'}}>members</Typography>
-                        <Typography variant="body2" sx={{mr: .25, mt: 'auto', mb: .2}}>select to add</Typography>
+                        <Typography variant="h5" sx={{ml: .25, mt: '.auto', mb: .5}}>members</Typography>
+                        <Typography variant="body2" sx={{mr: .25, mt: 'auto', mb: .8}}>select to add</Typography>
                     </div>
                     
                     <Stack direction="column" spacing={1.5}>
@@ -94,7 +96,12 @@ export default function MemberHallRoute() {
                         <MiniThinCard props={{heading: 'username', data1: 'devtype', data2: 'skill1, skill2...+4 more', availability: 'available'}} />
                     </Stack>
                 </Grid2>
-                <Grid2 md={5} sx={{display: { xs: 'none', sm: "none", md: "block"}, border: '1px dotted pink'}}>
+                <Grid2 
+                    md={5} 
+                    sx={{
+                        display: { xs: 'none', sm: "none", md: "block"}, 
+                        // border: '1px dotted pink'
+                        }}>
                     <div style={{position: 'sticky', top: 80}}>
                         <div style={{display: 'flex', flexBasis: 'row', flexWrap: 'nowrap', width: '100%', justifyContent: 'space-between'}}>
                             <Typography 

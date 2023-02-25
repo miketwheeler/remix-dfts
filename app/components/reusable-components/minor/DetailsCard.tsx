@@ -2,8 +2,8 @@
 //     LoaderArgs,
 // } from "@remix-run/node";
 // import { json } from "@remix-run/node"
-import { Paper, Typography, Box, Divider, Stack } from "@mui/material";
-// import Grid2 from "@mui/material/Unstable_Grid2";
+import { Paper, Typography, Box, Divider, Stack, Collapse, Slide } from "@mui/material";
+import Grid from "@mui/material/Unstable_Grid2";
 
 
 
@@ -12,7 +12,7 @@ const flexRowStyle = {
     flexBasis: "row", 
     flexWrap: 'nowrap', 
     justifyContent: 'space-between',
-    background: 'rgba(0, 0, 0, 0.05)'
+    // background: 'rgba(0, 0, 0, 0.05)'
 }
 const flexColumnStyle = { 
     display: 'flex', 
@@ -62,32 +62,41 @@ const DetailsCard = ({props}: any) => {
                     </Typography>
                 </Box>
                 <Divider />
-                <Stack direction="column" spacing={1} sx={{ my: 1.5 }}>
-                    <Box sx={flexRowStyle}>
-                        <Typography variant="body2">dev type</Typography>
-                        <Typography variant="body2">{props.devType}</Typography>
-                    </Box>
-                    <Box sx={flexRowStyle}>
-                        <Typography variant="body2">active since</Typography>
-                        <Typography variant="body2">{props.activeSince}</Typography>
-                    </Box>
-                    <Box sx={flexRowStyle}>
-                        <Typography variant="body2">total teams</Typography>
-                        <Typography variant="body2">{props.teamsOn}</Typography>
-                    </Box>
-                    <Box sx={flexRowStyle}>
-                        <Typography variant="body2">total projects</Typography>
-                        <Typography variant="body2">{props.projectsOn}</Typography>
-                    </Box>
-                    <Box sx={flexRowStyle}>
-                        <Typography variant="body2">total projects</Typography>
-                        <Typography variant="body2">{props.projectsOn}</Typography>
-                    </Box>
-                    <Box sx={flexRowStyle}>
-                        <Typography variant="body2">rating</Typography>
-                        <Typography variant="body2">{props.rating}</Typography>
-                    </Box>
-                </Stack>
+                <Grid container spacing={1} sx={{m: 0, p: 0}}>
+                    <Grid xs={12} md={7}>
+                        <Stack direction="column" spacing={1} sx={{ my: 1.5 }}>
+                            <Box sx={flexRowStyle}>
+                                <Typography variant="body2">dev type</Typography>
+                                <Typography variant="body2">{props.devType}</Typography>
+                            </Box>
+                            <Box sx={flexRowStyle}>
+                                <Typography variant="body2">active since</Typography>
+                                <Typography variant="body2">{props.activeSince}</Typography>
+                            </Box>
+                            <Box sx={flexRowStyle}>
+                                <Typography variant="body2">total teams</Typography>
+                                <Typography variant="body2">{props.teamsOn}</Typography>
+                            </Box>
+                            <Box sx={flexRowStyle}>
+                                <Typography variant="body2">total projects</Typography>
+                                <Typography variant="body2">{props.projectsOn}</Typography>
+                            </Box>
+                            <Box sx={flexRowStyle}>
+                                <Typography variant="body2">total projects</Typography>
+                                <Typography variant="body2">{props.projectsOn}</Typography>
+                            </Box>
+                            <Box sx={flexRowStyle}>
+                                <Typography variant="body2">rating</Typography>
+                                <Typography variant="body2">{props.rating}</Typography>
+                            </Box>
+                        </Stack>
+                    </Grid>
+                    <Grid md={5} sx={{ display: { sm: 'none', md: "flex"} }}>
+                        <Box sx={{ flexGrow: 1, display: 'flex', justifyContent: 'center', verticalAlign: 'middle' }}>
+                            <div style={{ margin: 'auto auto', background: '#121212', height: 100, width: 100 }} />
+                        </Box>
+                    </Grid>
+                </Grid>
                 <Stack direction="column" spacing={1.5} sx={{ mb: 1.5 }}>
                     <Divider />
                     <Box sx={flexRowStyle}>

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { styled } from '@mui/material/styles';
 import { 
     Button, 
@@ -8,8 +8,14 @@ import {
     TextField,
     Chip,
     Slide,
-    useMediaQuery
+    CardActionArea,
+    Popper,
+    Collapse, 
+    Fade,
+    useMediaQuery,
 } from "@mui/material";
+import MessageIcon from '@mui/icons-material/Message';
+
 import { useTheme } from '@mui/material/styles';
 
 // import { Link } from "@remix-run/react";
@@ -31,6 +37,8 @@ const ListItem = styled('li')(({ theme }) => ({
 const MessageCard = ({props}: any) => {
     const theme = useTheme();
     const mdAndDown = useMediaQuery(theme.breakpoints.down("sm"));
+    const [expandValue, setExpandValue] = useState<boolean>(false);
+    const containerRef = useRef(null)
 
     // TODO: pass selected users' switch data to this component
     const [chipData, setChipData] = useState<ChipData[]>([
@@ -39,14 +47,22 @@ const MessageCard = ({props}: any) => {
         { key: 2, label: 'username3' },
     ]);
 
+    const listLength = chipData.length;
+    let prevListLength = 0;
+
     const handleDelete = (chipToDelete: ChipData) => () => {
         setChipData((chips) => chips.filter((chip) => chip.key !== chipToDelete.key));
     };
 
+    const handleMessageCardClicked = () => {
+        setExpandValue(!expandValue);
+    }
 
-    // TODO:  need logic for card click to shrink and expand 
-    //          as well as logic for whether there are username chips being displayed
-    //          and slide-in animation for chips
+    useEffect(() => {
+        if(listLength > 0) setExpandValue(true);
+        else setExpandValue(false);
+    }, [listLength])
+
 
     // TODO: logic, action, and implementation for the form data (server side also)
 
@@ -74,57 +90,141 @@ const MessageCard = ({props}: any) => {
         minHeight: '40px',  
     }
 
+    // const textboxStyles = {
+    //     '& .MuiInputLabel-root': {
+    //         color: 'secondary.main'
+    //     },
+    //     '& .MuiInputLabel-shrink': {
+    //         backgroundColor: 'primary.main'
+    //     },
+    //     '& .MuiFormLabel': {
+    //         backgroundColor: 'primary.main'
+    //     },
+    //     color: 'primary.main',
+    //     '& label': {
+    //         color: 'primary.main'
+    //     },
+    //     '& label.Mui-focused': {
+    //         color: 'secondary.main',
+    //     },
+    //     '& .MuiOutlinedInput-root': {
+    //         borderColor: 'primary.main',
+    //         color: 'primary.dark',
+    //         '&.Mui-focused fieldset': {
+    //             borderColor: 'secondary.main',
+    //             color: 'secondary.main'
+    //         },
+    //     },
+    // }
+
+    const inputStyle = {
+        "& .MuiInput-input": {
+            color: 'primary.main'
+        }
+    }
+
 
     return (
-        <Box sx={containerStyle}>
-            <div style={{display: 'block'}}>
-                <Typography 
-                    variant="body2" 
-                    sx={{my: 'auto', mr: 2, color: 'black'}}
-                    >
-                    send a message or invite to:
-                </Typography>
-            </div>
-            <Box component="ul" sx={chipContainer}>
-                {
-                    chipData.map((data) => {                            
-                        return (
-                            <ListItem key={data.key}>
-                                <Chip 
-                                    label={data.label} 
-                                    color="primary"
-                                    onDelete={handleDelete(data)} 
-                                    // sx={{ cursor: 'pointer'}}
-                                    />
-                            </ListItem>
-                        )
-                    })
-                }
-            </Box>
-            <form>
-                <div>
-                <TextField
-                    id="message-input"
-                    label="Multiline"
-                    InputLabelProps={{ color: 'primary' }}
-                    multiline
-                    maxRows={4}
-                    variant="standard"
-                    sx={{ width: '100%', mt: 1, mb: 1, border: '1px solid black', boxShadow: 'inset 0px 0px black' }}
-                    />
-                </div>
-            </form>
-            <div style={{ display: 'flex', justifyContent: 'end'}}>
-                <Button
-                    variant="contained"
-                    type="button"
-                    // component={ Link }
-                    // to={`/${props.toWhere}`}
-                    >
-                    send
-                </Button>
-            </div>
-        </Box>
+        <CardActionArea
+            // elevation={4}
+            id={"message-card"}
+            onClick={() => handleMessageCardClicked()}
+            >
+            <Popper
+                open={true}
+                keepMounted
+                aria-labeledby="message-card"
+                aria-describedby='message-card-modal'
+                >
+            
+                <Box sx={containerStyle}>
+                    {
+                        !expandValue ? (
+                            <Fade in={!expandValue} timeout={{ enter: 700, exit: 10}} easing={{ enter: 'ease-in-out'}}>
+                                <div style={{display: 'inline-flex'}}>
+                                    <Typography 
+                                        variant="body2" 
+                                        sx={{my: 'auto', mr: .5, color: 'black'}}
+                                        >
+                                        send a message or invite!
+                                    </Typography>
+                                    <MessageIcon color="primary" sx={{ my: 'auto', ml: '4px' }} />
+                                </div>
+                            </Fade>
+                        ) : null
+                    }
+                
+                <Collapse in={ expandValue } easing={{ enter: 'ease-in-out', exit: 'ease-in-out' }} timeout={{ enter: 200, exit: 200 }}>
+                        <Fade in={ expandValue } timeout={{ enter: 200, exit: 10 }} easing={{ enter: 'ease-in-out' }}>
+                            <div>
+                                <div style={{display: 'block'}}>
+                                    <Typography 
+                                        variant="body2" 
+                                        sx={{my: 'auto', mr: 2, color: 'black', height: 'fit-content'}}
+                                        >
+                                        add members to connect
+                                    </Typography>
+                                </div>
+                                <Box component="ul" sx={chipContainer}>
+                                    {
+                                        chipData.map((data) => {                            
+                                            return (
+                                                <ListItem key={data.key}>
+                                                    <Chip 
+                                                        label={data.label} 
+                                                        color="primary"
+                                                        size="small"
+                                                        onDelete={handleDelete(data)} 
+                                                        />
+                                                </ListItem>
+                                            )
+                                        })
+                                    }
+                                </Box>
+                                <form>
+                                    <div>
+                                    <TextField
+                                        id="message-input"
+                                        label="Message"
+                                        InputLabelProps={{ color: 'primary' }}
+                                        multiline
+                                        maxRows={4}
+                                        variant="standard"
+                                        onClick={(e) => e.stopPropagation()}
+                                        color="primary"
+                                        fullWidth
+                                        // sx={textboxStyles}
+                                        inputProps={{ color: 'primary.main'}}
+                                        InputProps={inputStyle}
+                                        sx={{ 
+                                            width: '100%', 
+                                            mt: 1, 
+                                            mb: 1, 
+                                            border: '1px solid black', 
+                                            boxShadow: 'inset 0px 0px black' ,
+                                            color: 'black',
+                                            
+                                        }}
+
+                                        />
+                                    </div>
+                                </form>
+                                <div style={{ display: 'flex', justifyContent: 'end'}}>
+                                    <Button
+                                        variant="contained"
+                                        type="button"
+                                        // component={ Link }
+                                        // to={`/${props.toWhere}`}
+                                        >
+                                        send
+                                    </Button>
+                                </div>
+                            </div>
+                        </Fade>
+                    </Collapse>
+                </Box>
+            </Popper>
+        </CardActionArea>
     )
 };
 
