@@ -27,7 +27,8 @@ interface Props {
 }
 
 
-// Column Component Layout - assembles a columnar Stack of elements passed to it, gives it a header and/or title if passed
+// Column Component Layout - assembles a columnar Stack of elements passed to it, gives 
+//								it a header and/or title if passed
 const LayoutGridColumn: React.FC<Props> = (props) => {
 	return (
 		<>

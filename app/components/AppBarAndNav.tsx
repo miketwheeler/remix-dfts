@@ -189,6 +189,12 @@ export default function AppBarAndNav(props: any) {
 					)
 				}
 				<Divider />
+				<Typography variant="h6" sx={{ 
+					ml: 2, 
+					mt: 2, 
+					mb: 0,
+					opacity: secondaryLinks.every((link) => link.enabled) ? 1 : .2,
+				}}>personal</Typography>
 				{
 					secondaryLinks.map((link, index) => (
 						<Tab
@@ -207,6 +213,12 @@ export default function AppBarAndNav(props: any) {
 					)
 				}
 				<Divider />
+				<Typography variant="h6" sx={{ 
+					ml: 2, 
+					mt: 2, 
+					mb: 0,
+					opacity: secondaryLinks.every((link) => link.enabled) ? 1 : .2,
+				}}>create</Typography>
 				{
 					tertiaryLinks.map((link, index) => (
 						<Tab

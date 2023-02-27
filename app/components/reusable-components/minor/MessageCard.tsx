@@ -78,7 +78,7 @@ const MessageCard = ({props}: any) => {
         position: 'fixed',
         bottom: 10,
         right: 20,
-        width: mdAndDown ? '92%' : '340px',
+        width: mdAndDown ? '92%' : '320px',
     }
 
     const chipContainer = {
@@ -90,53 +90,26 @@ const MessageCard = ({props}: any) => {
         minHeight: '40px',  
     }
 
-    // const textboxStyles = {
-    //     '& .MuiInputLabel-root': {
-    //         color: 'secondary.main'
-    //     },
-    //     '& .MuiInputLabel-shrink': {
-    //         backgroundColor: 'primary.main'
-    //     },
-    //     '& .MuiFormLabel': {
-    //         backgroundColor: 'primary.main'
-    //     },
-    //     color: 'primary.main',
-    //     '& label': {
-    //         color: 'primary.main'
-    //     },
-    //     '& label.Mui-focused': {
-    //         color: 'secondary.main',
-    //     },
-    //     '& .MuiOutlinedInput-root': {
-    //         borderColor: 'primary.main',
-    //         color: 'primary.dark',
-    //         '&.Mui-focused fieldset': {
-    //             borderColor: 'secondary.main',
-    //             color: 'secondary.main'
-    //         },
-    //     },
-    // }
-
-    const inputStyle = {
-        "& .MuiInput-input": {
-            color: 'primary.main'
-        }
+    const messageBoxStyles = {
+        width: '100%', 
+        mt: 1, 
+        mb: 1,   
+        '& .MuiOutlinedInput-root': {
+            border: '1px solid black',
+        },
+        '& .MuiOutlinedInput-root.Mui-focused': {
+            border: '1px solid transparent',
+        },
+        '& .MuiFormLabel-root': {
+            color: 'black',
+        },
     }
+    const messageHeaderStyles = { my: 'auto', mr: .5, color: 'black'}
 
 
     return (
-        <CardActionArea
-            // elevation={4}
-            id={"message-card"}
-            onClick={() => handleMessageCardClicked()}
-            >
-            <Popper
-                open={true}
-                keepMounted
-                aria-labeledby="message-card"
-                aria-describedby='message-card-modal'
-                >
-            
+        <CardActionArea id={"message-card"} onClick={() => handleMessageCardClicked()}>
+            <Popper open={true} keepMounted>
                 <Box sx={containerStyle}>
                     {
                         !expandValue ? (
@@ -144,23 +117,22 @@ const MessageCard = ({props}: any) => {
                                 <div style={{display: 'inline-flex'}}>
                                     <Typography 
                                         variant="body2" 
-                                        sx={{my: 'auto', mr: .5, color: 'black'}}
+                                        sx={messageHeaderStyles}
                                         >
-                                        send a message or invite!
+                                        send a message or invite
                                     </Typography>
                                     <MessageIcon color="primary" sx={{ my: 'auto', ml: '4px' }} />
                                 </div>
                             </Fade>
                         ) : null
                     }
-                
                 <Collapse in={ expandValue } easing={{ enter: 'ease-in-out', exit: 'ease-in-out' }} timeout={{ enter: 200, exit: 200 }}>
                         <Fade in={ expandValue } timeout={{ enter: 200, exit: 10 }} easing={{ enter: 'ease-in-out' }}>
                             <div>
-                                <div style={{display: 'block'}}>
+                                <div style={{display: 'inline-flex'}}>
                                     <Typography 
                                         variant="body2" 
-                                        sx={{my: 'auto', mr: 2, color: 'black', height: 'fit-content'}}
+                                        sx={messageHeaderStyles}
                                         >
                                         add members to connect
                                     </Typography>
@@ -170,11 +142,11 @@ const MessageCard = ({props}: any) => {
                                         chipData.map((data) => {                            
                                             return (
                                                 <ListItem key={data.key}>
-                                                    <Chip 
-                                                        label={data.label} 
+                                                    <Chip
+                                                        label={data.label}
                                                         color="primary"
                                                         size="small"
-                                                        onDelete={handleDelete(data)} 
+                                                        onDelete={handleDelete(data)}
                                                         />
                                                 </ListItem>
                                             )
@@ -186,26 +158,14 @@ const MessageCard = ({props}: any) => {
                                     <TextField
                                         id="message-input"
                                         label="Message"
-                                        InputLabelProps={{ color: 'primary' }}
+                                        variant="outlined"
                                         multiline
-                                        maxRows={4}
-                                        variant="standard"
-                                        onClick={(e) => e.stopPropagation()}
-                                        color="primary"
                                         fullWidth
-                                        // sx={textboxStyles}
-                                        inputProps={{ color: 'primary.main'}}
-                                        InputProps={inputStyle}
-                                        sx={{ 
-                                            width: '100%', 
-                                            mt: 1, 
-                                            mb: 1, 
-                                            border: '1px solid black', 
-                                            boxShadow: 'inset 0px 0px black' ,
-                                            color: 'black',
-                                            
-                                        }}
-
+                                        maxRows={4}
+                                        onClick={(e) => e.stopPropagation()}
+                                        InputLabelProps={{ color: 'primary' }}
+                                        InputProps={{ style: { color: 'black' } }}
+                                        sx={messageBoxStyles}
                                         />
                                     </div>
                                 </form>
