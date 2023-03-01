@@ -1,26 +1,24 @@
 import type {
     LoaderArgs,
 } from "@remix-run/node";
+import { useState } from "react";
 import { json } from "@remix-run/node"
-import { Stack, Paper, Typography, Box, useMediaQuery, useTheme } from "@mui/material";
-// import { useTheme } from '@mui/material/styles';
-
+import { Stack, Typography, useMediaQuery, useTheme } from "@mui/material";
 import Grid2 from "@mui/material/Unstable_Grid2";
 import MiniThinCard from "~/components/reusable-components/minor/MiniThinCard";
 import DetailsCard from "~/components/reusable-components/minor/DetailsCard";
-
-// server-side imports
-import { requireUserId } from "~/utils/session.server";
 import RedirectQButton from "~/components/reusable-components/minor/RedirectQButton";
-
 import MessageCard from "~/components/reusable-components/minor/MessageCard";
+
+import { requireUserId } from "~/utils/session.server";
+
+import { MultiselectProvider } from "~/components/client-context/MultiselectContext";
 
 
 
 // requires the user to be logged in - on load, so is hack but works because of the order necessary within the login process
 export async function loader({ request }: LoaderArgs) {
 	await requireUserId(request);
-
 	return json({});
 }
 
@@ -32,40 +30,37 @@ export async function loader({ request }: LoaderArgs) {
 export default function MemberHallRoute() {    
     const theme = useTheme();
     const smAndDown = useMediaQuery(theme.breakpoints.down('sm'));
-    // TODO: get the loader data and save to local variable
-    // TODO: manage a variable that is the state of selected users
-    // TODO: manage a variable that is the state of selected user's details
+
+    const [cardId, setCardId] = useState<string>("");
+    const [cardIdList, setCardIdList] = useState<string[]>([]);
 
 
     return (
         <>
-        {/* Fade at the top, displays under header but over scrolled content for dissappearing effect */}
+        <MultiselectProvider cardId={cardId} cardIdList={cardIdList} setCardId={setCardId} setCardIdList={setCardIdList}>
+
             <div style={{
                 display: 'flex', 
                 position: 'sticky', 
-                    top: smAndDown ? 56 : 62, 
-                    height: 60, 
-                    marginBottom: '-60px', 
-                    width: '100%', 
-                    background: 'linear-gradient(0deg, rgba(18,18,18,0.2667191876750701) 0%, rgba(18,18,18,0.6252626050420168) 14%, rgba(18,18,18,1) 42%, rgba(18,18,18,1) 75%)'
+                top: smAndDown ? 56 : 62, 
+                height: 60, 
+                marginBottom: '-60px', 
+                width: '100%', 
+                background: 'linear-gradient(0deg, rgba(18,18,18,0.2667191876750701) 0%, rgba(18,18,18,0.6252626050420168) 14%, rgba(18,18,18,1) 42%, rgba(18,18,18,1) 75%)'
                 }} 
             />
             <Grid2 container spacing={2} sx={{height: '100%', m: 2, mt: 2.5}}>
-                <Grid2 
-                    xs={12}
-                    md={7} 
-                    // sx={{border: '1px dotted lightblue'}}
-                    >
+                <Grid2 xs={12} md={7}>
                     {/* Container for the heading on the 'sticky-header' with scrollable content children */}
                     <div style={{
-                            display: 'flex', 
-                            flexBasis: 'row', 
-                            justifyContent: 'space-between', 
-                            position: 'sticky',
-                            top: 80,
-                            // borderBottom: '1px solid lightblue',
-                            background: 'linear-gradient(0deg, rgba(18,18,18,0.2667191876750701) 0%, rgba(18,18,18,0.6252626050420168) 14%, rgba(18,18,18,0.84375) 42%, rgba(18,18,18,1) 75%)'
-                            }}>
+                        display: 'flex', 
+                        flexBasis: 'row', 
+                        justifyContent: 'space-between', 
+                        position: 'sticky',
+                        top: 80,
+                        // borderBottom: '1px solid lightblue',
+                        background: 'linear-gradient(0deg, rgba(18,18,18,0.2667191876750701) 0%, rgba(18,18,18,0.6252626050420168) 14%, rgba(18,18,18,0.84375) 42%, rgba(18,18,18,1) 75%)'
+                        }}>
                         <Typography variant="h5" sx={{ml: .25, mt: '.auto', mb: .5}}>members</Typography>
                         <Typography variant="body2" sx={{mr: .25, mt: 'auto', mb: .8}}>select to add</Typography>
                     </div>
@@ -96,25 +91,16 @@ export default function MemberHallRoute() {
                         <MiniThinCard props={{id: 21, heading: 'username', data1: 'devtype', data2: 'skill1, skill2...+4 more', availability: 'available'}} />
                     </Stack>
                 </Grid2>
-                <Grid2 
-                    md={5} 
-                    sx={{
-                        display: { xs: 'none', sm: "none", md: "block"}, 
-                        // border: '1px dotted pink'
-                        }}>
+                <Grid2 md={5} sx={{ display: { xs: 'none', sm: "none", md: "block"}}}>
                     <div style={{position: 'sticky', top: 80}}>
                         <div style={{display: 'flex', flexBasis: 'row', flexWrap: 'nowrap', width: '100%', justifyContent: 'space-between'}}>
-                            <Typography 
-                                variant="h5" 
-                                sx={{
-                                    ml: .25, 
-                                    // borderBottom: '1px solid lightblue'
-                                }}>
-                                    details
+                            <Typography variant="h5" sx={{ ml: .25 }}>
+                                details
                             </Typography>
                         </div>
                         <div style={{display: 'block'}}>
                             <Stack direction="column" spacing={2}>
+
                                 <DetailsCard props={{
                                     heading: 'username',
                                     availability: 'available', 
@@ -127,16 +113,17 @@ export default function MemberHallRoute() {
                                     bio: "lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitat."
                                 }}
                                 />
-                                <RedirectQButton props={{redirectHeader: "assembling a new crew?", whereTo: "team"}} />
 
-
-                                
+                                <RedirectQButton props={{redirectHeader: "assembling a new crew?", whereTo: "team"}} />                                
                             </Stack>
                         </div>
                     </div>
                 </Grid2>
+
                 <MessageCard />
+
             </Grid2>
+            </MultiselectProvider>
         </>
     );
 }

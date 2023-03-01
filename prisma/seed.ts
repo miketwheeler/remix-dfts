@@ -9,9 +9,6 @@ async function seed() {
         create: {
             firstName: 'Alice',
             lastName: 'Wonder',
-            // role: {
-            //     create: { name: "ADMIN" }
-            // },
             email: 'awonder@gmail.com',
             username: "awonder",
             // this is a hashed version of "twixrox"
@@ -20,7 +17,7 @@ async function seed() {
             available: true,
             bio: "Ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae duis faucibus accumsan odio curabitur convallis duis",
             skills: {
-                create: { name: "JavaScript" } 
+                create: { name: "JavaScript" }
             },
             teams: {
                 create: { 

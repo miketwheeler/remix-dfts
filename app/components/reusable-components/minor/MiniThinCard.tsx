@@ -2,10 +2,13 @@
 //     LoaderArgs,
 // } from "@remix-run/node";
 // import { json } from "@remix-run/node"
-import { useState } from "react";
+import { useState, useContext, useMemo } from "react";
 import { Paper, Typography, Box, CardActionArea } from "@mui/material";
-import Grid2 from "@mui/material/Unstable_Grid2";
-import { PillSwitch } from "./PillSwitch"
+// import Grid2 from "@mui/material/Unstable_Grid2";
+import { PillSwitch } from "./PillSwitch";
+// import { useMultiselectContext } from "~/components/client-context/MultiselectContext";
+// import { MultiselectContext } from "~/components/client-context/MultiselectContext";
+import { useMultiselectContext } from "~/components/client-context/MultiselectContext";
 
 
 const flexRowStyle = { display: 'flex', flexBasis: "row", flexWrap: 'nowrap', justifyContent: 'space-between' }
@@ -23,24 +26,46 @@ const cardContainer = {
 
 
 const MiniThinCard = ({props}: any) => {
-    const [currentSelected, setCurrentSelected] = useState<number>(-1);
-    const [switchList, setSwitchList] = useState<any[]>([]);
 
-    const handleCardClicked = (event: React.MouseEvent<HTMLButtonElement>, id: number) => {
+    const { cardId, cardIdList, setCardId, setCardIdList } = useMultiselectContext();
+    const [currentSelected, setCurrentSelected] = useState<string>(cardId);
+    // const [switchList, setSwitchList] = useState<any[]>(cardIdList);
+
+
+    // keeps track of the current hightlighted card
+    const handleCardClicked = (event: React.MouseEvent<HTMLButtonElement>, thisCardId: string) => {
         event.preventDefault();
-        if(currentSelected !== id) {
-            document.getElementById(`card-${id}`)?.classList.add('Mui-active');
-            if(currentSelected !== -1)
+        if(currentSelected !== thisCardId) {
+            document.getElementById(`card-${thisCardId}`)?.classList.add('Mui-active');
+            if(currentSelected !== "")
                 document.getElementById(`card-${currentSelected}`)?.classList.remove('Mui-active');
             }
-
-        setCurrentSelected(id);
+        setCurrentSelected(thisCardId);
+        setCardId(thisCardId);
     }
 
-    // function handleCardChecked(switchId) {
-    //     // membersCheckBoxSelected.includes(switchId) ? dispatch(memberRemove(switchId)) : dispatch(memberAdd(switchId))
+    // helper: removes the id from the list of selected cards
+    const handleRemoveId = (id: string) => {
+        let i = cardIdList.indexOf(id);
+        if(i !== -1) {
+            setCardIdList([...cardIdList.slice(0, i), ...cardIdList.slice(i, cardIdList.length-1 )]);
+        }
+    }
 
-    // }
+    // keeps track of current cards selected by their switch
+    const handleCardSwitched = (switchId: string) => {
+        cardIdList.includes(switchId) 
+        ? handleRemoveId(switchId) // is there already? remove it
+        : setCardIdList([...cardIdList, switchId]) // else add the cardId to the list
+    }
+
+    useMemo(() => {
+        console.log(`cardId: ${cardId}`)
+        console.log(`cardIdList: ${cardIdList}`)
+    }, [cardId, cardIdList])
+
+    // TODO:
+    // try/catch block for retrieving data for selected card and/or switch and then operating on their respective roles
 
     return (
         <Box sx={{ flexGrow: 1, m: 0 }}>
@@ -65,14 +90,13 @@ const MiniThinCard = ({props}: any) => {
                                 {props.availability}
                             </Typography>
                             <div style={{ fontSize: '12px', margin: 'auto 0' }}>
-                                (switch)
                                 <PillSwitch 
                                     // label="select-user"
                                     key={`${props.id}`}
                                     id={`switch-${props.id}`}
                                     onClick={(event: React.MouseEvent<HTMLElement>) => { 
                                         event.stopPropagation();
-                                        // handleCardChecked(props.id);
+                                        handleCardSwitched(props.id);
                                     }}
                                     onMouseDown={(event: React.MouseEvent<HTMLElement>) => event.stopPropagation()}
                                     />

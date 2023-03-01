@@ -192,7 +192,7 @@ export default function Login() {
                         </div>
                         <div className="flex items-center justify-center">
                             <div className="text-center text-sm text-gray-500">
-                                new here? join by {" "}
+                                new here? quick {" "}
                                 <Link
                                     className="text-blue-500 underline"
                                     to={{
@@ -200,7 +200,7 @@ export default function Login() {
                                         search: searchParams.toString(),
                                     }}
                                     >
-                                    creating a account
+                                    register
                                 </Link>
                             </div>
                         </div>

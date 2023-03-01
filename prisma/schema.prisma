@@ -28,6 +28,7 @@ model User {
   createdAt       DateTime    @default(now())
   updatedAt       DateTime    @updatedAt
   skills          Skills[]
+  rating          Int         @default(5)
   teamLead        Team?       @relation(name: "TeamLead")
   teams           Team[]
   posts           Post[]
@@ -58,8 +59,8 @@ model Project {
   synopsis        String
   description     String
   techStack       String?
-  beginDate       DateTime
-  endDate         DateTime
+  beginDate       DateTime?
+  endDate         DateTime?
   active          Boolean         @default(false)
   milestone       Int             @default(0)
   deployed        Boolean         @default(false)
@@ -67,8 +68,8 @@ model Project {
   fundingGoal     Decimal         @default(0.0)
   fundingCurrent  Decimal         @default(0.0)
   category        Category[]      
-  team            Team            @relation(fields: [teamId], references: [id])
-  teamId          String          @unique
+  team            Team?            @relation(fields: [teamId], references: [id])
+  teamId          String?          @unique
 }
 
 
