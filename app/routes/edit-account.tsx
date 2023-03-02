@@ -1,5 +1,6 @@
 import { Box, Paper, Stack, Button, Table, Rating, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Typography, RadioGroup, Radio, FormControlLabel } from "@mui/material";
 import Grid from "@mui/material/Unstable_Grid2"
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import type {
     LoaderArgs,
 } from "@remix-run/node";
@@ -220,9 +221,14 @@ export default function EditAccountRoute() {
                                 py: 2,
                                 // border: '1px solid pink'
                                 }}>
-                            <Button variant="contained" sx={{ m:2 }} type="submit" >
-                                save edits
-                            </Button>
+                            <div>
+                                <Button href="/account" startIcon={<ArrowBackIcon  />}>
+                                    go back
+                                </Button>
+                                <Button variant="contained" sx={{ m:2 }} type="submit" >
+                                    save edits
+                                </Button>
+                            </div>
                         </Box>
                     </div>
                 </Grid>

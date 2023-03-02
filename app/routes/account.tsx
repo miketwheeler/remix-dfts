@@ -178,11 +178,18 @@ export default function AccountRoute() {
                 
                 {/* NEED TO ADD SECTIONS FOR PROJECTS/TEAMS CURRENTLY INVOLVED WITH */}
                 <Grid xs={12} md={6}>
-                    <Paper sx={{p: 2}} elevation={2}>
-                        <Typography variant="h6" component="h2" gutterBottom>
-                            <Link to="/edit-account">edit</Link>&nbsp;settings
-                        </Typography>
-                    </Paper>
+                    <Stack spacing={2} sx={{width: '100%'}}>
+                        <Paper sx={{p: 2}} elevation={1}>
+                            <Typography variant="h6" component="h2" gutterBottom>
+                                projects
+                            </Typography>
+                        </Paper>
+                        <Paper sx={{p: 2}} elevation={1}>
+                            <Typography variant="h6" component="h2" gutterBottom>
+                                teams
+                            </Typography>
+                        </Paper>
+                    </Stack>
                 </Grid>
             </Grid>
         </Box>
