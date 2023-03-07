@@ -94,7 +94,7 @@ export default function EditAccountRoute() {
                 <Grid xs={12} md={6} sx={{p: 2}}>
                     <div>
                         <Typography variant="h6" component="h2" gutterBottom>
-                            {`<${username}>`}'s account info
+                            make changes to your account information
                         </Typography>
                         <TableContainer component={Paper}>
                             <Table>
@@ -142,7 +142,7 @@ export default function EditAccountRoute() {
                                                                 rows={4}
                                                                 type={row.type} 
                                                                 defaultValue={row.value}
-                                                                sx={{ width: '100%'}}
+                                                                sx={{ width: '100%' }}
                                                                 />
                                                         : row.name === "available"
                                                         ? 

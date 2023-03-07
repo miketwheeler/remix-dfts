@@ -28,7 +28,7 @@ model User {
   createdAt       DateTime    @default(now())
   updatedAt       DateTime    @updatedAt
   skills          Skills[]
-  rating          Int         @default(5)
+  rating          Float       @default(5.0)
   teamLead        Team?       @relation(name: "TeamLead")
   teams           Team[]
   posts           Post[]
@@ -71,8 +71,6 @@ model Project {
   team            Team?            @relation(fields: [teamId], references: [id])
   teamId          String?          @unique
 }
-
-
 
 // user & userId - 1 post can only belong to 1 user
 // category - A post can have many categories
