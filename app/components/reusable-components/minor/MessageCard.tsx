@@ -7,7 +7,7 @@ import {
     // Paper,
     TextField,
     Chip,
-    Slide,
+    // Slide,
     CardActionArea,
     Popper,
     Collapse, 
@@ -17,6 +17,7 @@ import {
 import MessageIcon from '@mui/icons-material/Message';
 
 import { useTheme } from '@mui/material/styles';
+// import { blue } from '@mui/material/colors';
 
 // import { Link } from "@remix-run/react";
 
@@ -32,13 +33,11 @@ const ListItem = styled('li')(({ theme }) => ({
 
 
 
-
-
 const MessageCard = ({props}: any) => {
     const theme = useTheme();
     const mdAndDown = useMediaQuery(theme.breakpoints.down("sm"));
     const [expandValue, setExpandValue] = useState<boolean>(false);
-    const containerRef = useRef(null)
+    // const containerRef = useRef(null)
 
     // TODO: pass selected users' switch data to this component
     const [chipData, setChipData] = useState<ChipData[]>([
@@ -74,10 +73,15 @@ const MessageCard = ({props}: any) => {
         boxShadow: '1px 3px 13px black',
         p: 2,
         borderRadius: '22px 22px 0 22px',
-        background: 'white',
+        // NOTE: dark glass effect
+        background: 'rgba(22, 22, 22, .8)', 
+        // NOTE: light glass effect
+        // background: 'rgba(222, 222, 222, 0.2)',
+        backdropFilter: 'blur(4px)',
         position: 'fixed',
         bottom: 10,
         right: 20,
+        zIndex: 5,
         width: mdAndDown ? '92%' : '320px',
     }
 
@@ -94,22 +98,16 @@ const MessageCard = ({props}: any) => {
         width: '100%', 
         mt: 1, 
         mb: 1,   
-        '& .MuiOutlinedInput-root': {
-            border: '1px solid black',
-        },
-        '& .MuiOutlinedInput-root.Mui-focused': {
-            border: '1px solid transparent',
-        },
         '& .MuiFormLabel-root': {
-            color: 'black',
+            color: 'white',
         },
     }
-    const messageHeaderStyles = { my: 'auto', mr: .5, color: 'black'}
+    const messageHeaderStyles = { my: 'auto', mr: .5, color: 'white'}
 
 
     return (
-        <CardActionArea id={"message-card"} onClick={() => handleMessageCardClicked()}>
-            <Popper open={true} keepMounted>
+        <CardActionArea id={"message-card"} onClick={() => handleMessageCardClicked()} sx={{zIndex: 5}}>
+            <Popper open={true} keepMounted sx={{ zIndex: 5, opacity: 1}}>
                 <Box sx={containerStyle}>
                     {
                         !expandValue ? (
@@ -164,7 +162,7 @@ const MessageCard = ({props}: any) => {
                                         maxRows={4}
                                         onClick={(e) => e.stopPropagation()}
                                         InputLabelProps={{ color: 'primary' }}
-                                        InputProps={{ style: { color: 'black' } }}
+                                        InputProps={{ style: { color: 'white' } }}
                                         sx={messageBoxStyles}
                                         />
                                     </div>

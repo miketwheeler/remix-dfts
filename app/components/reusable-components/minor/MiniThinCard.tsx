@@ -1,7 +1,3 @@
-// import type {
-//     LoaderArgs,
-// } from "@remix-run/node";
-// import { json } from "@remix-run/node"
 import { useState, useContext, useMemo } from "react";
 import { Paper, Typography, Box, CardActionArea } from "@mui/material";
 // import Grid2 from "@mui/material/Unstable_Grid2";
@@ -11,7 +7,11 @@ import { PillSwitch } from "./PillSwitch";
 import { useMultiselectContext } from "~/components/client-context/MultiselectContext";
 
 
-const flexRowStyle = { display: 'flex', flexBasis: "row", flexWrap: 'nowrap', justifyContent: 'space-between' }
+
+// TODO:  fix the this component, wip pass selected to details card and switch to message card!!!!!!
+
+
+const flexRowStyle = { display: 'flex', flexBasis: "row", flexWrap: 'nowrap', justifyContent: 'space-between', border: '1px dotted pink' }
 const flexColumnStyle = { display: 'flex', flexBasis: 'column', flexWrap: 'nowrap', textAlign: 'center', verticalAlign: 'middle' }
 const cardContainer = {
     p: 1,
@@ -26,11 +26,10 @@ const cardContainer = {
 
 
 const MiniThinCard = ({props}: any) => {
-
     const { cardId, cardIdList, setCardId, setCardIdList } = useMultiselectContext();
     const [currentSelected, setCurrentSelected] = useState<string>(cardId);
     // const [switchList, setSwitchList] = useState<any[]>(cardIdList);
-
+    
 
     // keeps track of the current hightlighted card
     const handleCardClicked = (event: React.MouseEvent<HTMLButtonElement>, thisCardId: string) => {
@@ -39,7 +38,7 @@ const MiniThinCard = ({props}: any) => {
             document.getElementById(`card-${thisCardId}`)?.classList.add('Mui-active');
             if(currentSelected !== "")
                 document.getElementById(`card-${currentSelected}`)?.classList.remove('Mui-active');
-            }
+        }
         setCurrentSelected(thisCardId);
         setCardId(thisCardId);
     }
@@ -59,36 +58,67 @@ const MiniThinCard = ({props}: any) => {
         : setCardIdList([...cardIdList, switchId]) // else add the cardId to the list
     }
 
-    useMemo(() => {
-        console.log(`cardId: ${cardId}`)
-        console.log(`cardIdList: ${cardIdList}`)
-    }, [cardId, cardIdList])
-
-    // TODO:
-    // try/catch block for retrieving data for selected card and/or switch and then operating on their respective roles
+    // useMemo(() => {
+    //     console.log(`cardId: ${cardId}`)
+    //     console.log(`cardIdList: ${cardIdList}`)
+    // }, [cardId, cardIdList])
 
     return (
         <Box sx={{ flexGrow: 1, m: 0 }}>
             <CardActionArea id={`card-${props.id}`} onClick={(event) => handleCardClicked(event, props.id)}>
-                <Paper elevation={4} sx={cardContainer} id={`card-inneer-${props.id}`}>
+                <Paper elevation={4} sx={cardContainer} id={`card-inner-${props.id}`}>
                     <Box sx={flexRowStyle}>
                         <Box sx={flexColumnStyle}>
-                            <Typography variant="body2" sx={{my: 'auto'}}>
-                                {props.heading}
-                            </Typography>
+                            {
+                                props.header ?
+                                <Typography variant="body2" sx={{my: 'auto'}}>
+                                    {props.header.toLowerCase()}
+                                </Typography>
+                                : null
+                            }
                         </Box>
-                        <div style={{display: 'block'}}>
-                            <Typography variant="body2">
-                                {props.data1}
-                            </Typography>
-                            <Typography variant="body2">
-                                {props.data2}
-                            </Typography>
+                        <div style={{ 
+                            display: 'block', 
+                            // border: '1px solid lightblue' 
+                            }}
+                            >
+                            {
+                                props.data1 ?
+                                <Typography variant="body2">
+                                    {props.data1.toLowerCase()}
+                                </Typography>
+                                : null
+                            }
+                            {
+                                props.data2 ? 
+                                <Box sx={{ display: 'flex', flexDirection: 'row', flexWrap: 'nowrap', maxWidth: '200px'}}>
+                                    <Typography variant='body2' sx={{textOverflow: 'ellipsis', maxWidth: '120px', whiteSpace: 'nowrap', overflow: 'hidden' }}>
+                                        {
+                                            props.data2.map((skill: any, index: number) => {
+                                                return (
+                                                    skill.name + 
+                                                    `${index < props.data2.length -1 ? ", " : ""}`
+                                                )
+                                            })
+                                        }
+                                    </Typography>
+                                    <Typography variant="body2" sx={{width: 'fit-content'}}>
+                                        {
+                                            props.data2.length > 2 ? ` +${props.data2.length - 2} more` : ""
+                                        }
+                                    </Typography>
+                                </Box>
+                                : null
+                            }
                         </div>
                         <Box sx={{ display: 'flex', flexBasis: "row", flexWrap: 'nowrap', textAlign: 'center', verticalAlign: 'middle' }}>
-                            <Typography variant="body2" sx={{my: 'auto', mr: .5}}>
-                                {props.availability}
-                            </Typography>
+                            {
+                                props.availability !== null || props.availability !== undefined ?
+                                <Typography variant="body2" sx={{my: 'auto', mr: .5}}>
+                                    {props.availability === true ? "available" : "unavailable"}
+                                </Typography>
+                                : null
+                            }
                             <div style={{ fontSize: '12px', margin: 'auto 0' }}>
                                 <PillSwitch 
                                     // label="select-user"

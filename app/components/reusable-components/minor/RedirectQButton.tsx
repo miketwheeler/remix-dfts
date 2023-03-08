@@ -8,6 +8,7 @@ const flexRowStyle = {
     flexWrap: 'nowrap', 
     justifyContent: 'center',
     py: 3,
+    zIndex: 0,
     boxShadow: '1px 3px 13px black'
 }
 
