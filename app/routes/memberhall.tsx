@@ -67,21 +67,19 @@ export default function MemberHallRoute() {
                     </div>
                     <Stack direction="column" spacing={1.5} sx={{zIndex: 0}}> 
                         {
-                            data.map((member: any) => {
-                                return (
-                                    <MiniThinCard 
-                                        key={`card-${member.id}`}
-                                        props={{
-                                            id: member.id,
-                                            header: member.username,
-                                            data1: member.devType,
-                                            data2: member.skills,
-                                            availability: member.available,
-                                        }}
-                                        // props={ member } 
-                                        />
+                            data.map((member: any) => (
+                                <MiniThinCard 
+                                    key={`card-${member.id}`}
+                                    props={{
+                                        id: member.id,
+                                        header: member.username,
+                                        data1: member.devType,
+                                        data2: member.skills,
+                                        availability: member.available,
+                                    }}
+                                    />
                                 )
-                            })
+                            )
                         }
                     </Stack>
                 </Grid2>

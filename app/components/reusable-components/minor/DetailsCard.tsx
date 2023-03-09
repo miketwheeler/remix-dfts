@@ -1,11 +1,17 @@
-// import type {
-//     LoaderArgs,
-// } from "@remix-run/node";
-// import { json } from "@remix-run/node"
+import type {
+    LoaderArgs,
+} from "@remix-run/node";
+import { useLoaderData } from "@remix-run/react";
 import { Paper, Typography, Box, Divider, Stack, Collapse, Slide } from "@mui/material";
 import Grid from "@mui/material/Unstable_Grid2";
+import { useMultiselectContext } from "~/components/client-context/MultiselectContext";
+
+// import { getMember } from "~/utils/db.server";
 
 
+export async function loader({ request }: LoaderArgs ) {
+    // const displayUser = await getMember()
+}
 
 const flexRowStyle = { 
     display: 'flex', 
@@ -44,6 +50,9 @@ const cardContainer = {
 
 
 const DetailsCard = ({props}: any) => {
+    const data = useLoaderData();
+    const { cardId } = useMultiselectContext();
+
     return (
         <Paper id="small-card" elevation={4} sx={cardContainer}>
             <Box flexGrow={1}>

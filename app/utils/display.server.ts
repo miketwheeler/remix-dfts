@@ -9,3 +9,11 @@ export async function getMemberList(request: Request) {
     });
     return memberList;
 }
+
+// export async function getMember(request: Request) {
+//     const member = await db.user.findUnique({
+//         where: { id: request.params.id },
+//         select: { id: true, username: true, devType: true, skills: true, available: true },
+//     });
+//     return member;
+// }

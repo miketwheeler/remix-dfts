@@ -57,10 +57,10 @@ const MessageCard = ({props}: any) => {
         setExpandValue(!expandValue);
     }
 
-    useEffect(() => {
-        if(listLength > 0) setExpandValue(true);
-        else setExpandValue(false);
-    }, [listLength])
+    // useEffect(() => {
+    //     if(listLength > 0) setExpandValue(true);
+    //     else setExpandValue(false);
+    // }, [listLength])
 
 
     // TODO: logic, action, and implementation for the form data (server side also)
@@ -102,7 +102,7 @@ const MessageCard = ({props}: any) => {
             color: 'white',
         },
     }
-    const messageHeaderStyles = { my: 'auto', mr: .5, color: 'white'}
+    const messageHeaderStyles = { my: 'auto', mr: .5, color: 'white', justifyContent: 'center'}
 
 
     return (
@@ -110,11 +110,11 @@ const MessageCard = ({props}: any) => {
             <Popper open={true} keepMounted sx={{ zIndex: 5, opacity: 1}}>
                 <Box sx={containerStyle}>
                     {
-                        !expandValue ? (
+                        !expandValue ? 
                             <Fade in={!expandValue} timeout={{ enter: 700, exit: 10}} easing={{ enter: 'ease-in-out'}}>
                                 <div style={{display: 'inline-flex'}}>
                                     <Typography 
-                                        variant="body2" 
+                                        // variant="body2" 
                                         sx={messageHeaderStyles}
                                         >
                                         send a message or invite
@@ -122,7 +122,7 @@ const MessageCard = ({props}: any) => {
                                     <MessageIcon color="primary" sx={{ my: 'auto', ml: '4px' }} />
                                 </div>
                             </Fade>
-                        ) : null
+                        : null
                     }
                 <Collapse in={ expandValue } easing={{ enter: 'ease-in-out', exit: 'ease-in-out' }} timeout={{ enter: 200, exit: 200 }}>
                         <Fade in={ expandValue } timeout={{ enter: 200, exit: 10 }} easing={{ enter: 'ease-in-out' }}>

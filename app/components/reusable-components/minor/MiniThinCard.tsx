@@ -1,18 +1,27 @@
 import { useState, useContext, useMemo } from "react";
-import { Paper, Typography, Box, CardActionArea } from "@mui/material";
+import { Paper, Typography, Box, CardActionArea, Divider } from "@mui/material";
 // import Grid2 from "@mui/material/Unstable_Grid2";
 import { PillSwitch } from "./PillSwitch";
-// import { useMultiselectContext } from "~/components/client-context/MultiselectContext";
-// import { MultiselectContext } from "~/components/client-context/MultiselectContext";
 import { useMultiselectContext } from "~/components/client-context/MultiselectContext";
-
 
 
 // TODO:  fix the this component, wip pass selected to details card and switch to message card!!!!!!
 
 
-const flexRowStyle = { display: 'flex', flexBasis: "row", flexWrap: 'nowrap', justifyContent: 'space-between', border: '1px dotted pink' }
-const flexColumnStyle = { display: 'flex', flexBasis: 'column', flexWrap: 'nowrap', textAlign: 'center', verticalAlign: 'middle' }
+const flexRowStyle = { 
+    display: 'flex', 
+    flexBasis: "row", 
+    flexWrap: 'nowrap', 
+    justifyContent: 'space-between', 
+    // border: '1px dotted pink' 
+}
+// const flexColumnStyle = { display: 'flex', flexBasis: 'column', flexWrap: 'nowrap',  verticalAlign: 'middle' }
+const flexColumnHeaderStyle = { 
+    display: 'flex',  
+    textAlign: 'center', 
+    minWidth: '100px',
+    // border: '1px dotted red'
+}
 const cardContainer = {
     p: 1,
     pl: 2,
@@ -64,11 +73,11 @@ const MiniThinCard = ({props}: any) => {
     // }, [cardId, cardIdList])
 
     return (
-        <Box sx={{ flexGrow: 1, m: 0 }}>
+        <Box sx={{ flexGrow: 1, m: 0, minWidth: '300px'}}>
             <CardActionArea id={`card-${props.id}`} onClick={(event) => handleCardClicked(event, props.id)}>
                 <Paper elevation={4} sx={cardContainer} id={`card-inner-${props.id}`}>
                     <Box sx={flexRowStyle}>
-                        <Box sx={flexColumnStyle}>
+                        <Box sx={flexColumnHeaderStyle}>
                             {
                                 props.header ?
                                 <Typography variant="body2" sx={{my: 'auto'}}>
@@ -77,34 +86,36 @@ const MiniThinCard = ({props}: any) => {
                                 : null
                             }
                         </Box>
-                        <div style={{ 
-                            display: 'block', 
-                            // border: '1px solid lightblue' 
+                        <Divider orientation="vertical" variant="middle" flexItem sx={{ml: 1, mr: 2}} />
+                        <div 
+                            style={{ 
+                                display: 'block', 
+                                textAlign: 'left',
+                                width: '100%',
+                                minWidth: '100px',
+                                overflow: 'hidden',
+                                marginRight: '12px',
+                                // border: '1px solid red',
                             }}
                             >
                             {
                                 props.data1 ?
-                                <Typography variant="body2">
-                                    {props.data1.toLowerCase()}
-                                </Typography>
+                                    <Typography noWrap variant='body2' sx={{textOverflow: 'ellipsis', maxWidth: '100%', whiteSpace: 'nowrap', overflow: 'hidden' }}>
+                                        {props.data1.toLowerCase()}
+                                    </Typography>
                                 : null
                             }
                             {
                                 props.data2 ? 
-                                <Box sx={{ display: 'flex', flexDirection: 'row', flexWrap: 'nowrap', maxWidth: '200px'}}>
-                                    <Typography variant='body2' sx={{textOverflow: 'ellipsis', maxWidth: '120px', whiteSpace: 'nowrap', overflow: 'hidden' }}>
+                                <Box sx={{ display: 'flex', flexDirection: 'row', flexWrap: 'nowrap', overflow: 'hidden'}}>
+                                    <Typography noWrap variant='body2' sx={{textOverflow: 'ellipsis', maxWidth: '100%', whiteSpace: 'nowrap', overflow: 'hidden' }}>
                                         {
                                             props.data2.map((skill: any, index: number) => {
                                                 return (
-                                                    skill.name + 
+                                                    skill.name.toLowerCase() + 
                                                     `${index < props.data2.length -1 ? ", " : ""}`
                                                 )
                                             })
-                                        }
-                                    </Typography>
-                                    <Typography variant="body2" sx={{width: 'fit-content'}}>
-                                        {
-                                            props.data2.length > 2 ? ` +${props.data2.length - 2} more` : ""
                                         }
                                     </Typography>
                                 </Box>
@@ -114,7 +125,15 @@ const MiniThinCard = ({props}: any) => {
                         <Box sx={{ display: 'flex', flexBasis: "row", flexWrap: 'nowrap', textAlign: 'center', verticalAlign: 'middle' }}>
                             {
                                 props.availability !== null || props.availability !== undefined ?
-                                <Typography variant="body2" sx={{my: 'auto', mr: .5}}>
+                                <Typography 
+                                    variant="body2" 
+                                    // color={props.availability === true ? 'theme.palette.success' : 'theme.palette.warning'}
+                                    sx={{
+                                        my: 'auto', 
+                                        mr: .5, 
+                                        opacity: props.availability === true ? 1 : .2
+                                        }}
+                                    >
                                     {props.availability === true ? "available" : "unavailable"}
                                 </Typography>
                                 : null
