@@ -1,7 +1,7 @@
 import type {
     LoaderArgs,
 } from "@remix-run/node";
-import { useLoaderData } from "@remix-run/react";
+import { useLoaderData, useFetcher } from "@remix-run/react";
 import { Paper, Typography, Box, Divider, Stack, Collapse, Slide } from "@mui/material";
 import Grid from "@mui/material/Unstable_Grid2";
 import { useMultiselectContext } from "~/components/client-context/MultiselectContext";
