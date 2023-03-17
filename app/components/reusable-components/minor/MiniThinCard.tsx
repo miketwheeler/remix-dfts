@@ -1,9 +1,12 @@
 import { useState, useContext, useMemo } from "react";
-import { Paper, Typography, Box, CardActionArea, Divider } from "@mui/material";
+import { Paper, Typography, Box, CardActionArea, Divider, useTheme } from "@mui/material";
 // import Grid2 from "@mui/material/Unstable_Grid2";
 import { PillSwitch } from "./PillSwitch";
 import { useMultiselectContext } from "~/components/client-context/MultiselectContext";
-
+import PersonAddIcon from '@mui/icons-material/PersonAdd';
+import PersonAddDisabledIcon from '@mui/icons-material/PersonAddDisabled';
+import { useFetcher } from "react-router-dom";
+import { Link } from "@remix-run/react";
 
 // TODO:  fix the this component, wip pass selected to details card and switch to message card!!!!!!
 
@@ -37,11 +40,12 @@ const cardContainer = {
 const MiniThinCard = ({props}: any) => {
     const { cardId, cardIdList, setCardId, setCardIdList } = useMultiselectContext();
     const [currentSelected, setCurrentSelected] = useState<string>(cardId);
+    const theme = useTheme();
     // const [switchList, setSwitchList] = useState<any[]>(cardIdList);
     
 
     // keeps track of the current hightlighted card
-    const handleCardClicked = (event: React.MouseEvent<HTMLButtonElement>, thisCardId: string) => {
+    const handleCardClicked = (event: React.SyntheticEvent<HTMLAnchorElement, Event>, thisCardId: string) => {
         event.preventDefault();
         if(currentSelected !== thisCardId) {
             document.getElementById(`card-${thisCardId}`)?.classList.add('Mui-active');
@@ -56,7 +60,7 @@ const MiniThinCard = ({props}: any) => {
     const handleRemoveId = (id: string) => {
         let i = cardIdList.indexOf(id);
         if(i !== -1) {
-            setCardIdList([...cardIdList.slice(0, i), ...cardIdList.slice(i, cardIdList.length-1 )]);
+            setCardIdList([...cardIdList.slice(0, i), ...cardIdList.slice( i, cardIdList.length-1 )]);
         }
     }
 
@@ -74,7 +78,14 @@ const MiniThinCard = ({props}: any) => {
 
     return (
         <Box sx={{ flexGrow: 1, m: 0, minWidth: '300px'}}>
-            <CardActionArea id={`card-${props.id}`} onClick={(event) => handleCardClicked(event, props.id)}>
+            {/* <CardActionArea id={`card-${props.id}`} onClick={(event) => handleCardClicked(event, props.id)}> */}
+            <Link 
+                to={props.id} 
+                // prefetch="intent" 
+                key={`link-${props.id}`}
+                style={{ textDecoration: 'none', color: 'inherit' }}
+                onSelect={(event) => handleCardClicked(event, props.id)}
+                >
                 <Paper elevation={4} sx={cardContainer} id={`card-inner-${props.id}`}>
                     <Box sx={flexRowStyle}>
                         <Box sx={flexColumnHeaderStyle}>
@@ -134,7 +145,12 @@ const MiniThinCard = ({props}: any) => {
                                         opacity: props.availability === true ? 1 : .2
                                         }}
                                     >
-                                    {props.availability === true ? "available" : "unavailable"}
+                                    {
+                                        props.availability === true 
+                                        ? <PersonAddIcon fontSize="small" /> 
+                                        : <PersonAddDisabledIcon fontSize="small" />
+                                    }
+
                                 </Typography>
                                 : null
                             }
@@ -153,7 +169,8 @@ const MiniThinCard = ({props}: any) => {
                         </Box>
                     </Box>
                 </Paper>
-            </CardActionArea>
+            </Link>
+            {/* </CardActionArea> */}
         </Box>
     )
 }
