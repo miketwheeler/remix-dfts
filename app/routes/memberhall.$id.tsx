@@ -22,6 +22,32 @@ import { getUserId, requireUserId } from "~/utils/session.server";
 // };
 
 export const loader = async ({ params }: LoaderArgs) => {
+    const skillList = await db.skills.findMany({
+        where: { 
+            users : { 
+                some: { id: params.id  }    
+            } 
+        },
+        select: { name: true },
+    })
+
+    const teamList = await db.team.findMany({
+        where: { members : { some: { id: params.id } } },
+        select: { name: true, id: true, projects: true },
+    })
+
+    // const teamIdList = teamList.map(team => team.id);
+    // const quantityProjects = ;
+
+    // TODO: finish query for the user's projects (look up the fluentAPI for single pass unique queries!)
+    // const latestProject = await db.project.findMany({
+    //     where: { 
+    //         team: { 
+    //             is: { id: teamIdList[-1] } 
+    //         } 
+    //     },
+    // });
+
 	const user = await db.user.findUnique({
 		where: { id: params.id },
         select: { 
@@ -30,15 +56,19 @@ export const loader = async ({ params }: LoaderArgs) => {
             devType: true, 
             createdAt: true, 
             rating: true, 
-            bio: true 
+            bio: true,
         }
 	});
 	if (!user) {
-		throw new Response("What a joke! User not found.", {
-			status: 404,
-		});
+		throw new Response("What a joke! User not found.", { status: 404 });
 	}
-	return json({ user });
+	return json({ 
+        user, 
+        skillList, 
+        teamList, 
+        // quantityProjects, 
+        // latestProject 
+    });
 };
 
 // export const action = async ({ params, request }: ActionArgs) => {
@@ -63,10 +93,10 @@ export default function MemberIdRoute() {
             availability={data.user.available}
             devType={data.user.devType}
             activeSince={data.user.createdAt}
-            // teamsOn={data.user.teams.length}
-            // projectsOn={data.user.projects.length}
+            teamsOn={data.teamList.length}
+            // projectsOn={data.}
             rating={data.user.rating}
-            // skills={data.user.skills}
+            skills={data.skillList}
             bio={data.user.bio}
         />
     )
@@ -86,14 +116,14 @@ export function CatchBoundary() {
 		case 404: {
 			return (
 				<div className="error-container">
-					Huh? What the heck is {params.userId}?
+					Seems that user does not exist.
 				</div>
 			);
 		}
 		case 403: {
 			return (
 				<div className="error-container">
-					Sorry, but {params.userId} is not your joke.
+					This asset does not belong to you.
 				</div>
 			);
 		}
@@ -108,7 +138,7 @@ export function ErrorBoundary({ error }: { error: Error }) {
 	const { id } = useParams();
 	return (
 		<div>
-            {`There was an error loading the user. Sorry. \nUser ID: ${id}. \nError: ${error}`}
+            {`There was an error loading that user's info. Please try again later.`}
         </div>
 	);
 }

@@ -68,7 +68,18 @@ const DetailsCard = (props: any) => {
     //         console.log(`currentUser cardId (context var) after change: ${cardId}`);
     //     }
     // }, [cardId, currentUser])
+    // console.log(JSON.stringify(props.skills))
+    // Object.entries(props.skills).map((key, value) => {
+        //     return (
+            //         console.log(`value: ${value}`)
+            //     )
+            // })
+            // console.log(Object.values(props.skills))
+            
     const simpleDate = (`${props.activeSince.toString().slice(5,2).concat(props.activeSince.toString().slice(0,4))}`)
+    const skillsList = props.skills.map((obj: any, i: any) => {
+        return obj.name
+    })
 
     return (
         <Paper id="small-card" elevation={4} sx={cardContainer}>
@@ -118,10 +129,6 @@ const DetailsCard = (props: any) => {
                                         <Typography variant="body2">total projects</Typography>
                                         <Typography variant="body2">{props.projectsOn}</Typography>
                                     </Box>
-                                    {/* <Box sx={flexRowStyle}>
-                                        <Typography variant="body2">total projects</Typography>
-                                        <Typography variant="body2">{props.projectsOn}</Typography>
-                                    </Box> */}
                                     <Box sx={flexRowStyle}>
                                         <Typography variant="body2">rating</Typography>
                                         <Typography variant="body2">{props.rating}</Typography>
@@ -141,7 +148,7 @@ const DetailsCard = (props: any) => {
                                     <Typography variant="body2">skills</Typography>
                                 </Box>
                                 <Box sx={flexColumnStyle}>
-                                    <Typography variant="body2">{props.skills}</Typography>
+                                    <Typography variant="body2">{skillsList.join(', ')}</Typography>
                                 </Box>
                             </Box>
 
