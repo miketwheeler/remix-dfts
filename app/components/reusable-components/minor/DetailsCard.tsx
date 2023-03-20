@@ -37,19 +37,6 @@ const cardContainer = {
     borderRadius: 2,
 }
 
-// const separator = {
-//     whiteSpace: 'nowrap',
-//     position: 'relative',
-//     overflow: 'hidden',
-//     "&:after": {
-//         content: ".............................................",
-//         letterSpacing: '4px',
-//         color: 'grey',
-//         opacity: '50%',
-//         verticalAlign: "3px",
-//         display: 'inline-block',
-//     }
-// }
 
 
 const DetailsCard = (props: any) => {
@@ -114,30 +101,30 @@ const DetailsCard = (props: any) => {
                             <Grid xs={12} md={7}>
                                 <Stack direction="column" spacing={1} sx={{ my: 1.5 }}>
                                     <Box sx={flexRowStyle}>
-                                        <Typography variant="body2">dev type</Typography>
-                                        <Typography variant="body2">{props.devType}</Typography>
+                                        <Typography variant="body2">dev:</Typography>
+                                        <Typography variant="body2" sx={{textAlign: 'right'}}>{props.devType.toLowerCase()}</Typography>
                                     </Box>
                                     <Box sx={flexRowStyle}>
-                                        <Typography variant="body2">active since</Typography>
+                                        <Typography variant="body2">active since:</Typography>
                                         <Typography variant="body2">{simpleDate}</Typography>
                                     </Box>
                                     <Box sx={flexRowStyle}>
-                                        <Typography variant="body2">total teams</Typography>
+                                        <Typography variant="body2">total teams:</Typography>
                                         <Typography variant="body2">{props.teamsOn}</Typography>
                                     </Box>
                                     <Box sx={flexRowStyle}>
-                                        <Typography variant="body2">total projects</Typography>
+                                        <Typography variant="body2">total projects:</Typography>
                                         <Typography variant="body2">{props.projectsOn}</Typography>
                                     </Box>
                                     <Box sx={flexRowStyle}>
-                                        <Typography variant="body2">rating</Typography>
+                                        <Typography variant="body2">rating:</Typography>
                                         <Typography variant="body2">{props.rating}</Typography>
                                     </Box>
                                 </Stack>
                             </Grid>
                             <Grid md={5} sx={{ display: { sm: 'none', md: "flex"} }}>
-                                <Box sx={{ flexGrow: 1, display: 'flex', justifyContent: 'center', verticalAlign: 'middle' }}>
-                                    <div style={{ margin: 'auto auto', background: '#121212', height: 100, width: 100 }} />
+                                <Box sx={{ flexGrow: 1, display: 'flex', justifyContent: 'center', verticalAlign: 'middle', pl: 1, py: 1 }}>
+                                    <div style={{ margin: 'auto auto', background: '#121212', height: '100%', width: '100%' }} />
                                 </Box>
                             </Grid>
                         </Grid>
@@ -145,20 +132,20 @@ const DetailsCard = (props: any) => {
                             <Divider />
                             <Box sx={flexRowStyle}>
                                 <Box sx={flexColumnStyle}>
-                                    <Typography variant="body2">skills</Typography>
+                                    <Typography variant="body2" sx={{mr: 3}}>skills:</Typography>
                                 </Box>
                                 <Box sx={flexColumnStyle}>
-                                    <Typography variant="body2">{skillsList.join(', ')}</Typography>
+                                    <Typography variant="body2" sx={{textAlign: 'left'}}>{skillsList.join(', ').toLowerCase()}</Typography>
                                 </Box>
                             </Box>
 
                             <Divider />
                             <Box sx={flexRowStyle}>
                                 <Box sx={flexColumnStyle}>
-                                    <Typography sx={{mr: 2}} variant="body2">bio</Typography>
+                                    <Typography sx={{mr: 3}} variant="body2">bio:</Typography>
                                 </Box>
                                 <Box sx={flexColumnStyle}>
-                                    <Typography variant="body2">{props.bio}</Typography>
+                                    <Typography variant="body2" >{props.bio}</Typography>
                                 </Box>
                             </Box>
                         </Stack>

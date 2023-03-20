@@ -5,30 +5,37 @@ import { Link } from "@remix-run/react";
 const flexRowStyle = { 
     display: 'flex', 
     flexBasis: "row", 
-    flexWrap: 'nowrap', 
+    flexWrap: 'wrap', 
     justifyContent: 'center',
-    py: 3,
+    my: 'auto',
+    py: 1.5,
+    px: 1,
     zIndex: 0,
     boxShadow: '1px 3px 13px black'
 }
 
 const RedirectQButton = ({props}: any) => {
     return (
-        <Box sx={flexRowStyle}>
-            <Typography 
-                variant="body2" 
-                sx={{my: 'auto', mr: 2}}
-                >
-                {props.redirectHeader}
-            </Typography>
-            <Button
-                variant="contained"
-                type="button"
-                component={ Link }
-                to={`/${props.toWhere}`}
-                >
-                create {props.toWhere}
-            </Button>
+        <Box sx={ flexRowStyle }>
+            <Box sx={{ my: 'auto', py: 0.5 }}>
+                <Typography 
+                    variant="body2" 
+                    sx={{ my: 'auto', mr: 2, minWidth: '100px' }}
+                    >
+                    { props.redirectHeader }
+                </Typography>
+            </Box>
+            <Box sx={{ my: 'auto', py: 0.5 }}>
+                <Button
+                    variant="contained"
+                    type="button"
+                    component={ Link }
+                    to={ `/${props.toWhere}` }
+                    sx={{ minWidth: '100px'}}
+                    >
+                    create {props.toWhere}
+                </Button>
+            </Box>
         </Box>
     )
 };

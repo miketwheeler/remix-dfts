@@ -9,7 +9,7 @@ export default function MemberhallIndexRoute() {
 		<Skeleton 
 			variant="rectangular"  
 			height={420}
-			sx={{ borderRadius: 2 }} 
+			sx={{ borderRadius: 2, display: { sm: 'none' , md: 'flex'} }} 
 			/>
 	);
 }
@@ -17,7 +17,7 @@ export default function MemberhallIndexRoute() {
 export function CatchBoundary() {
 	const caught = useCatch();
 
-	if (caught.status === 404) {
+	if (caught.status >= 401) {
 		return (
 			<div className="error-container">
 				There are no users to display.

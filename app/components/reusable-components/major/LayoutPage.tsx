@@ -34,7 +34,7 @@ const styles = {
 const LayoutPage: React.FC<PageProps> = ({ columnWidths, children }) => {
 	return (
 		<Box sx={styles.root}>
-			<Grid container xs={12} spacing={2} sx={{maxWidth: 1120, mx: 'auto'}}>
+			<Grid container xs={12} spacing={2} sx={{ mx: 'auto'}}>
 				{
 					children[0][0] !== undefined
 					?

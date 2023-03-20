@@ -1,4 +1,4 @@
-import { Skeleton } from "@mui/material";
+// import { Skeleton } from "@mui/material";
 import type { ActionArgs, LoaderArgs, MetaFunction } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
 import { useCatch, useLoaderData, useParams } from "@remix-run/react";
@@ -6,7 +6,7 @@ import { useCatch, useLoaderData, useParams } from "@remix-run/react";
 import DetailsCard from "~/components/reusable-components/minor/DetailsCard";
 
 import { db } from "~/utils/db.server";
-import { getUserId, requireUserId } from "~/utils/session.server";
+// import { getUserId, requireUserId } from "~/utils/session.server";
 
 // export const meta: MetaFunction<typeof loader> = ({ data }) => {
 // 	if (!data) {
@@ -22,32 +22,7 @@ import { getUserId, requireUserId } from "~/utils/session.server";
 // };
 
 export const loader = async ({ params }: LoaderArgs) => {
-    const skillList = await db.skills.findMany({
-        where: { 
-            users : { 
-                some: { id: params.id  }    
-            } 
-        },
-        select: { name: true },
-    })
-
-    const teamList = await db.team.findMany({
-        where: { members : { some: { id: params.id } } },
-        select: { name: true, id: true, projects: true },
-    })
-
-    // const teamIdList = teamList.map(team => team.id);
-    // const quantityProjects = ;
-
-    // TODO: finish query for the user's projects (look up the fluentAPI for single pass unique queries!)
-    // const latestProject = await db.project.findMany({
-    //     where: { 
-    //         team: { 
-    //             is: { id: teamIdList[-1] } 
-    //         } 
-    //     },
-    // });
-
+    // user info: get the user's info
 	const user = await db.user.findUnique({
 		where: { id: params.id },
         select: { 
@@ -59,15 +34,50 @@ export const loader = async ({ params }: LoaderArgs) => {
             bio: true,
         }
 	});
+
+    var skillList: any[] = [];
+    var teamList: any[] = [];
+    
+    // if the user does not exist, throw a 404 error
 	if (!user) {
 		throw new Response("What a joke! User not found.", { status: 404 });
 	}
+    // else: get the rest of this users info for display
+    else {
+        try {
+            // skills: retrieve the skills this user's id is associated with
+            const getSkillList = await db.skills.findMany({
+                where: { 
+                    users : { 
+                        some: { id: params.id  }    
+                    } 
+                },
+                select: { name: true },
+            })
+            // projects: get the projects that this user has been/is a member of on a given team:: 
+            //           later <projects> is mapped out then reduced to ALSO include the total 
+            //           quantity of projects this user has been/is a member of.
+            const getTeamList = await db.team.findMany({
+                where: { 
+                    members : { 
+                        some: { id: params.id } 
+                    },
+                },
+                select: { name: true, id: true, projects: true },
+            }) 
+
+            skillList = getSkillList;
+            teamList = getTeamList;
+        }
+        catch (error) {
+            console.log(error);
+        }
+    }
+    
 	return json({ 
         user, 
         skillList, 
         teamList, 
-        // quantityProjects, 
-        // latestProject 
     });
 };
 
@@ -94,7 +104,7 @@ export default function MemberIdRoute() {
             devType={data.user.devType}
             activeSince={data.user.createdAt}
             teamsOn={data.teamList.length}
-            // projectsOn={data.}
+            projectsOn={data.teamList.map(team => team.projects.length).reduce((a, b) => a + b, 0)}
             rating={data.user.rating}
             skills={data.skillList}
             bio={data.user.bio}
@@ -104,7 +114,7 @@ export default function MemberIdRoute() {
 
 export function CatchBoundary() {
 	const caught = useCatch();
-	const params = useParams();
+	// const params = useParams();
 	switch (caught.status) {
 		case 400: {
 			return (
@@ -135,7 +145,7 @@ export function CatchBoundary() {
 
 export function ErrorBoundary({ error }: { error: Error }) {
 	console.error(error);
-	const { id } = useParams();
+	// const { id } = useParams();
 	return (
 		<div>
             {`There was an error loading that user's info. Please try again later.`}

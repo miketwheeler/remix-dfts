@@ -1,8 +1,8 @@
 import type {
-    ActionArgs,
+    // ActionArgs,
     LoaderArgs,
 } from "@remix-run/node";
-import { Outlet, Link, useLoaderData, useFetcher } from "@remix-run/react";
+import { Outlet, Link, useLoaderData } from "@remix-run/react";
 import { useState, useEffect } from "react";
 import { json } from "@remix-run/node"
 import { Stack, Typography, useMediaQuery, useTheme, Box } from "@mui/material";
@@ -54,26 +54,35 @@ export default function MemberHallRoute() {
 
 
     return (
-        
         <MultiselectProvider cardId={cardId} cardIdList={cardIdList} setCardId={setCardId} setCardIdList={setCardIdList}>
             <Box sx={{
-                display: 'block', 
+                display: 'flex', 
                 position: 'sticky', 
                 top: smAndDown ? 56 : 62, 
                 height: 60, 
                 marginBottom: '-60px', 
-                width: '100%', 
+                flexGrow: 1,
                 zIndex: 2,
                 backdropFilter: 'blur(4px)',
                 background: 'rgba(18, 18, 18, 0.63)',
+                // display: 'block', 
+                // width: '100%', 
                 // border: '1px solid lightblue',
                 }} 
             />
-            <Grid2 container spacing={2} sx={{height: '100%', m: 2, mt: 2.5, zIndex: 3}}>
+            <Grid2 
+                container 
+                spacing={2} 
+                sx={{
+                    // height: '100%', 
+                    m: 2, 
+                    mt: 2.5, 
+                    zIndex: 3
+                }}>
                 <Grid2 xs={12} md={7}>
                     <div style={{
                         display: 'flex', 
-                        flexBasis: 'row', 
+                        flexDirection: 'row', 
                         justifyContent: 'space-between', 
                         position: 'sticky',
                         top: 80,
@@ -85,60 +94,46 @@ export default function MemberHallRoute() {
                     <Stack direction="column" spacing={1.5} sx={{zIndex: 0}}> 
                         {
                             data.map((member: any) => (
-                                // <Link 
-                                //     to={member.id} 
-                                //     // prefetch="intent" 
-                                //     key={`link-${member.id}`}
-                                //     style={{ textDecoration: 'none', color: 'inherit'  }}
-                                //     >
-                                    <MiniThinCard 
-                                        key={`card-${member.id}`}
-                                        props={{
-                                            id: member.id,
-                                            header: member.username,
-                                            data1: member.devType,
-                                            data2: member.skills,
-                                            availability: member.available,
-                                        }}
-                                        />
-                                //         {member.username}
-                                // </Link> 
+                                <MiniThinCard 
+                                    key={`card-${member.id}`}
+                                    props={{
+                                        id: member.id,
+                                        header: member.username,
+                                        data1: member.devType,
+                                        data2: member.skills,
+                                        availability: member.available,
+                                    }}
+                                    />
                                 )
                             )
                         }
                     </Stack>
                 </Grid2>
-                <Grid2 md={5} sx={{ display: { xs: 'none', sm: "none", md: "block", xIndex: 3}}}>
+                <Grid2 md={5} sx={{ display: { xs: 'none', sm: "none", md: "block", zIndex: 3}}}>
                     <div style={{position: 'sticky', top: 80, zIndex: 3}}>
-                        <div style={{display: 'flex', flexBasis: 'row', flexWrap: 'nowrap', width: '100%', justifyContent: 'space-between'}}>
+                        <div style={{
+                                display: 'flex', 
+                                flexDirection: 'row', 
+                                flexWrap: 'nowrap', 
+                                width: '100%', 
+                                justifyContent: 'space-between'
+                            }}>
                             <Typography variant="h5" sx={{ ml: .25, mb: .5 }}>
                                 details
                             </Typography>
                         </div>
                         <div style={{display: 'block'}}>
                             <Stack direction="column" spacing={2}>
-                                {/* <DetailsCard 
-                                    props={{
-                                        heading: 'username',
-                                        availability: 'available', 
-                                        devType: 'devtype', 
-                                        activeSince: "11/01/23", 
-                                        teamsOn: '3', 
-                                        projectsOn: '2', 
-                                        rating: '4.5',
-                                        skills: "skill1, skill2, skill3, skill4, skill5",
-                                        bio: "lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitat."
-                                    }}
-                                /> */}
                                 <Box flexGrow={1}>
+                                    {/* The details card */}
                                     <Outlet />
                                 </Box>
-                                {/* <RedirectQButton 
+                                <RedirectQButton 
                                     props={{
                                         redirectHeader: "assembling a new crew?", 
-                                        whereTo: "team"
+                                        toWhere: "team"
                                     }} 
-                                    />                                 */}
+                                    />
                             </Stack>
                         </div>
                     </div>

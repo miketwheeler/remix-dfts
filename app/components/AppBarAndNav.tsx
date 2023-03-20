@@ -26,10 +26,8 @@ import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 import MailIcon from '@mui/icons-material/Mail';
 import HistoryEduIcon from '@mui/icons-material/HistoryEdu';
 import NewspaperIcon from '@mui/icons-material/Newspaper';
-import PolylineIcon from '@mui/icons-material/Polyline';
 import AddBoxIcon from '@mui/icons-material/AddBox';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
-// import Slide from '@mui/material/Slide';
 
 
 // import { db } from "~/utils/db.server";
@@ -145,6 +143,7 @@ export default function AppBarAndNav(props: any) {
 	const data = useLoaderData<typeof loader>();
 	const { window } = props;
 	const [navTabValue, setNavTabValue] = React.useState(0);
+	const [pathValue, setPathValue] = React.useState("dashboard");
 	// const [navTabValue, setNavTabValue] = React.useState("/dashboard");
 	const [mobileOpen, setMobileOpen] = React.useState(false);
 	// const theme = useTheme();
@@ -194,7 +193,9 @@ export default function AppBarAndNav(props: any) {
 					mt: 2, 
 					mb: 0,
 					opacity: secondaryLinks.every((link) => link.enabled) ? 1 : .2,
-				}}>personal</Typography>
+					}}>
+						personal
+				</Typography>
 				{
 					secondaryLinks.map((link, index) => (
 						<Tab
@@ -358,7 +359,7 @@ export default function AppBarAndNav(props: any) {
 							width: drawerWidth,
 						},
 					}}
-				>
+					>
 					{drawer}
 				</Drawer>
 				<Drawer
@@ -380,7 +381,7 @@ export default function AppBarAndNav(props: any) {
 				sx={{
 					flexGrow: 1,
 					p: 0,
-					width: { sm: `calc(100% - ${drawerWidth}px)` },
+					width: { xs: `calc(100% - ${drawerWidth}px)` },
 				}}
 				>
 				<Toolbar />

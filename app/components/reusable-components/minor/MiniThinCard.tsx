@@ -5,7 +5,7 @@ import { PillSwitch } from "./PillSwitch";
 import { useMultiselectContext } from "~/components/client-context/MultiselectContext";
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import PersonAddDisabledIcon from '@mui/icons-material/PersonAddDisabled';
-import { useFetcher } from "react-router-dom";
+// import { useFetcher } from "react-router-dom";
 import { Link } from "@remix-run/react";
 
 // TODO:  fix the this component, wip pass selected to details card and switch to message card!!!!!!
@@ -22,7 +22,9 @@ const flexRowStyle = {
 const flexColumnHeaderStyle = { 
     display: 'flex',  
     textAlign: 'center', 
-    minWidth: '100px',
+    minWidth: '60px',
+    overflow: 'hidden',
+    maxWidth: '100px',
     // border: '1px dotted red'
 }
 const cardContainer = {
@@ -30,7 +32,7 @@ const cardContainer = {
     pl: 2,
     pr: 1.5,
     borderRadius: 2,
-    minWidth: '350px',
+    // minWidth: '350px',
     // border: 'none',
     '&:hover': { boxShadow: '.5px .5px 3px 1px rgba(25,118,210, 1)' },
     '&.Mui-active': { boxShadow: '.5px .5px 3px 1px rgba(25,118,210, .8)' },
@@ -45,7 +47,7 @@ const MiniThinCard = ({props}: any) => {
     
 
     // keeps track of the current hightlighted card
-    const handleCardClicked = (event: React.SyntheticEvent<HTMLAnchorElement, Event>, thisCardId: string) => {
+    const handleCardClicked = (event: any, thisCardId: string) => {
         event.preventDefault();
         if(currentSelected !== thisCardId) {
             document.getElementById(`card-${thisCardId}`)?.classList.add('Mui-active');
@@ -54,6 +56,7 @@ const MiniThinCard = ({props}: any) => {
         }
         setCurrentSelected(thisCardId);
         setCardId(thisCardId);
+        
     }
 
     // helper: removes the id from the list of selected cards
@@ -77,14 +80,14 @@ const MiniThinCard = ({props}: any) => {
     // }, [cardId, cardIdList])
 
     return (
-        <Box sx={{ flexGrow: 1, m: 0, minWidth: '300px'}}>
+        <Box sx={{ flexGrow: 1, m: 0, minWidth: '200px'}}>
             {/* <CardActionArea id={`card-${props.id}`} onClick={(event) => handleCardClicked(event, props.id)}> */}
             <Link 
                 to={props.id} 
                 // prefetch="intent" 
                 key={`link-${props.id}`}
                 style={{ textDecoration: 'none', color: 'inherit' }}
-                onSelect={(event) => handleCardClicked(event, props.id)}
+                // onClick={(event) => handleCardClicked(event, props.id)}
                 >
                 <Paper elevation={4} sx={cardContainer} id={`card-inner-${props.id}`}>
                     <Box sx={flexRowStyle}>
@@ -97,13 +100,13 @@ const MiniThinCard = ({props}: any) => {
                                 : null
                             }
                         </Box>
-                        <Divider orientation="vertical" variant="middle" flexItem sx={{ml: 1, mr: 2}} />
+                        <Divider orientation="vertical" variant="middle" flexItem sx={{ mx: 2 }} />
                         <div 
                             style={{ 
                                 display: 'block', 
                                 textAlign: 'left',
                                 width: '100%',
-                                minWidth: '100px',
+                                minWidth: '80px',
                                 overflow: 'hidden',
                                 marginRight: '12px',
                                 // border: '1px solid red',
@@ -133,6 +136,9 @@ const MiniThinCard = ({props}: any) => {
                                 : null
                             }
                         </div>
+                        <Divider orientation="vertical" variant="middle" flexItem sx={{ mx: 2 }} />
+                        {/* <Divider orientation="vertical" variant="middle" flexItem sx={{ ml: 2, mr: .2 }} /> */}
+                        {/* <Divider orientation="vertical" variant="middle" flexItem sx={{ mr: 2, ml: .2 }} /> */}
                         <Box sx={{ display: 'flex', flexBasis: "row", flexWrap: 'nowrap', textAlign: 'center', verticalAlign: 'middle' }}>
                             {
                                 props.availability !== null || props.availability !== undefined ?
