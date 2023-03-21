@@ -1,11 +1,9 @@
-import { useState, useContext, useMemo } from "react";
+import { useState, useContext, useMemo, useEffect } from "react";
 import { Paper, Typography, Box, CardActionArea, Divider, useTheme } from "@mui/material";
-// import Grid2 from "@mui/material/Unstable_Grid2";
 import { PillSwitch } from "./PillSwitch";
 import { useMultiselectContext } from "~/components/client-context/MultiselectContext";
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import PersonAddDisabledIcon from '@mui/icons-material/PersonAddDisabled';
-// import { useFetcher } from "react-router-dom";
 import { Link } from "@remix-run/react";
 
 // TODO:  fix the this component, wip pass selected to details card and switch to message card!!!!!!
@@ -16,7 +14,6 @@ const flexRowStyle = {
     flexBasis: "row", 
     flexWrap: 'nowrap', 
     justifyContent: 'space-between', 
-    // border: '1px dotted pink' 
 }
 // const flexColumnStyle = { display: 'flex', flexBasis: 'column', flexWrap: 'nowrap',  verticalAlign: 'middle' }
 const flexColumnHeaderStyle = { 
@@ -25,71 +22,98 @@ const flexColumnHeaderStyle = {
     minWidth: '60px',
     overflow: 'hidden',
     maxWidth: '100px',
-    // border: '1px dotted red'
 }
 const cardContainer = {
     p: 1,
     pl: 2,
     pr: 1.5,
+    position: 'realative',
     borderRadius: 2,
-    // minWidth: '350px',
-    // border: 'none',
     '&:hover': { boxShadow: '.5px .5px 3px 1px rgba(25,118,210, 1)' },
     '&.Mui-active': { boxShadow: '.5px .5px 3px 1px rgba(25,118,210, .8)' },
 }
 
 
 const MiniThinCard = ({props}: any) => {
-    const { cardId, cardIdList, setCardId, setCardIdList } = useMultiselectContext();
-    const [currentSelected, setCurrentSelected] = useState<string>(cardId);
+    // const { cardId, cardIdList, setCardId, setCardIdList } = useMultiselectContext();
+    const { cardId, setCardId, cardIdList, setCardIdList } = useMultiselectContext();
+    const [currentSelected, setCurrentSelected] = useState<string>("");
+    const [checked, setChecked] = useState<boolean>(false);
+    
     const theme = useTheme();
     // const [switchList, setSwitchList] = useState<any[]>(cardIdList);
-    
 
     // keeps track of the current hightlighted card
-    const handleCardClicked = (event: any, thisCardId: string) => {
-        event.preventDefault();
-        if(currentSelected !== thisCardId) {
+    const handleCardClicked = (thisCardId: string) => {
+        // event.preventDefault();
+        if(cardId !== thisCardId) {
+            if(cardId !== "") {
+                document.getElementById(`card-${cardId}`)?.classList.remove('Mui-active');
+            }
             document.getElementById(`card-${thisCardId}`)?.classList.add('Mui-active');
-            if(currentSelected !== "")
-                document.getElementById(`card-${currentSelected}`)?.classList.remove('Mui-active');
         }
         setCurrentSelected(thisCardId);
         setCardId(thisCardId);
-        
     }
 
-    // helper: removes the id from the list of selected cards
-    const handleRemoveId = (id: string) => {
-        let i = cardIdList.indexOf(id);
-        if(i !== -1) {
-            setCardIdList([...cardIdList.slice(0, i), ...cardIdList.slice( i, cardIdList.length-1 )]);
-        }
+    const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        event.stopPropagation();
+        setChecked(event.target.checked);
+        handleCardSwitched(props.id, props.header);
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////
+    // SET A CARD ID TO THE CONTEXT LIST ///////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////
+    const handleRemoveSwitchId = async (idToDelete: string) => {
+        const newCardIdList = cardIdList;
+        const deleteEntry = cardIdList.findIndex(n => n.id === idToDelete);
+        // console.log(`found index: ${cardIdList.findIndex(n => n.id === idToDelete)}`)
+        setCardIdList(newCardIdList.splice(deleteEntry, 1));
+
+        console.log(`len on delete: ${cardIdList.length}`)
+    }
+
+    const handleAddSwitchId = async (id: string, name: string) => {
+        const newCardIdList = cardIdList;
+        setCardIdList(newCardIdList.concat({ id, name }));
+
+        console.log(`len on add: ${cardIdList.length}`)
+
     }
 
     // keeps track of current cards selected by their switch
-    const handleCardSwitched = (switchId: string) => {
-        cardIdList.includes(switchId) 
-        ? handleRemoveId(switchId) // is there already? remove it
-        : setCardIdList([...cardIdList, switchId]) // else add the cardId to the list
+    const handleCardSwitched = async (switchId: string, userName: string) => {
+        if(cardIdList.length) {
+            for(const n of cardIdList) {
+                if(n.id === switchId ) {
+                    handleRemoveSwitchId(switchId);
+                } else {
+                    handleAddSwitchId(switchId, userName);
+                }
+            }
+        } else {
+            handleAddSwitchId(switchId, userName);
+        }
+        console.log(`cardIdList: ${JSON.stringify(cardIdList, null, 4)}`)
     }
+    // /////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////
 
-    // useMemo(() => {
-    //     console.log(`cardId: ${cardId}`)
-    //     console.log(`cardIdList: ${cardIdList}`)
-    // }, [cardId, cardIdList])
 
     return (
         <Box sx={{ flexGrow: 1, m: 0, minWidth: '200px'}}>
             {/* <CardActionArea id={`card-${props.id}`} onClick={(event) => handleCardClicked(event, props.id)}> */}
             <Link 
                 to={props.id} 
-                // prefetch="intent" 
+                id={`minicardlink-${props.id}`}
                 key={`link-${props.id}`}
                 style={{ textDecoration: 'none', color: 'inherit' }}
-                // onClick={(event) => handleCardClicked(event, props.id)}
+                preventScrollReset={true}
+                onClick={() => handleCardClicked(props.id)}
                 >
-                <Paper elevation={4} sx={cardContainer} id={`card-inner-${props.id}`}>
+                <Paper elevation={4} sx={cardContainer} id={`card-${props.id}`}>
                     <Box sx={flexRowStyle}>
                         <Box sx={flexColumnHeaderStyle}>
                             {
@@ -109,7 +133,6 @@ const MiniThinCard = ({props}: any) => {
                                 minWidth: '80px',
                                 overflow: 'hidden',
                                 marginRight: '12px',
-                                // border: '1px solid red',
                             }}
                             >
                             {
@@ -137,14 +160,11 @@ const MiniThinCard = ({props}: any) => {
                             }
                         </div>
                         <Divider orientation="vertical" variant="middle" flexItem sx={{ mx: 2 }} />
-                        {/* <Divider orientation="vertical" variant="middle" flexItem sx={{ ml: 2, mr: .2 }} /> */}
-                        {/* <Divider orientation="vertical" variant="middle" flexItem sx={{ mr: 2, ml: .2 }} /> */}
                         <Box sx={{ display: 'flex', flexBasis: "row", flexWrap: 'nowrap', textAlign: 'center', verticalAlign: 'middle' }}>
                             {
                                 props.availability !== null || props.availability !== undefined ?
                                 <Typography 
                                     variant="body2" 
-                                    // color={props.availability === true ? 'theme.palette.success' : 'theme.palette.warning'}
                                     sx={{
                                         my: 'auto', 
                                         mr: .5, 
@@ -156,7 +176,6 @@ const MiniThinCard = ({props}: any) => {
                                         ? <PersonAddIcon fontSize="small" /> 
                                         : <PersonAddDisabledIcon fontSize="small" />
                                     }
-
                                 </Typography>
                                 : null
                             }
@@ -167,9 +186,10 @@ const MiniThinCard = ({props}: any) => {
                                     id={`switch-${props.id}`}
                                     onClick={(event: React.MouseEvent<HTMLElement>) => { 
                                         event.stopPropagation();
-                                        handleCardSwitched(props.id);
+                                        // handleCardSwitched(props.id, props.header);
                                     }}
-                                    onMouseDown={(event: React.MouseEvent<HTMLElement>) => event.stopPropagation()}
+                                    // onChange={ handleChange }
+                                    // checked={checked}
                                     />
                             </div>
                         </Box>

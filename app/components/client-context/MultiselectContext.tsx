@@ -1,11 +1,16 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext } from "react";
+
+type SelectedObject = {
+    id: string,
+    name: string,
+}
 
 
 interface MultiselectContextProps {
     cardId: string;
-    cardIdList: string[];
+    cardIdList: SelectedObject[];
     setCardId: (cardId: string) => void;
-    setCardIdList: (cardIdList: string[]) => void;
+    setCardIdList: (cardIdList: SelectedObject[]) => void;
 }
 
 // created context
@@ -22,9 +27,9 @@ export const useMultiselectContext = () => useContext(MultiselectContext);
 interface MuiltiselectProviderProps {
     children: React.ReactNode;
     cardId: string;
-    cardIdList: string[];
+    cardIdList: SelectedObject[];
     setCardId: (cardId: string) => void;
-    setCardIdList: (cardIdList: string[]) => void;
+    setCardIdList: (cardIdList: SelectedObject[]) => void;
 }
 
 // created provider

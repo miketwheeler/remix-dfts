@@ -18,12 +18,27 @@ import { MultiselectProvider } from "~/components/client-context/MultiselectCont
 
 
 
+type SelectedObject = {
+    id: string,
+    name: string,
+}
+
 // get the pre-defined number of members to display (req on server)
 export async function loader({ request }: LoaderArgs) {
     const displayMembers = await getMemberList(request);
 
     return json(displayMembers);
 }
+
+const headerFullWidthContainer = {
+    display: 'flex', 
+    flexDirection: 'row', 
+    justifyContent: 'space-between', 
+    position: 'sticky',
+    top: 80,
+    zIndex: 3,
+}
+
 
 // export async function action({ request }: ActionArgs) {
 //     const retMember = await getMember(request);
@@ -38,9 +53,19 @@ export default function MemberHallRoute() {
 
 
     const [cardId, setCardId] = useState<string>("");
-    const [cardIdList, setCardIdList] = useState<string[]>([]);
+    const [cardIdList, setCardIdList] = useState<SelectedObject[]>([]);
 
-    // console.log(`data: ${JSON.stringify(data, null, 4)}`)
+    const glassHeaderBackgroundComponent = {
+        display: 'flex', 
+        position: 'sticky', 
+        top: smAndDown ? 56 : 62, 
+        height: 60, 
+        marginBottom: '-60px', 
+        flexGrow: 1,
+        zIndex: 3,
+        backdropFilter: 'blur(4px)',
+        background: 'rgba(18, 18, 18, 0.63)',
+    }
 
 
     // const [currentUser, setCurrentUser] = useState<any>(null);
@@ -55,21 +80,7 @@ export default function MemberHallRoute() {
 
     return (
         <MultiselectProvider cardId={cardId} cardIdList={cardIdList} setCardId={setCardId} setCardIdList={setCardIdList}>
-            <Box sx={{
-                display: 'flex', 
-                position: 'sticky', 
-                top: smAndDown ? 56 : 62, 
-                height: 60, 
-                marginBottom: '-60px', 
-                flexGrow: 1,
-                zIndex: 2,
-                backdropFilter: 'blur(4px)',
-                background: 'rgba(18, 18, 18, 0.63)',
-                // display: 'block', 
-                // width: '100%', 
-                // border: '1px solid lightblue',
-                }} 
-            />
+            <Box sx={glassHeaderBackgroundComponent} />
             <Grid2 
                 container 
                 spacing={2} 
@@ -80,17 +91,10 @@ export default function MemberHallRoute() {
                     zIndex: 3
                 }}>
                 <Grid2 xs={12} md={7}>
-                    <div style={{
-                        display: 'flex', 
-                        flexDirection: 'row', 
-                        justifyContent: 'space-between', 
-                        position: 'sticky',
-                        top: 80,
-                        zIndex: 2,
-                        }}>
+                    <Box sx={headerFullWidthContainer}>
                         <Typography variant="h5" sx={{ml: .25, mt: '.auto', mb: .5}}>members</Typography>
                         <Typography variant="body2" sx={{mr: .25, mt: 'auto', mb: 1}}>select to add</Typography>
-                    </div>
+                    </Box>
                     <Stack direction="column" spacing={1.5} sx={{zIndex: 0}}> 
                         {
                             data.map((member: any) => (

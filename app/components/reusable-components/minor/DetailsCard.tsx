@@ -3,7 +3,7 @@ import type {
 } from "@remix-run/node";
 import { useState, useEffect } from "react";
 import { useLoaderData, useFetcher} from "@remix-run/react";
-import { Paper, Typography, Box, Divider, Stack, Collapse, Slide, Skeleton } from "@mui/material";
+import { Paper, Typography, Box, Divider, Stack, Collapse, Slide, Skeleton, Rating } from "@mui/material";
 import Grid from "@mui/material/Unstable_Grid2";
 // import { useMultiselectContext } from "~/components/client-context/MultiselectContext";
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
@@ -118,7 +118,15 @@ const DetailsCard = (props: any) => {
                                     </Box>
                                     <Box sx={flexRowStyle}>
                                         <Typography variant="body2">rating:</Typography>
-                                        <Typography variant="body2">{props.rating}</Typography>
+                                        <Typography variant="body2">
+                                            <Rating
+                                                precision={0.25}
+                                                readOnly
+                                                value={props.rating}
+                                                size="small"
+                                                sx={{ color: 'secondary.main'}}
+                                                />
+                                        </Typography>
                                     </Box>
                                 </Stack>
                             </Grid>
@@ -145,7 +153,7 @@ const DetailsCard = (props: any) => {
                                     <Typography sx={{mr: 3}} variant="body2">bio:</Typography>
                                 </Box>
                                 <Box sx={flexColumnStyle}>
-                                    <Typography variant="body2" >{props.bio}</Typography>
+                                    <Typography variant="body2">{props.bio}</Typography>
                                 </Box>
                             </Box>
                         </Stack>

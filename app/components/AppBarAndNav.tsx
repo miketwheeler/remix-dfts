@@ -143,8 +143,9 @@ export default function AppBarAndNav(props: any) {
 	const data = useLoaderData<typeof loader>();
 	const { window } = props;
 	const [navTabValue, setNavTabValue] = React.useState(0);
-	const [pathValue, setPathValue] = React.useState("dashboard");
-	// const [navTabValue, setNavTabValue] = React.useState("/dashboard");
+
+	const [pathValue, setPathValue] = React.useState("dashboard"); // for setting the TABs value/check against current path
+	
 	const [mobileOpen, setMobileOpen] = React.useState(false);
 	// const theme = useTheme();
 

@@ -13,6 +13,7 @@ import {
     useMediaQuery,
 } from "@mui/material";
 import MessageIcon from '@mui/icons-material/Message';
+import { useMultiselectContext } from '~/components/client-context/MultiselectContext';
 
 import { useTheme } from '@mui/material/styles';
 
@@ -33,6 +34,7 @@ const MessageCard = ({props}: any) => {
     const theme = useTheme();
     const mdAndDown = useMediaQuery(theme.breakpoints.down("md"));
     const smAndDown = useMediaQuery(theme.breakpoints.down("sm"));
+    const pillValues = useMultiselectContext();
 
     const [expandValue, setExpandValue] = useState<boolean>(false);
     // const containerRef = useRef(null)

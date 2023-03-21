@@ -5,7 +5,7 @@ import { Switch, styled } from '@mui/material';
 // Android 12 type switch - most borrowed from the MUI component docs, modified
 export const PillSwitch = styled(Switch)(({ theme }) => ({
     padding: 11,
-    zIndex: 1,
+    zIndex: 2,
     '& .MuiSwitch-track': {
         borderRadius: 22 / 2,
         '&:before, &:after': {
