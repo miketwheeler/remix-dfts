@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useMemo } from 'react';
 import { styled } from '@mui/material/styles';
 import { 
     Button, 
@@ -11,17 +11,20 @@ import {
     Collapse, 
     Fade,
     useMediaQuery,
+    Slide,
 } from "@mui/material";
 import MessageIcon from '@mui/icons-material/Message';
+import ClearIcon from '@mui/icons-material/Clear'
 import { useMultiselectContext } from '~/components/client-context/MultiselectContext';
 
 import { useTheme } from '@mui/material/styles';
 
 
 
+
 interface ChipData {
-    key: number;
-    label: string;
+    id: string;
+    name: string;
 }
 
 const ListItem = styled('li')(({ theme }) => ({
@@ -29,43 +32,42 @@ const ListItem = styled('li')(({ theme }) => ({
 }));
 
 
-
 const MessageCard = ({props}: any) => {
     const theme = useTheme();
     const mdAndDown = useMediaQuery(theme.breakpoints.down("md"));
     const smAndDown = useMediaQuery(theme.breakpoints.down("sm"));
-    const pillValues = useMultiselectContext();
+    const { cardIdList, setCardIdList } = useMultiselectContext();
 
     const [expandValue, setExpandValue] = useState<boolean>(false);
     // const containerRef = useRef(null)
 
-    // TODO: pass selected users' switch data to this component
-    const [chipData, setChipData] = useState<ChipData[]>([
-        { key: 0, label: 'username1' },
-        { key: 1, label: 'username2' },
-        { key: 2, label: 'username3' },
-    ]);
-
-    const listLength = chipData.length;
-    let prevListLength = 0;
+    const listLength = cardIdList.length;
 
     const handleDelete = (chipToDelete: ChipData) => () => {
-        setChipData((chips) => chips.filter((chip) => chip.key !== chipToDelete.key));
+        const newCardIdList = [...cardIdList];
+        const removeIndex = cardIdList.findIndex(n => n.id === chipToDelete.id);
+        if(removeIndex !== -1) 
+            newCardIdList.splice(removeIndex, 1);
+
+        setCardIdList(newCardIdList);
     };
 
     const handleMessageCardClicked = () => {
         setExpandValue(!expandValue);
     }
 
-    // useEffect(() => {
-    //     if(listLength > 0) setExpandValue(true);
-    //     else setExpandValue(false);
-    // }, [listLength])
+    const cancelAll = () => {
+        setCardIdList([]);
+    }
 
+    // if the memebers selected are greater than 0, expand the card - else collapse it
+    useMemo(() => {
+        if(listLength > 0) 
+            setExpandValue(true);
+        else 
+            setExpandValue(false);
+    }, [listLength])
 
-    // TODO: logic, action, and implementation for the form data (server side also)
-
-    // styles
 
     const cardContainerStyles = { 
         flexWrap: 'nowrap', 
@@ -75,7 +77,7 @@ const MessageCard = ({props}: any) => {
         background: 'rgba(22, 22, 22, .8)',  // NOTE: dark glass effect
         backdropFilter: 'blur(4px)',
         zIndex: 50,
-        width: smAndDown ? '92%' : mdAndDown ? '58%' : '30%',
+        width: smAndDown ? '96%' : mdAndDown ? '58%' : '30%',
         // Note: these on down for position 
         position: 'fixed',
         bottom: 0,
@@ -101,6 +103,8 @@ const MessageCard = ({props}: any) => {
             color: 'white',
         },
     }
+
+    // TODO: make this a REMIX Form for submitting message to members in cardIdList context state variable
     
 
     return (
@@ -122,7 +126,7 @@ const MessageCard = ({props}: any) => {
                         : null
                     }
                 <Collapse in={ expandValue } easing={{ enter: 'ease-in-out', exit: 'ease-in-out' }} timeout={{ enter: 200, exit: 200 }}>
-                        <Fade in={ expandValue } timeout={{ enter: 200, exit: 10 }} easing={{ enter: 'ease-in-out' }}>
+                        <Fade in={ expandValue } timeout={{ enter: 600, exit: 10 }} easing={{ enter: 'ease-in-out' }}>
                             <div>
                                 <div style={{display: 'inline-flex'}}>
                                     <Typography 
@@ -134,15 +138,40 @@ const MessageCard = ({props}: any) => {
                                 </div>
                                 <Box component="ul" sx={chipContainer}>
                                     {
-                                        chipData.map((data) => {                            
+                                        cardIdList.map((data) => {                            
                                             return (
-                                                <ListItem key={data.key}>
-                                                    <Chip
-                                                        label={data.label}
-                                                        color="primary"
-                                                        size="small"
-                                                        onDelete={handleDelete(data)}
-                                                        />
+                                                <ListItem key={data.id}>
+                                                    {
+                                                        cardIdList.length === 1
+                                                        ? 
+                                                            <Slide 
+                                                                direction="left" 
+                                                                in={ expandValue } 
+                                                                timeout={{ enter: 300, exit: 10 }} 
+                                                                easing={{ enter: 'ease-in-out' }}
+                                                                >
+                                                                <Chip
+                                                                    label={data.name}
+                                                                    color="primary"
+                                                                    size="small"
+                                                                    onDelete={handleDelete(data)}
+                                                                    />
+                                                            </Slide>
+                                                        : 
+                                                            <Slide 
+                                                                direction="left" 
+                                                                in={ expandValue } 
+                                                                timeout={{ enter: 200, exit: 10 }} 
+                                                                easing={{ enter: 'ease-in-out' }}
+                                                                >
+                                                                <Chip
+                                                                    label={ data.name }
+                                                                    color="primary"
+                                                                    size="small"
+                                                                    onDelete={ handleDelete(data) }
+                                                                    />
+                                                            </Slide>
+                                                    }
                                                 </ListItem>
                                             )
                                         })
@@ -164,7 +193,24 @@ const MessageCard = ({props}: any) => {
                                         />
                                     </div>
                                 </form>
-                                <div style={{ display: 'flex', justifyContent: 'end'}}>
+                                <Box style={{ display: 'flex', justifyContent: cardIdList.length ? 'space-between' : 'end'}}>
+                                    {
+                                        cardIdList.length
+                                        ? 
+                                        <Fade in={cardIdList.length > 0} timeout={{ enter: 200, exit: 10 }} easing={{ enter: 'ease-in-out' }}>
+                                            <Button 
+                                                color="secondary" 
+                                                variant="text" 
+                                                type="button" 
+                                                onClick={ () => cancelAll() }
+                                                endIcon={<ClearIcon fontSize='small'/>}
+                                                >
+                                                dismiss all
+                                            </Button>
+                                        </Fade>
+                                        : null
+                                    }
+                                    
                                     <Button
                                         variant="contained"
                                         type="button"
@@ -173,7 +219,7 @@ const MessageCard = ({props}: any) => {
                                         >
                                         send
                                     </Button>
-                                </div>
+                                </Box>
                             </div>
                         </Fade>
                     </Collapse>

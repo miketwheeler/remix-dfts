@@ -1,11 +1,14 @@
 import * as React from "react";
+import { useMemo } from "react";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import Box from "@mui/material/Box";
-import { Link, useNavigate } from "@remix-run/react";
+import { Link, useLocation } from "@remix-run/react";
 
 
 const drawerWidth = 240;
+
+const dashRoutes = ["dashboard", "team", "project", "messages", "schedule"]
 
 const links = [
 	{
@@ -31,16 +34,23 @@ const links = [
 ];
 
 export default function CustomTabs() {
+	const location = useLocation().pathname;
 	const [dashTabValue, setDashTabValue] = React.useState(0);
+	const [pathValue, setPathValue] = React.useState('dashboard');
+	
 
 	const handleChange = (event: React.SyntheticEvent, newValue: number) => {
 		setDashTabValue(newValue);
 	};
 
-	// TESTING
-	// React.useEffect(() => {
-	// 	console.log(`dashTab current value: ${dashTabValue}`)
-	// })
+	useMemo(() => {
+        setPathValue(
+			location.split('/')[2] ? location.split('/')[2] : location.split('/')[1]
+		);
+        let pathToValue = dashRoutes.indexOf(pathValue);
+        setDashTabValue(pathToValue !== dashTabValue ? pathToValue : dashTabValue);
+    }, [location, dashTabValue, pathValue]);
+
 
 	return (
 		<Box sx={{ width: "100%", bgcolor: "background.paper", top: '100px'}}>

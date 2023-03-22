@@ -1,9 +1,9 @@
-import * as React from "react";
+import { useState, useMemo } from "react";
 import type { 
 	LoaderArgs 
 } from "@remix-run/node";
 import { json } from "@remix-run/node";
-import { Link, Outlet, useLoaderData } from "@remix-run/react";
+import { Link, Outlet, useLoaderData, useLocation } from "@remix-run/react";
 
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
@@ -13,9 +13,8 @@ import Drawer from "@mui/material/Drawer";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 
-import { Tab, Tabs, Button } from "@mui/material";
-import IconButton from '@mui/material/IconButton';
-import theme from "~/styles/theme";
+import { Tab, Tabs, IconButton } from "@mui/material";
+// import IconButton from '@mui/material/IconButton';
 
 import MenuIcon from '@mui/icons-material/Menu';
 import ErrorIcon from '@mui/icons-material/Error';
@@ -36,9 +35,8 @@ import { getUser } from "~/utils/session.server";
 
 
 const drawerWidth = 240;
-// const linksMain = undefined;
-// const linksSecondary = undefined;
-// const primaryLinksEndIndex = 2;
+
+const navRoutes = ["dashboard", "projecthub", "memberhall", "fundingtree", "DIVIDER", "HEADING1", "messages", "documents", "news", "DIVIDER", "HEADER2", "project", "team"]
 const navLinks = [
     {
 		index: 0,
@@ -92,31 +90,22 @@ const secondaryLinks = [
 		enabled: false,
 	}
 ];
-
 const tertiaryLinks = [
 	{
 		index: 7,
-		name: "create project",
+		name: "new project",
 		path: "/project",
 		icon: <AddBoxIcon />,
 		enabled: true,
 	},
 	{
 		index: 8,
-		name: "create team",
+		name: "new team",
 		path: "/team",
 		icon: <AddCircleIcon />,
 		enabled: true,
 	},
 ];
-
-// const allLinks = [
-// 	navLinks,
-// 	secondaryLinks,
-// 	tertiaryLinks,
-// ]
-
-
 const tabStyles = {
 	color: "primary",
 	textTransform: 'none',
@@ -129,7 +118,12 @@ const tabStyles = {
 		mr: 3,
 	},
 }
-
+const navHeaderStyle = { 
+	ml: 2, 
+	mt: 2, 
+	mb: 0,
+	opacity: .2,
+}
 
 export const loader = async ({ request }: LoaderArgs) => {
 	const user = await getUser(request);
@@ -137,17 +131,33 @@ export const loader = async ({ request }: LoaderArgs) => {
 };
 
 
+const BuiltTab = ({props}: any) => {
+	return (
+		<Tab
+			id={ props.link.name }
+			component={ Link }
+			// prefetch='intent'
+			label={ props.link.name }
+			iconPosition="start"
+			icon={ props.link.icon }
+			to={ props.link.path }
+			disabled={ !props.link.enabled }
+			sx={ tabStyles }
+		/>
+	)
+}
+
+
 
 export default function AppBarAndNav(props: any) {
-	// const user = useOptionalUser();
 	const data = useLoaderData<typeof loader>();
 	const { window } = props;
-	const [navTabValue, setNavTabValue] = React.useState(0);
-
-	const [pathValue, setPathValue] = React.useState("dashboard"); // for setting the TABs value/check against current path
+	const container = (window !== undefined) ? () => window().document.body : undefined;
+	const [mobileOpen, setMobileOpen] = useState(false);
 	
-	const [mobileOpen, setMobileOpen] = React.useState(false);
-	// const theme = useTheme();
+	const location = useLocation().pathname;
+	const [pathValue, setPathValue] = useState("dashboard"); // for setting the TABs value/check against current path
+	const [navTabValue, setNavTabValue] = useState(0);
 
 	const handleDrawerToggle = () => {
 		setMobileOpen(!mobileOpen);
@@ -159,87 +169,52 @@ export default function AppBarAndNav(props: any) {
 			handleDrawerToggle();
 	};
 
+	useMemo(() => {
+        setPathValue(location.split('/')[1]);
+        let pathToValue = navRoutes.indexOf(pathValue);
+        setNavTabValue(pathToValue !== navTabValue ? pathToValue : navTabValue);
+    }, [location, navTabValue, pathValue]);
+
 
 	const drawer = (
 		<div>
 			<Toolbar />
 			<Divider />
-
 			<Tabs
 				orientation="vertical"
-				value={navTabValue}
-				onChange={handleChange}
+				value={ navTabValue }
+				onChange={ handleChange }
 				aria-label="Primary Navigation Tabs"
 				>
 				{
 					navLinks.map((link, index) => (
-						<Tab
-							key={ `tab-${link.index}` }
-							id={ link.name }
-							// value={ link.path }
-							label={ link.name }
-							icon={ link.icon }
-							iconPosition="start"
-							component={ Link }
-							to={ link.path }
-							disabled={ !link.enabled }
-							sx={ tabStyles }
-						/>
+						<BuiltTab key={ `tab-${props.index}` } props={{ link }} />
 						)
 					)
 				}
 				<Divider />
-				<Typography variant="h6" sx={{ 
-					ml: 2, 
-					mt: 2, 
-					mb: 0,
-					opacity: secondaryLinks.every((link) => link.enabled) ? 1 : .2,
-					}}>
-						personal
+				<Typography variant="h6" sx={navHeaderStyle}>
+					personal
 				</Typography>
 				{
-					secondaryLinks.map((link, index) => (
-						<Tab
-							key={ `tab-${link.index}` }
-							id={ link.name }
-							// value={ link.path }
-							label={ link.name }
-							icon={ link.icon }
-							iconPosition="start"
-							component={ Link }
-							to={ link.path }
-							disabled={ !link.enabled }
-							sx={ tabStyles }
-						/>
+					secondaryLinks.map((link, index = navLinks.length) => (
+						<BuiltTab key={ `tab-${index}` } props={{ link }} />
 						)
 					)
 				}
 				<Divider />
-				<Typography variant="h6" sx={{ 
-					ml: 2, 
-					mt: 2, 
-					mb: 0,
-					opacity: secondaryLinks.every((link) => link.enabled) ? 1 : .2,
-				}}>create</Typography>
+				<Typography variant="h6" sx={navHeaderStyle}>
+						create
+				</Typography>
 				{
-					tertiaryLinks.map((link, index) => (
-						<Tab
-							key={ `tab-${link.index}` }
-							id={ link.name }
-							// value={ link.path }
-							label={ link.name }
-							icon={ link.icon }
-							iconPosition="start"
-							component={ Link }
-							to={ link.path }
-							disabled={ !link.enabled }
-							sx={ tabStyles }
-						/>
+					tertiaryLinks.map((link, index = navLinks.length + secondaryLinks.length) => (
+						<BuiltTab key={ `tab-${index}` } props={{ link }} />
 						)
 					)
 				}
 				{
-					(!navLinks ?? !secondaryLinks ?? !tertiaryLinks) ?
+					(!navLinks ?? !secondaryLinks ?? !tertiaryLinks) 
+					? 
 						<Tab
 							key={ 'tab-empty' }
 							id={ 'empty-tab' }
@@ -249,17 +224,13 @@ export default function AppBarAndNav(props: any) {
 							component={ Link }
 							to={ '/' }
 							sx={ tabStyles }
-						/>
+							/>
 					: null
 				}
 			</Tabs>
 		</div>
 	);
 	
-
-
-	const container =
-		window !== undefined ? () => window().document.body : undefined;
 
 	return (
 		<Box sx={{ display: "flex" }}>

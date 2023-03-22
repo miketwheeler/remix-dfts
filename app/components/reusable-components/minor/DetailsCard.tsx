@@ -1,20 +1,12 @@
 import type {
     LoaderArgs, 
 } from "@remix-run/node";
-import { useState, useEffect } from "react";
-import { useLoaderData, useFetcher} from "@remix-run/react";
-import { Paper, Typography, Box, Divider, Stack, Collapse, Slide, Skeleton, Rating } from "@mui/material";
+import { Paper, Typography, Box, Divider, Stack, Rating } from "@mui/material";
 import Grid from "@mui/material/Unstable_Grid2";
 // import { useMultiselectContext } from "~/components/client-context/MultiselectContext";
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import PersonAddDisabledIcon from '@mui/icons-material/PersonAddDisabled';
 
-// import { getMember } from "~/utils/db.server";
-
-
-// export async function loader({ request }: LoaderArgs ) {
-//     // const displayUser = await getMember()
-// }
 
 const flexRowStyle = { 
     display: 'flex', 
@@ -39,34 +31,13 @@ const cardContainer = {
 
 
 
-const DetailsCard = (props: any) => {
-    // const data = useLoaderData();
-    // const { cardId } = useMultiselectContext();
-    // const fetcher = useFetcher();
-    // const [currentUser, setCurrentUser] = useState<any>(null);
-
-    // setCurrentUser(cardId);
-    // console.log(`currentUser set on load: ${currentUser}`)
-
-    // useEffect(() => {
-    //     if (currentUser !==  cardId) {
-    //         setCurrentUser(cardId);
-    //         // const getUser = fetcher.load()
-    //         console.log(`currentUser cardId (context var) after change: ${cardId}`);
-    //     }
-    // }, [cardId, currentUser])
-    // console.log(JSON.stringify(props.skills))
-    // Object.entries(props.skills).map((key, value) => {
-        //     return (
-            //         console.log(`value: ${value}`)
-            //     )
-            // })
-            // console.log(Object.values(props.skills))
-            
+const DetailsCard = (props: any) => {            
     const simpleDate = (`${props.activeSince.toString().slice(5,2).concat(props.activeSince.toString().slice(0,4))}`)
+
     const skillsList = props.skills.map((obj: any, i: any) => {
         return obj.name
     })
+
 
     return (
         <Paper id="small-card" elevation={4} sx={cardContainer}>
@@ -146,7 +117,6 @@ const DetailsCard = (props: any) => {
                                     <Typography variant="body2" sx={{textAlign: 'left'}}>{skillsList.join(', ').toLowerCase()}</Typography>
                                 </Box>
                             </Box>
-
                             <Divider />
                             <Box sx={flexRowStyle}>
                                 <Box sx={flexColumnStyle}>

@@ -1,3 +1,8 @@
+html {
+    --scrollbarBG: #26262606;
+    --thumbBG: #3a3a3a;
+    /* --thumbBG: rgba(0, 0, 0, 0.54); */
+}
 
 body {
     padding: 0;
@@ -5,6 +10,26 @@ body {
     /* width: 100%; */
     height: 100%;
     color: white;
+
+    /* ADDED STYLES - ScrollBar */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+body::-webkit-scrollbar {
+    width: 12px;
+    height: 10px;
+    background-color: transparent;
+}
+body::-webkit-scrollbar-corner{
+    background-color: var(--scrollbarBG);
+}
+body::-webkit-scrollbar-track {
+    background: var(--scrollbarBG);
+}
+body::-webkit-scrollbar-thumb {
+    background-color: var(--thumbBG);
+    border-radius: 8px;
+    border: 2px solid var(--scrollbarBG);
 }
 
 .loginform {

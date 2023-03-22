@@ -18,7 +18,7 @@ export const MultiselectContext = createContext<MultiselectContextProps>({
     cardId: "",
     cardIdList: [],
     setCardId: () => {},
-    setCardIdList: () => {}
+    setCardIdList: () => []
 });
 
 // custom hook to use context
