@@ -1,20 +1,8 @@
+import type { LoaderArgs } from "@remix-run/node";
 import { useState, useMemo } from "react";
-import type { 
-	LoaderArgs 
-} from "@remix-run/node";
 import { json } from "@remix-run/node";
 import { Link, Outlet, useLoaderData, useLocation } from "@remix-run/react";
-
-import AppBar from "@mui/material/AppBar";
-import Box from "@mui/material/Box";
-import CssBaseline from "@mui/material/CssBaseline";
-import Divider from "@mui/material/Divider";
-import Drawer from "@mui/material/Drawer";
-import Toolbar from "@mui/material/Toolbar";
-import Typography from "@mui/material/Typography";
-
-import { Tab, Tabs, IconButton } from "@mui/material";
-// import IconButton from '@mui/material/IconButton';
+import { AppBar, Box, CssBaseline, Divider, Drawer, Toolbar, Typography, Tab, Tabs, IconButton } from "@mui/material";
 
 import MenuIcon from '@mui/icons-material/Menu';
 import ErrorIcon from '@mui/icons-material/Error';
@@ -29,7 +17,6 @@ import AddBoxIcon from '@mui/icons-material/AddBox';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 
 
-// import { db } from "~/utils/db.server";
 import { getUser } from "~/utils/session.server";
 
 
@@ -254,9 +241,8 @@ export default function AppBarAndNav(props: any) {
 						<MenuIcon />
 					</IconButton>
 					<Typography variant="h6" noWrap component="div" sx={{marginLeft: '8px'}}>
-						App Bar
+						dev foyer
 					</Typography>
-
 						{
 							data.user ? (
 								<div style={{ marginLeft: 'auto', display: 'flex', flexDirection: 'row', flexWrap: 'nowrap'}}>
@@ -344,7 +330,7 @@ export default function AppBarAndNav(props: any) {
 						},
 					}}
 					open
-				>
+					>
 					{drawer}
 				</Drawer>
 			</Box>

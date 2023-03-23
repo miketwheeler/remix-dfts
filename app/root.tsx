@@ -15,6 +15,7 @@ import {
 	ScrollRestoration,
 	Outlet,
 	useCatch,
+	PrefetchPageLinks,
 } from "@remix-run/react";
 
 import "@fontsource/roboto/300.css";
@@ -83,6 +84,7 @@ function Document({
 					<ScrollRestoration />
 					<Scripts />
 					<LiveReload />
+					{/* <PrefetchPageLinks page="/projecthub" /> */}
 				</body>
 			</ThemeProvider>
 		</html>

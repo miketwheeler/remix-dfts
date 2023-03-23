@@ -1,7 +1,5 @@
 import { Box, Skeleton, Stack } from "@mui/material";
 import { useCatch } from "@remix-run/react";
-// import DetailsCard from "~/components/reusable-components/minor/DetailsCard";
-
 
 
 export default function MemberhallIndexRoute() {
