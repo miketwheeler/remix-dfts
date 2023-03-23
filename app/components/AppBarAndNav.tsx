@@ -24,75 +24,78 @@ import { getUser } from "~/utils/session.server";
 const drawerWidth = 240;
 
 const navRoutes = ["dashboard", "projecthub", "memberhall", "fundingtree", "DIVIDER", "HEADING1", "messages", "documents", "news", "DIVIDER", "HEADER2", "project", "team"]
-const navLinks = [
-    {
-		index: 0,
-        name: "dashboard",
-        path: "/dashboard",
-		icon: <GridViewIcon />,
-		enabled: true,
-    },
-    {
-		index: 1,
-        name: "project hub",
-        path: "/projecthub",
-		icon: <CategoryIcon />,
-		enabled: true,
-    },
-    {
-		index: 2,
-        name: "member hall",
-        path: "/memberhall",
-		icon: <GroupsIcon />,
-		enabled: true,
-    },
-	{
-		index: 3,
-		name: "funding tree",
-		path: "/fundingtree",
-		icon: <AttachMoneyIcon />,
-		enabled: false,
-	},
-];
-const secondaryLinks = [
-	{
-		index: 4,
-		name: "messages",
-		path: "/messages",
-		icon: <MailIcon />,
-		enabled: false,
-	},
-	{
-		index: 5,
-		name: "documents",
-		path: "/documents",
-		icon: <HistoryEduIcon />,
-		enabled: false,
-	},
-	{
-		index: 6,
-		name: "news",
-		path: "/news",
-		icon: <NewspaperIcon />,
-		enabled: false,
-	}
-];
-const tertiaryLinks = [
-	{
-		index: 7,
-		name: "new project",
-		path: "/project",
-		icon: <AddBoxIcon />,
-		enabled: true,
-	},
-	{
-		index: 8,
-		name: "new team",
-		path: "/team",
-		icon: <AddCircleIcon />,
-		enabled: true,
-	},
-];
+const nav = {
+	primaryLinks: [
+		{
+			index: 0,
+			name: "dashboard",
+			path: "/dashboard",
+			icon: <GridViewIcon />,
+			enabled: true,
+		},
+		{
+			index: 1,
+			name: "project hub",
+			path: "/projecthub",
+			icon: <CategoryIcon />,
+			enabled: true,
+		},
+		{
+			index: 2,
+			name: "member hall",
+			path: "/memberhall",
+			icon: <GroupsIcon />,
+			enabled: true,
+		},
+		{
+			index: 3,
+			name: "funding tree",
+			path: "/fundingtree",
+			icon: <AttachMoneyIcon />,
+			enabled: false,
+		},
+	],
+	secondaryLinks: [
+		{
+			index: 4,
+			name: "messages",
+			path: "/messages",
+			icon: <MailIcon />,
+			enabled: false,
+		},
+		{
+			index: 5,
+			name: "documents",
+			path: "/documents",
+			icon: <HistoryEduIcon />,
+			enabled: false,
+		},
+		{
+			index: 6,
+			name: "news",
+			path: "/news",
+			icon: <NewspaperIcon />,
+			enabled: false,
+		},
+	],
+	tertiaryLinks: [
+		{
+			index: 7,
+			name: "new project",
+			path: "/project",
+			icon: <AddBoxIcon />,
+			enabled: true,
+		},
+		{
+			index: 8,
+			name: "new team",
+			path: "/team",
+			icon: <AddCircleIcon />,
+			enabled: true,
+		},
+	],
+}
+
 const tabStyles = {
 	color: "primary",
 	textTransform: 'none',
@@ -174,7 +177,7 @@ export default function AppBarAndNav(props: any) {
 				aria-label="Primary Navigation Tabs"
 				>
 				{
-					navLinks.map((link, index) => (
+					nav.primaryLinks.map((link, index) => (
 						<BuiltTab key={ `tab-${props.index}` } props={{ link }} />
 						)
 					)
@@ -184,7 +187,7 @@ export default function AppBarAndNav(props: any) {
 					personal
 				</Typography>
 				{
-					secondaryLinks.map((link, index = navLinks.length) => (
+					nav.secondaryLinks.map((link, index = nav.primaryLinks.length) => (
 						<BuiltTab key={ `tab-${index}` } props={{ link }} />
 						)
 					)
@@ -194,13 +197,13 @@ export default function AppBarAndNav(props: any) {
 						create
 				</Typography>
 				{
-					tertiaryLinks.map((link, index = navLinks.length + secondaryLinks.length) => (
+					nav.tertiaryLinks.map((link, index = nav.primaryLinks.length + nav.secondaryLinks.length) => (
 						<BuiltTab key={ `tab-${index}` } props={{ link }} />
 						)
 					)
 				}
 				{
-					(!navLinks ?? !secondaryLinks ?? !tertiaryLinks) 
+					(!nav.primaryLinks ?? !nav.secondaryLinks ?? !nav.tertiaryLinks) 
 					? 
 						<Tab
 							key={ 'tab-empty' }

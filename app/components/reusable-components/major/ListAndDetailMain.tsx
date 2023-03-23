@@ -8,7 +8,10 @@ import MiniThinCard from "~/components/reusable-components/minor/MiniThinCard";
 import RedirectQButton from "~/components/reusable-components/minor/RedirectQButton";
 import MessageCard from "~/components/reusable-components/minor/MessageCard";
 
-import { getMemberList } from "~/utils/display.server";
+import { 
+    getMemberList, 
+    getProjectList 
+} from "~/utils/display.server";
 
 // import { MultiselectProvider } from "~/components/client-context/MultiselectContext";
 
@@ -20,8 +23,13 @@ import { getMemberList } from "~/utils/display.server";
 // }
 
 // get the pre-defined number of members to display (req on server)
-export async function loader({ request }: LoaderArgs) {
-    const displayMembers = await getMemberList(request);
+export async function loader({ request, params }: LoaderArgs) {
+
+    // const displayMembers = await getMemberList(request)
+    const displayMembers = await (params.pathname === "/memberhall" 
+        ? getMemberList(request)
+        : getProjectList(request)
+    )
 
     return json(displayMembers);
 }

@@ -14,13 +14,6 @@ type SelectedObject = {
     name: string,
 }
 
-// get the pre-defined number of members to display (req on server)
-export async function loader({ request }: LoaderArgs) {
-    const displayMembers = await getMemberList(request);
-
-    return json(displayMembers);
-}
-
 const projectSpecificProps = {
     mainHeaders: {
         main: "projects",
@@ -35,12 +28,19 @@ const projectSpecificProps = {
     messageBoxProps: {
         messageBoxType: 1,
         primaryHeader: "send a message to a project",
-        secondaryHeader: "select projects to ping",
+        secondaryHeader: "select projects to message",
         redirectToValue: "dashboard", // TODO: change to dispatch to current project(s)' owner
     },
     detailsCardProps: {
         detailsCardType: 1,
     }
+}
+
+// get the pre-defined number of members to display (req on server)
+export async function loader({ request }: LoaderArgs) {
+    const displayMembers = await getMemberList(request);
+
+    return json(displayMembers);
 }
 
 

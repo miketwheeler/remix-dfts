@@ -18,3 +18,12 @@ export async function getMember( params: { id: any; }) {
     });
     return member;
 }
+
+
+export async function getProjectList(request: Request) {
+    const projectList = await db.project.findMany({
+        take: 16,
+        select: { id: true, name: true, type: true, synopsis: true, techStack: true, active: true, beginDate: true, endDate: true },
+    });
+    return projectList;
+}
