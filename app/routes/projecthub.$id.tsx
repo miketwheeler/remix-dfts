@@ -2,10 +2,12 @@
 import type { ActionArgs, LoaderArgs, MetaFunction } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
 import { useCatch, useLoaderData, useParams } from "@remix-run/react";
-
 import DetailsCard from "~/components/reusable-components/minor/DetailsCard";
 
+import { getProject } from "~/utils/display.server";
+
 import { db } from "~/utils/db.server";
+
 
 // export const meta: MetaFunction<typeof loader> = ({ data }) => {
 // 	if (!data) {
@@ -21,62 +23,44 @@ import { db } from "~/utils/db.server";
 // };
 
 export const loader = async ({ params }: LoaderArgs) => {
-    // user info: get the user's info
-	const user = await db.user.findUnique({
-		where: { id: params.id },
-        select: { 
-            username: true, 
-            available: true, 
-            devType: true, 
-            createdAt: true, 
-            rating: true, 
-            bio: true,
-        }
-	});
-
-    var skillList: any[] = [];
-    var teamList: any[] = [];
+    // all project data
+    const project = await getProject({ id: Number(params.id) });
+	
+    // var teamMembersList;
     
-    // if the user does not exist, throw a 404 error
-	if (!user) {
+    // if the project does not exist, throw a 404 error
+	if (!project) {
 		throw new Response("What a joke! User not found.", { status: 404 });
 	}
-    // else: get the rest of this users info for display
-    else {
-        try {
-            // skills: retrieve the skills this user's id is associated with
-            const getSkillList = await db.skills.findMany({
-                where: { 
-                    users : { 
-                        some: { id: params.id  }    
-                    } 
-                },
-                select: { name: true },
-            })
-            // projects: get the projects that this user has been/is a member of on a given team:: 
-            //           later <projects> is mapped out then reduced to ALSO include the total 
-            //           quantity of projects this user has been/is a member of.
-            const getTeamList = await db.team.findMany({
-                where: { 
-                    members : { 
-                        some: { id: params.id } 
-                    },
-                },
-                select: { name: true, id: true, projects: true },
-            }) 
-
-            skillList = getSkillList;
-            teamList = getTeamList;
-        }
-        catch (error) {
-            console.log(error);
-        }
-    }
+    // else: try to get the rest of this project's info for display
+    // else {
+    //     try {
+    //         // project's team members: retrieve the members of this project's team
+    //         const getTeamMembersList = await db.project.findUnique({
+    //             where: { id: Number(params.id) },
+    //             select: { 
+    //                 team: {
+    //                     select: {
+    //                         members: {
+    //                             select: {
+    //                                 username: true,
+    //                             }
+    //                         },
+    //                     }
+    //                 }
+    //             },
+    //         });
+    //         teamMembersList = getTeamMembersList
+    //         // teamMembersList = (getTeamMembersList !== null) ? getTeamMembersList : ["No team members found"];
+    //     }
+    //     catch (error) {
+    //         console.log(error);
+    //     }        
+    // }
     
 	return json({ 
-        user, 
-        skillList, 
-        teamList, 
+        project, 
+        // teamMembersList, 
     });
 };
 
@@ -85,15 +69,15 @@ export default function ProjectIdRoute() {
 
 	return ( 
         <DetailsCard 
-            heading={data.user.username}
-            availability={data.user.available}
-            devType={data.user.devType}
-            activeSince={data.user.createdAt}
-            teamsOn={data.teamList.length}
-            projectsOn={data.teamList.map(team => team.projects.length).reduce((a, b) => a + b, 0)}
-            rating={data.user.rating}
-            skills={data.skillList}
-            bio={data.user.bio}
+            heading={data.project.name}
+            active={data.project.active}
+            devType={data.project.type}
+            activeSince={data.project.beginDate}
+            // teamsOn={data.teamList.length}
+            // projectsOn={data.teamList.map(team => team.projects.length).reduce((a, b) => a + b, 0)}
+            // rating={data.user.rating}
+            stack={data.project.techStack}
+            bio={data.project.synopsis}
         />
     )
 }

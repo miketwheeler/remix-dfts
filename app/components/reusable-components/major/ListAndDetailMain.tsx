@@ -1,5 +1,5 @@
 import type { LoaderArgs } from "@remix-run/node";
-import { Outlet, useLoaderData } from "@remix-run/react";
+import { Outlet, useLoaderData, useLocation } from "@remix-run/react";
 // import { useState } from "react";
 import { json } from "@remix-run/node"
 import { Stack, Typography, useMediaQuery, useTheme, Box } from "@mui/material";
@@ -8,10 +8,11 @@ import MiniThinCard from "~/components/reusable-components/minor/MiniThinCard";
 import RedirectQButton from "~/components/reusable-components/minor/RedirectQButton";
 import MessageCard from "~/components/reusable-components/minor/MessageCard";
 
-import { 
-    getMemberList, 
-    getProjectList 
-} from "~/utils/display.server";
+// import { 
+//     getMemberList, 
+//     getProjectList,
+//     getProject,
+// } from "~/utils/display.server";
 
 // import { MultiselectProvider } from "~/components/client-context/MultiselectContext";
 
@@ -22,17 +23,16 @@ import {
 //     name: string,
 // }
 
+
 // get the pre-defined number of members to display (req on server)
-export async function loader({ request, params }: LoaderArgs) {
-
-    // const displayMembers = await getMemberList(request)
-    const displayMembers = await (params.pathname === "/memberhall" 
-        ? getMemberList(request)
-        : getProjectList(request)
-    )
-
-    return json(displayMembers);
-}
+// export async function loader({ request }: LoaderArgs) {
+//     const displayProject = await getProject(request);
+//     return json(displayMembers);
+// }
+// export async function loader({ request }: LoaderArgs) {
+//     const displayMembers = await getMemberList(request);
+//     return json(displayMembers);
+// }
 
 const styles = {
     gridLayoutStyles: { m: 2, mt: 2.5, zIndex: 3 },
@@ -70,13 +70,18 @@ const styles = {
 
 // exports the 'index' member hall route - the parent of subsequent member hall content
 export default function ListAndDetailMain({props}: any) {    
+    // const location = useLocation().pathname.split('/')[1];
+    const { specProps, allData } = props;
+    const { mainHeaders, miniThinCardProps, redirectQButtonProps, messageBoxProps, detailsCardProps } = specProps;
+    const data = allData; // const data = useLoaderData();
+
     const theme = useTheme();
     const smAndDown = useMediaQuery(theme.breakpoints.down('sm'));
-    const data = useLoaderData<typeof loader>();
+    
     // const [cardId, setCardId] = useState<string>("");
     // const [cardIdList, setCardIdList] = useState<SelectedObject[]>([]);
 
-    const { mainHeaders, miniThinCardProps, redirectQButtonProps, messageBoxProps, detailsCardProps } = props;
+    // console.log(`props: ${JSON.stringify(allData, null, 4)}`)
 
     // glass-header background - needs access to dynamic media query 
     const glassHeaderBackgroundComponent = {
@@ -93,7 +98,6 @@ export default function ListAndDetailMain({props}: any) {
 
 
     return (
-        // <MultiselectProvider cardId={cardId} cardIdList={cardIdList} setCardId={setCardId} setCardIdList={setCardIdList}>
         <>
             <Box sx={glassHeaderBackgroundComponent} />
             <Grid2 container spacing={2} sx={styles.gridLayoutStyles}>
@@ -109,10 +113,11 @@ export default function ListAndDetailMain({props}: any) {
                                     key={`card-${item.id}`}
                                     props={{
                                         id: item.id,
-                                        header: item.username,
-                                        data1: item.devType,
-                                        data2: item.skills,
-                                        availability: item.available,
+                                        header: (item.username || item.name) ?? "header",
+                                        data1: (item.devType || item.type) ?? "primary data",
+                                        data2: item.skills || null,
+                                        data3: item.synopsis || null,
+                                        availability: (item.available || item.active) ?? "availability",
                                         miniThinCardProps: miniThinCardProps
                                     }}
                                 />
@@ -130,9 +135,7 @@ export default function ListAndDetailMain({props}: any) {
                         <Box sx={styles.detailsContentContainerStyles}>
                             <Stack direction="column" spacing={2}>
                                 {/* DETAILS CARD */}
-                                <Outlet 
-                                    context={detailsCardProps.detailsCardType}
-                                    />
+                                <Outlet context={detailsCardProps.detailsCardType} />
                                 <RedirectQButton 
                                     props={{
                                         redirectHeader: redirectQButtonProps.message, 
@@ -148,6 +151,5 @@ export default function ListAndDetailMain({props}: any) {
                 <MessageCard props={messageBoxProps} />
             </Box>
         </>
-        // </MultiselectProvider>
     );
 }

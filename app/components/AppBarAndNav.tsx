@@ -167,7 +167,7 @@ export default function AppBarAndNav(props: any) {
 
 
 	const drawer = (
-		<div>
+		<Box>
 			<Toolbar />
 			<Divider />
 			<Tabs
@@ -218,7 +218,7 @@ export default function AppBarAndNav(props: any) {
 					: null
 				}
 			</Tabs>
-		</div>
+		</Box>
 	);
 	
 
@@ -319,6 +319,7 @@ export default function AppBarAndNav(props: any) {
 							boxSizing: "border-box",
 							width: drawerWidth,
 						},
+						
 					}}
 					>
 					{drawer}

@@ -1,18 +1,11 @@
-import { Box, Skeleton, Stack } from "@mui/material";
 import { useCatch } from "@remix-run/react";
+import SkeletonDetails from "~/components/reusable-components/minor/SkeletonDetails";
+
 
 
 export default function MemberhallIndexRoute() {
 	return (
-		<Stack spacing={1} sx={{ display: { sm: 'none' , md: 'flex'} }} >
-			<Skeleton animation={false} variant="text" sx={{ fontSize: '2rem', borderRadius: 2 }} />
-			<Box sx={{ display: 'flex', flexBasis: 'row', flexWrap: 'nowrap', justifyContent: 'space-between' }}>
-				<Skeleton animation={false} variant="rectangular"  height={120} sx={{ width: '60%', borderRadius: 2 }}/>
-				<Skeleton animation={false} variant="circular" width={120} height={120} />
-			</Box>
-			<Skeleton animation={false} variant="rectangular"  height={100} sx={{ borderRadius: 2 }}/>
-			<Skeleton animation={false} variant="rectangular"  height={100} sx={{ borderRadius: 2 }}/>
-		</Stack>
+		<SkeletonDetails />
 	);
 }
 

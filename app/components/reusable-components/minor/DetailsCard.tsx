@@ -65,14 +65,35 @@ const DetailsCard = (props: any) => {
                                 variant="body2"
                                 sx={availabilityStyles}>
                                 {
-                                    props.availability === 'available' 
-                                    ? 'available' 
-                                    : 'unavailable'
-                                } 
-                                {
-                                    props.availability === 'available' 
-                                    ? <PersonAddIcon fontSize="small" sx={styles.iconStyles} /> 
-                                    : <PersonAddDisabledIcon fontSize="small" sx={styles.iconStyles} />
+                                    props.availability !== null 
+                                    ?
+                                        <>
+                                            {
+                                                props.availability === 'available' 
+                                                ? 'available' 
+                                                : 'unavailable'
+                                            }
+                                            {
+                                                props.availability === 'available' 
+                                                ? <PersonAddIcon fontSize="small" sx={styles.iconStyles} /> 
+                                                : <PersonAddDisabledIcon fontSize="small" sx={styles.iconStyles} />
+                                            }
+                                        </>
+                                    :
+                                    props.active !== null ?
+                                    <>
+                                        {
+                                            props.active === true 
+                                            ? 'active' 
+                                            : 'inactive'
+                                        }
+                                        {
+                                            props.active === true
+                                            ? <PersonAddIcon fontSize="small" sx={styles.iconStyles} /> 
+                                            : <PersonAddDisabledIcon fontSize="small" sx={styles.iconStyles} />
+                                        }
+                                    </>
+                                    : null
                                 }
                             </Typography>
                         </Box>

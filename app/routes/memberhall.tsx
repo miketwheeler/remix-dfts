@@ -6,6 +6,7 @@ import ListAndDetailMain from "~/components/reusable-components/major/ListAndDet
 import { getMemberList } from "~/utils/display.server";
 
 import { MultiselectProvider } from "~/components/client-context/MultiselectContext";
+import { useLoaderData } from "react-router";
 
 
 
@@ -47,12 +48,13 @@ export async function loader({ request }: LoaderArgs) {
 
 // exports the 'index' member hall route - the parent of subsequent member hall content
 export default function MemberHallRoute() {
+    const data = useLoaderData();
     const [cardId, setCardId] = useState<string>("");
     const [cardIdList, setCardIdList] = useState<SelectedObject[]>([]);
 
     return (
         <MultiselectProvider cardId={cardId} cardIdList={cardIdList} setCardId={setCardId} setCardIdList={setCardIdList}>
-            <ListAndDetailMain props={membersSpecificProps} />
+            <ListAndDetailMain props={{specProps: membersSpecificProps, allData: data}} />
         </MultiselectProvider>
     );
 }

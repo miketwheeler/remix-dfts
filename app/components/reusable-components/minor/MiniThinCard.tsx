@@ -74,31 +74,31 @@ const MiniThinCard = ({props}: any) => {
     // SET A CARD ID TO THE CONTEXT LIST ///////////////////////////////////////////////////
     // **remove an entry from the context list
     const handleRemoveSwitchId = async (idToDelete: string) => {
-        const newCardIdList = [...cardIdList];                                  // copy the state array
-        const deleteEntryIndex = cardIdList.findIndex(n => n.id === idToDelete);// check if the entry exists
-        if(deleteEntryIndex !== -1)                                             // if it exists, remove it               
-            newCardIdList.splice(deleteEntryIndex, 1);                          // remove the entry from state array
+        const newCardIdList = [...cardIdList];                                          // copy the state array
+        const deleteEntryIndex = cardIdList.findIndex(n => n.id === idToDelete);        // check if the entry exists
+        if(deleteEntryIndex !== -1)                                                     // if it exists, remove it               
+            newCardIdList.splice(deleteEntryIndex, 1);                                  // remove the entry from state array
 
-        setCardIdList(newCardIdList);                                           // sets state array to the new array
+        setCardIdList(newCardIdList);                                                   // sets state array to the new array
     }
     // **add an entry to the context list
     const handleAddSwitchId = async (id: string, name: string) => {
-        const newCardIdList = [...cardIdList];                          // copy the state array
-        const addEntryExist = cardIdList.findIndex(n => n.id === id);   // check if the entry exists
-        if(addEntryExist === -1)                                        // if it doesn't exist, add it                  
-            setCardIdList(newCardIdList.concat({ id, name }))           // adds the new entry to the state array
+        const newCardIdList = [...cardIdList];                                          // copy the state array
+        const addEntryExist = cardIdList.findIndex(n => n.id === id);                   // check if the entry exists
+        if(addEntryExist === -1)                                                        // if it doesn't exist, add it                  
+            setCardIdList(newCardIdList.concat({ id, name }))                           // adds the new entry to the state array
     }
     // keeps track of current cards selected by their switch
     const handleCardSwitched = async (switchId: string, userName: string) => {
-        if(cardIdList.length) {                                         // if are entries in the state array  
-            for(const n of cardIdList) {                                // loop through entries
-                n.id === switchId                                       // if the entry.id matches the switch.id
-                    ? handleRemoveSwitchId(switchId)                    // remove the entry from state array
-                    : handleAddSwitchId(switchId, userName);            // else, add the entry to state array
+        if(cardIdList.length) {                                                         // if are entries in the state array  
+            for(const n of cardIdList) {                                                // loop through entries
+                n.id === switchId                                                       // if the entry.id matches the switch.id
+                    ? handleRemoveSwitchId(switchId)                                    // remove the entry from state array
+                    : handleAddSwitchId(switchId, userName);                            // else, add the entry to state array
             }
         }
         else
-            handleAddSwitchId(switchId, userName);    // if no entries in state array, add it to state array
+            handleAddSwitchId(switchId, userName);                                      // if no entries in state array, add it to state array
     }
     ////////////////////////////////////////////////////////////////////////////////////////
 
@@ -150,6 +150,15 @@ const MiniThinCard = ({props}: any) => {
                                                 )
                                             })
                                         }
+                                    </Typography>
+                                </Box>
+                                : null
+                            }
+                            {
+                                props.data3 ? 
+                                <Box sx={{ display: 'flex', flexDirection: 'row', flexWrap: 'nowrap', overflow: 'hidden'}}>
+                                    <Typography noWrap variant='body2' sx={dataDisappearStyle}>
+                                        { props.data3 }
                                     </Typography>
                                 </Box>
                                 : null

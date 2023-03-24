@@ -4,6 +4,9 @@ import { grey, purple, blue } from '@mui/material/colors';
 
 
 
+const scrollbarBG = '#26262606';
+const thumbBG = '#3a3a3a';
+
 // Creates the theme instance.
 const theme = createTheme({
     // Global MUI colorway settings
@@ -52,9 +55,29 @@ const theme = createTheme({
                     textTransform: 'none',
                 },
             },
+        },
+        MuiPaper: {
+            styleOverrides: {
+                root: {
+                    '&::-webkit-scrollbar': {
+                        width:'4px',
+                        backgroundColor: 'transparent',
+                    },
+                    '&::-webkit-scrollbar-corner': {
+                        backgroundColor: scrollbarBG,
+                    },
+                    '&::-webkit-scrollbar-track': {
+                        background: scrollbarBG,
+                    },
+                    '&::-webkit-scrollbar-thumb': {
+                        backgroundColor: thumbBG,
+                        borderRadius: '8px',
+                        border: `2px solid ${scrollbarBG}`,
+                    }
+                }
+            }
         }
     }
-
 });
 
 export default theme;

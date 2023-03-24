@@ -11,7 +11,7 @@ export async function getMemberList(request: Request) {
     return memberList;
 }
 
-export async function getMember( params: { id: any; }) {
+export async function getMember( params: { id: string }) {
     const member = await db.user.findUnique({
         where: { id: params.id },
         select: { id: true, username: true, devType: true, skills: true, available: true },
@@ -26,4 +26,12 @@ export async function getProjectList(request: Request) {
         select: { id: true, name: true, type: true, synopsis: true, techStack: true, active: true, beginDate: true, endDate: true },
     });
     return projectList;
+}
+
+export async function getProject( params: { id: number }) {
+    const project = await db.project.findUnique({
+        where: { id: Number(params.id) },
+        select: { id: true, name: true, type: true, synopsis: true, techStack: true, active: true, beginDate: true, endDate: true },
+    });
+    return project;
 }
