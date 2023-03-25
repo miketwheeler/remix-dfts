@@ -1,7 +1,7 @@
 // import { Skeleton } from "@mui/material";
 import type { ActionArgs, LoaderArgs, MetaFunction } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
-import { useCatch, useLoaderData, useParams } from "@remix-run/react";
+import { useCatch, useLoaderData, useOutletContext, useParams } from "@remix-run/react";
 import DetailsCard from "~/components/reusable-components/minor/DetailsCard";
 
 import { getProject } from "~/utils/display.server";
@@ -64,14 +64,16 @@ export const loader = async ({ params }: LoaderArgs) => {
     });
 };
 
-export default function ProjectIdRoute() {
+export default function ProjectIdRoute({ props }: any) {
 	const data = useLoaderData<typeof loader>();
+    const { detailsCardType } = useOutletContext<{ detailsCardType: number }>();
 
 	return ( 
         <DetailsCard 
+            type={detailsCardType}
             heading={data.project.name}
             active={data.project.active}
-            devType={data.project.type}
+            projectType={data.project.type}
             activeSince={data.project.beginDate}
             // teamsOn={data.teamList.length}
             // projectsOn={data.teamList.map(team => team.projects.length).reduce((a, b) => a + b, 0)}
@@ -118,7 +120,7 @@ export function ErrorBoundary({ error }: { error: Error }) {
 	// const { id } = useParams();
 	return (
 		<div>
-            {`There was an error loading that user's info. Please try again later.`}
+            {`There was an error loading that data. Please try again later.`}
         </div>
 	);
 }

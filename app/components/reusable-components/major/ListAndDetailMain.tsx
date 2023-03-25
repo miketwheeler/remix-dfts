@@ -110,9 +110,9 @@ export default function ListAndDetailMain({props}: any) {
                         {
                             data.map((item: any) => (
                                 <MiniThinCard 
-                                    key={`card-${item.id}`}
+                                    key={`card-${item.id.toString()}`}
                                     props={{
-                                        id: item.id,
+                                        id: item.id.toString(),
                                         header: (item.username || item.name) ?? "header",
                                         data1: (item.devType || item.type) ?? "primary data",
                                         data2: item.skills || null,
@@ -135,7 +135,7 @@ export default function ListAndDetailMain({props}: any) {
                         <Box sx={styles.detailsContentContainerStyles}>
                             <Stack direction="column" spacing={2}>
                                 {/* DETAILS CARD */}
-                                <Outlet context={detailsCardProps.detailsCardType} />
+                                <Outlet context={{detailsCardType: detailsCardProps.detailsCardType}} />
                                 <RedirectQButton 
                                     props={{
                                         redirectHeader: redirectQButtonProps.message, 

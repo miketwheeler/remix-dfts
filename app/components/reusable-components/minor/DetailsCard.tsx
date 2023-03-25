@@ -6,7 +6,7 @@ import Grid from "@mui/material/Unstable_Grid2";
 // import { useMultiselectContext } from "~/components/client-context/MultiselectContext";
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import PersonAddDisabledIcon from '@mui/icons-material/PersonAddDisabled';
-
+import WorkspacesIcon from '@mui/icons-material/Workspaces';
 
 
 const styles = {
@@ -39,16 +39,16 @@ const styles = {
 
 
 const DetailsCard = (props: any) => {            
-    const simpleDate = (`${props.activeSince.toString().slice(5,2).concat(props.activeSince.toString().slice(0,4))}`)
+    const simpleDate = (`${props.activeSince?.toString().slice(5,2).concat(props.activeSince.toString().slice(0,4))}`)
 
-    const skillsList = props.skills.map((obj: any, i: any) => {
+    const skillsList = props.skills?.map((obj: any, i: any) => {
         return obj.name;
     })
 
     const availabilityStyles = {
         my: 'auto', 
         ml: 1, 
-        opacity: props.availability === 'available' ? '100%' : '50%',
+        opacity: props.availability === 'available' || props.availability === true ? '100%' : '50%',
         display: 'flex',
     }
 
@@ -65,6 +65,43 @@ const DetailsCard = (props: any) => {
                                 variant="body2"
                                 sx={availabilityStyles}>
                                 {
+                                    props.detailsCardType === 1   // is member type card
+                                    ? 
+                                    (
+                                        props.availability !== null 
+                                        ?
+                                            <>
+                                                {
+                                                    props.availability === 'available' 
+                                                    ? 'available' 
+                                                    : 'unavailable'
+                                                }
+                                                {
+                                                    props.availability === 'available' 
+                                                    ? <PersonAddIcon fontSize="small" sx={styles.iconStyles} /> 
+                                                    : <PersonAddDisabledIcon fontSize="small" sx={styles.iconStyles} />
+                                                }
+                                            </>
+                                        : null
+                                    )
+                                    :
+                                    props.active !== null 
+                                    ?
+                                    <>
+                                        {
+                                            props.active === true 
+                                            ? 'active' 
+                                            : 'inactive'
+                                        }
+                                        {
+                                            props.active === true
+                                            ? <WorkspacesIcon fontSize="small" sx={styles.iconStyles} /> 
+                                            : <WorkspacesIcon fontSize="small" sx={styles.iconStyles} />
+                                        }
+                                    </>
+                                    : null
+                                }
+                                {/* {
                                     props.availability !== null 
                                     ?
                                         <>
@@ -94,7 +131,7 @@ const DetailsCard = (props: any) => {
                                         }
                                     </>
                                     : null
-                                }
+                                } */}
                             </Typography>
                         </Box>
                         <Divider />
@@ -102,33 +139,55 @@ const DetailsCard = (props: any) => {
                             <Grid xs={12} md={7}>
                                 <Stack direction="column" spacing={1} sx={styles.detailsMainInfoContainerStyles}>
                                     <Box sx={styles.flexRowStyle}>
-                                        <Typography variant="body2">dev:</Typography>
-                                        <Typography variant="body2">{props.devType.toLowerCase()}</Typography>
+                                        {
+                                            props.devType 
+                                            ? 
+                                            <>
+                                                <Typography variant="body2">dev:</Typography>
+                                                <Typography variant="body2">{props.devType.toLowerCase()}</Typography>
+                                            </>
+                                            : props.projectType
+                                            ? 
+                                            <>
+                                                <Typography variant="body2">type:</Typography>
+                                                <Typography variant="body2">{props.projectType.toLowerCase()}</Typography>
+                                            </>
+                                            : null
+                                        }
                                     </Box>
                                     <Box sx={styles.flexRowStyle}>
                                         <Typography variant="body2">active since:</Typography>
                                         <Typography variant="body2">{simpleDate}</Typography>
                                     </Box>
-                                    <Box sx={styles.flexRowStyle}>
-                                        <Typography variant="body2">total teams:</Typography>
-                                        <Typography variant="body2">{props.teamsOn}</Typography>
-                                    </Box>
-                                    <Box sx={styles.flexRowStyle}>
-                                        <Typography variant="body2">total projects:</Typography>
-                                        <Typography variant="body2">{props.projectsOn}</Typography>
-                                    </Box>
-                                    <Box sx={styles.flexRowStyle}>
-                                        <Typography variant="body2">rating:</Typography>
-                                        <Typography variant="body2">
-                                            <Rating
-                                                precision={0.25}
-                                                readOnly
-                                                value={props.rating}
-                                                size="small"
-                                                sx={{ color: 'secondary.main'}}
-                                                />
-                                        </Typography>
-                                    </Box>
+                                    {
+                                        props.detailsCardType === 1  // is member type card
+                                        ?
+                                        <>  
+                                            <Box sx={styles.flexRowStyle}>
+                                                <Typography variant="body2">total teams:</Typography>
+                                                <Typography variant="body2">{props.teamsOn}</Typography>
+                                            </Box>
+                                            <Box sx={styles.flexRowStyle}>
+                                                <Typography variant="body2">total projects:</Typography>
+                                                <Typography variant="body2">{props.projectsOn}</Typography>
+                                            </Box>
+                                            <Box sx={styles.flexRowStyle}>
+                                                <Typography variant="body2">rating:</Typography>
+                                                <Typography variant="body2">
+                                                    <Rating
+                                                        precision={0.25}
+                                                        readOnly
+                                                        value={props.rating}
+                                                        size="small"
+                                                        sx={{ color: 'secondary.main'}}
+                                                        />
+                                                </Typography>
+                                            </Box>
+                                        </>
+                                        :
+                                        null
+                                    }
+                                    
                                 </Stack>
                             </Grid>
                             <Grid md={5} sx={styles.detailsImageContainerStyles}>
@@ -140,12 +199,33 @@ const DetailsCard = (props: any) => {
                         <Stack direction="column" spacing={1.5} sx={styles.detailsSkillsBioContainerStyles}>
                             <Divider />
                             <Box sx={styles.flexRowStyle}>
-                                <Box sx={styles.flexColumnStyle}>
+                                {
+                                    props.detailsCardType === 1  // is member type card
+                                    ?
+                                    <>
+                                        <Box sx={styles.flexColumnStyle}>
+                                            <Typography variant="body2" sx={styles.detailsSkillsBioHeaderStyles}>skills:</Typography>
+                                        </Box>
+                                        <Box sx={styles.flexColumnStyle}>
+                                            <Typography variant="body2">{skillsList.join(', ').toLowerCase()}</Typography>
+                                        </Box>
+                                    </>
+                                    :
+                                    <>
+                                        <Box sx={styles.flexColumnStyle}>
+                                            <Typography variant="body2" sx={styles.detailsSkillsBioHeaderStyles}>stack:</Typography>
+                                        </Box>
+                                        <Box sx={styles.flexColumnStyle}>
+                                            <Typography variant="body2">{props.stack}</Typography>
+                                        </Box>
+                                    </>
+                                }
+                                {/* <Box sx={styles.flexColumnStyle}>
                                     <Typography variant="body2" sx={styles.detailsSkillsBioHeaderStyles}>skills:</Typography>
                                 </Box>
                                 <Box sx={styles.flexColumnStyle}>
                                     <Typography variant="body2">{skillsList.join(', ').toLowerCase()}</Typography>
-                                </Box>
+                                </Box> */}
                             </Box>
                             <Divider />
                             <Box sx={styles.flexRowStyle}>
