@@ -16,8 +16,8 @@ export async function loader({ request }: LoaderArgs) {
 
 
 // exports the 'index' page of the member hall route - the parent of subsequent member hall content
-export default function ProjectRoute() {    
+export default function CreateTeamRoute() {    
     return (
-        <div>Project Page</div>
+        <div>Team Page</div>
     );
 }

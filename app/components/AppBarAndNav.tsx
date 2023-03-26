@@ -23,7 +23,7 @@ import { getUser } from "~/utils/session.server";
 
 const drawerWidth = 240;
 
-const navRoutes = ["dashboard", "projecthub", "memberhall", "fundingtree", "DIVIDER", "HEADING1", "messages", "documents", "news", "DIVIDER", "HEADER2", "project", "team"]
+const navRoutes = ["dashboard", "projecthub", "memberhall", "fundingtree", "DIVIDER", "HEADING1", "messages", "documents", "news", "DIVIDER", "HEADER2", "create-project", "create-team"]
 const nav = {
 	primaryLinks: [
 		{
@@ -82,14 +82,14 @@ const nav = {
 		{
 			index: 7,
 			name: "new project",
-			path: "/project",
+			path: "/create-project",
 			icon: <AddBoxIcon />,
 			enabled: true,
 		},
 		{
 			index: 8,
 			name: "new team",
-			path: "/team",
+			path: "/create-team",
 			icon: <AddCircleIcon />,
 			enabled: true,
 		},
