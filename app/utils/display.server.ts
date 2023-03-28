@@ -2,7 +2,7 @@
 import { db } from './db.server';
 // import { requireUserSession } from './session.server';
 
-
+// GET MEMEBER DATA
 export async function getMemberList(request: Request) {
     const memberList = await db.user.findMany({
         take: 16,
@@ -19,7 +19,7 @@ export async function getMember( params: { id: string }) {
     return member;
 }
 
-
+// GET PROJECT DATA
 export async function getProjectList(request: Request) {
     const projectList = await db.project.findMany({
         take: 16,
@@ -35,3 +35,21 @@ export async function getProject( params: { id: number }) {
     });
     return project;
 }
+
+// GET TEAM DATA
+export async function getUsersTeamData( id: string ) {
+    const userTeams = await db.user.findUnique({
+        where: { id },
+        select: { teams: true }
+    });
+
+    return userTeams;
+}
+
+// async function setProjectTeam( id: string ) {
+//     const project = await db.project.findUnique({
+//         where: { id },
+//         select: { teamLeadId: id }
+//     });
+//     return team;
+// }

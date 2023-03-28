@@ -96,7 +96,6 @@ export default function ListAndDetailMain({props}: any) {
         background: 'rgba(18, 18, 18, 0.63)',
     }
 
-
     return (
         <>
             <Box sx={glassHeaderBackgroundComponent} />
@@ -135,7 +134,7 @@ export default function ListAndDetailMain({props}: any) {
                         <Box sx={styles.detailsContentContainerStyles}>
                             <Stack direction="column" spacing={2}>
                                 {/* DETAILS CARD */}
-                                <Outlet context={{detailsCardType: detailsCardProps.detailsCardType}} />
+                                <Outlet context={{ detailsCardType: detailsCardProps.detailsCardType }} />
                                 <RedirectQButton 
                                     props={{
                                         redirectHeader: redirectQButtonProps.message, 

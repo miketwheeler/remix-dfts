@@ -3,17 +3,28 @@ import type {
     MetaFunction,
     LoaderArgs,
 } from "@remix-run/node";
+// import type { Decimal } from '@prisma/client/runtime';
 import React, { useState } from "react";
-import { json } from "@remix-run/node"
-import { Link, useSearchParams, Form, useActionData } from "@remix-run/react";
-import { Box, Typography, Divider, Button, Paper, TextField } from "@mui/material";
+import { json, redirect } from "@remix-run/node"
+import { Link, useSearchParams, Form, useActionData, useLoaderData, useFetcher } from "@remix-run/react";
+import { Box, Typography, Divider, Button, Paper, TextField, FormControl, FormLabel, RadioGroup, FormControlLabel, Radio } from "@mui/material";
+import { NumericFormat, NumericFormatProps } from "react-number-format";
+
+
+// import UsersTeamPicker from "~/components/reusable-components/minor/UsersTeamPicker";
 
 // import for data from DB
 import { db } from "~/utils/db.server";
 import { badRequest } from "~/utils/request.server";
-import { createUserSession, register } from "~/utils/session.server";
-
 import { requireUserId } from "~/utils/session.server";
+import { createProject } from "~/utils/create.server";
+
+
+
+interface CustomProps {
+    onChange: (event: { target: { name: string; value: string } }) => void;
+    name: string;
+}
 
 // requires the user to be logged in - on load, so is hack but works because of the order necessary within the login process
 export async function loader({ request }: LoaderArgs) {
@@ -22,71 +33,53 @@ export async function loader({ request }: LoaderArgs) {
 	return json({});
 }
 
-
-// // exports the 'index' page of the member hall route - the parent of subsequent member hall content
-// export default function CreateProjectRoute() {    
-//     return (
-//         <div>Project Page</div>
-//     );
-// }
-
-
-
-
-
 export const meta: MetaFunction = () => ({
-	description: "Register to create an project and access your dashboard.",
-	title: "dev foyer | register",
+	description: "Create a project and access it on your dashboard.",
+	title: "dev foyer | create project",
 });
 
 
-function validateTeamName(username: unknown) {
-	if (typeof username !== "string" || username.length < 3) {
-		return "The username must be at least 3 characters long";
+// form validation
+function validateProjectName(projectName: string) {
+	if (typeof projectName !== "string" || projectName.length < 3) {
+		return "The projectName must be at least 3 characters long";
 	}
 }
-
-// function validatePassword(password: unknown) {
-// 	if (typeof password !== "string" || password.length < 6) {
-// 		return "The password must be at least 6 characters long";
-// 	}
-// }
-
-// function validatePasswordConfirm(passwordConfirm: unknown, password: unknown) {
-//     if (passwordConfirm !== password) {
-//         return "The passwords do not match";
-//     }
-// }
-
-// TODO: needs to satisfy @somehting.com - (use regex or library that will work server side)
-function validateEmail(email: unknown) {
-    if (typeof email !== "string" || email.length < 6) {
-        return "The email must be at least 6 characters long";
+function validateProjectType(projectType: string) {
+	if (typeof projectType !== "string" || projectType.length < 4) {
+		return "The password must be at least 6 characters long";
+	}
+}
+function validateProjectSynopsis(projectSynopsis: string) {
+    if (typeof projectSynopsis !== "string" || projectSynopsis.length < 10) {
+		return "The password must be at least 6 characters long";
+	}
+}
+function validateProjectDescription(projectDescription: string) {
+    if (typeof projectDescription !== "string" || projectDescription.length < 60) {
+		return "The password must be at least 6 characters long";
+	}
+}
+function validateProjectTechStack(projectTechStack: string) {
+    if (typeof projectTechStack !== "string" || projectTechStack.length < 6) {
+        return "The password must be at least 6 characters long";
+    }
+}
+function validateProjectBeginDate(projectBeginDate: string) {
+    if (typeof projectBeginDate !== "string" || projectBeginDate.length < 6) {
+        return "The password must be at least 6 characters long";
+    }
+}
+function validateProjectEndDate(projectEndDate: string) {
+    if (typeof projectEndDate !== "string" || projectEndDate.length < 6) {
+        return "The password must be at least 6 characters long";
     }
 }
 
-function validateFirstName(firstName: unknown) {
-	if (typeof firstName !== "string" || firstName.length < 1) {
-		return "The first name must be at least 1 character long";
-	}
-}
 
-function validateLastName(lastName: unknown) {
-	if (typeof lastName !== "string" || lastName.length < 1) {
-		return "The lastName must be at least 1 character long";
-	}
-}
-
-function validateDevType(devType: unknown) {
-	if (typeof devType !== "string" || devType.length < 3) {
-		return "The dev type must be at least 3 characters long";
-	}
-}
-
+// url validation
 function validateUrl(url: string) {
 	let urls = [
-		"/forgot-password",
-		"/reset-password",
 		"/",
 		"/dashboard",
 		"/project",
@@ -99,25 +92,33 @@ function validateUrl(url: string) {
 }
 
 export const action = async ({ request }: ActionArgs) => {
-	const form = await request.formData();
-	const username = form.get("username");
-	const password = form.get("password");
-    const passwordConfirm = form.get("passwordConfirm");
-    const email = form.get("email");
-    const firstName = form.get("firstName");
-    const lastName = form.get("lastName");
-    const devType = form.get("devType");                                        
-	const redirectTo = validateUrl(form.get("redirectTo")?.toString() ?? "/dashboard");
+    const form = await request.formData();
+    const name = form.get("name");
+    const type = form.get("type");
+    const synopsis = form.get("synopsis");
+    const description = form.get("description");
+    const techStack = form.get("techStack");
+    const beginDate = form.get("beginDate");
+    const endDate = form.get("endDate");
+    const active = form.get("active") ?? true;
+    const fundingGoal = form.get("fundingGoal") ?? 0.0;
+    // const category = form.get('category');
+    // const team = form.get('team');
+
+	const redirectTo = validateUrl(form.get("redirectTo")?.toString() ?? "/dashboard/project");
 
 	if (
-		typeof username !== "string" ||
-		typeof password !== "string" ||
-        typeof passwordConfirm !== "string" ||
-        typeof email !== "string" ||
-        typeof firstName !== "string" ||
-        typeof lastName !== "string" ||
-        typeof devType !== "string" ||
-		typeof redirectTo !== "string"
+		typeof name !== "string" ||
+        typeof type !== "string" ||
+        typeof synopsis !== "string" ||
+		typeof description !== "string" ||
+        typeof techStack !== "string" ||
+        typeof beginDate !== "string" ||
+        typeof endDate !== "string" ||
+        typeof active !== "boolean" ||
+        typeof fundingGoal !== "number" ||
+        // typeof team !== "string" ||
+		typeof redirectTo !== "string" 
 	) {
 		return badRequest({
 			fieldErrors: null,
@@ -126,36 +127,63 @@ export const action = async ({ request }: ActionArgs) => {
 		});
 	}
 
-	const fields = { username, password, email, firstName, lastName, devType };
+	const fields = { 
+        name: name, 
+        type: type, 
+        synopsis: synopsis, 
+        description: description,
+        techStack: techStack, 
+        beginDate: beginDate, 
+        endDate: endDate, 
+        active: active, 
+        fundingGoal: fundingGoal, 
+        // category,
+        // team,
+    };
 	const fieldErrors = {
-		username: validateTeamName(username),
-		// password: validatePassword(password),
-        // passwordConfirm: validatePasswordConfirm(passwordConfirm, password),
-        email: validateEmail(email),
-        firstName: validateFirstName(firstName),
-        lastName: validateLastName(lastName),
-        devType: validateDevType(devType),
+        name: validateProjectName(name),
+        type: validateProjectType(type),
+        synopsis: validateProjectSynopsis(synopsis),
+        description: validateProjectDescription(description),
+        techStack: validateProjectTechStack(techStack),
+        beginDate: validateProjectBeginDate(beginDate),
+        endDate: validateProjectEndDate(endDate),
+        // projectFundingGoal: validateProjectFundingGoal(projectFundingGoal),
+        // projectCategories: validateProjectCategories(projectCategories),
+        // projectTeam: validateProjectTeam(projectTeam),
 	};
-	if (Object.values(fieldErrors).some(Boolean)) {
+	if(Object.values(fieldErrors).some(Boolean)) {
 		return badRequest({
 			fieldErrors,
 			fields,
 			formError: null,
 		});
 	}
-    const userExists = await db.user.findFirst({
-        where: { username },
+    const projectExists = await db.project.findFirst({
+        where: { name },
     });
-    if (userExists) {
+    if(projectExists) {
         return badRequest({
             fieldErrors: null,
             fields,
-            formError: `User with username ${username} already exists`,
+            formError: `Project with the name ${name} already exists`,
         });
     }
-    // create the user && create their session and redirect to /dashboard
-    const user = await register({ username, password, email, firstName, lastName, devType });
-    if (!user) {
+    // create the project && create their session and redirect to /dashboard
+    const project = await createProject({ 
+        name,
+        type,
+        synopsis,
+        description,
+        techStack,
+        beginDate,
+        endDate,
+        active,
+        fundingGoal,
+        // category,
+        // team,
+    });
+    if(!project) {
         return badRequest({
             fieldErrors: null,
             fields,
@@ -163,8 +191,7 @@ export const action = async ({ request }: ActionArgs) => {
         });
     }
 
-    return createUserSession(user.id, "/dashboard");
-    // return redirect("/login");
+    return redirect("/dashboard/project");
 };
 
 const styles = {
@@ -184,10 +211,46 @@ const styles = {
     }
 };
 
+
+const NumericFormatCustom = React.forwardRef<NumericFormatProps, CustomProps>(
+	function NumericFormatCustom(props, ref) {
+		const { onChange, ...other } = props;
+
+		return (
+			<NumericFormat
+				{...other}
+				getInputRef={ref}
+				onValueChange={(values) => {
+					onChange({
+						target: {
+							name: props.name,
+							value: values.value,
+						},
+					});
+				}}
+				thousandSeparator
+				valueIsNumericString
+				prefix="$"
+			/>
+		);
+	}
+);
+
 export default function CreateProject() {
     const actionData = useActionData<typeof action>();
+    const loaderData = useLoaderData<typeof loader>();
 	const [searchParams] = useSearchParams();
-    const [projectName, setProjectName] = useState('');
+    const [projectNameState, setProjectNameState] = useState('');
+    const [fundingValue, setFundingValue] = useState({numberFormat: '0.00'});
+    const fetcher = useFetcher<typeof loader>();
+
+
+    const handleFundingChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setFundingValue({
+            ...fundingValue,
+            [event.target.name]: event.target.value,
+        });
+    };
 
 
 	return (
@@ -201,11 +264,11 @@ export default function CreateProject() {
             <Paper sx={styles.paper}>
                 <div className="content" data-light="">
                     <Typography
-                        variant="h4" 
-                        sx={{my: '1rem', display: 'inline-flex', wrap: 'nowrap'}}
+                        variant="h5" 
+                        sx={{my: .5, display: 'inline-flex', wrap: 'nowrap'}}
                         >
                             project
-                            { projectName !== "" ? <div style={{opacity: .5}}>&nbsp; - {projectName}</div> : null }
+                            { projectNameState !== "" ? <div style={{opacity: .5}}>&nbsp; - {projectNameState}</div> : null }
                     </Typography>
                     <Form method="post">
                         <input
@@ -215,166 +278,249 @@ export default function CreateProject() {
                         />
                         <Box sx={{ my: 2 }}>
                             <TextField 
-                                id="project-name-input" 
-                                name="project name"
+                                id="name-input" 
+                                name="name"
                                 variant="outlined" 
-                                label="project name" 
+                                label="name" 
                                 type="text" 
                                 fullWidth={ true }
                                 onChange={(e) => {
                                     e.preventDefault();
-                                    setProjectName(e.target.value);
+                                    setProjectNameState(e.target.value);
                                 }}
-                                defaultValue={ actionData?.fields?.username } 
-                                aria-invalid={ Boolean(actionData?.fieldErrors?.username) }
-                                aria-errormessage={ actionData?.fieldErrors?.username ? "username-error" : undefined }
+                                defaultValue={ actionData?.fields?.name } 
+                                aria-invalid={ Boolean(actionData?.fieldErrors?.name) }
+                                aria-errormessage={ actionData?.fieldErrors?.name ? "name-error" : undefined }
                                 />
                             {
-                                actionData?.fieldErrors?.username 
+                                actionData?.fieldErrors?.name 
                                 ? (
                                     <p
                                         className="form-validation-error"
                                         role="alert"
-                                        id="username-error"
+                                        id="name-error"
                                         >
-                                        {actionData.fieldErrors.username}
+                                        {actionData?.fieldErrors?.name}
                                     </p>
                                 ) : null
                             }
                         </Box>
-
                         <Box sx={{ my: 2 }}>
                             <TextField 
-                                id="project-type-input" 
+                                id="type-input" 
                                 name="type"
                                 variant="outlined" 
                                 label="type (e.g. web app, mobile app, etc.)" 
                                 type="text"
                                 fullWidth={ true }
                                 color="secondary"
-                                defaultValue={ actionData?.fields?.email } 
-                                aria-invalid={ Boolean(actionData?.fieldErrors?.email) }
-                                aria-errormessage={ actionData?.fieldErrors?.email ? "email-error" : undefined }
+                                defaultValue={ actionData?.fields?.type } 
+                                aria-invalid={ Boolean(actionData?.fieldErrors?.type) }
+                                aria-errormessage={ actionData?.fieldErrors?.type ? "type-error" : undefined }
                                 />
                             {
-                                actionData?.fieldErrors?.email ? (
+                                actionData?.fieldErrors?.type ? (
                                     <p
                                         className="form-validation-error"
                                         role="alert"
-                                        id="email-error"
+                                        id="type-error"
                                         >
-                                        {actionData.fieldErrors.email}
+                                        {actionData.fieldErrors.type}
                                     </p>
                                 ) : null
                             }
                         </Box>
                         <Box sx={{ my: 2 }}>
                             <TextField 
-                                id="firstName-input" 
-                                name="firstName"
+                                id="synopsis-input" 
+                                name="synopsis"
                                 variant="outlined" 
-                                label="first name" 
-                                type="text" 
+                                label="synopsis (shortened description)" 
+                                type="text"
+                                multiline 
+                                rows={4}
                                 fullWidth={ true }
                                 color="secondary"
-                                defaultValue={ actionData?.fields?.firstName } 
-                                aria-invalid={ Boolean(actionData?.fieldErrors?.firstName) }
-                                aria-errormessage={ actionData?.fieldErrors?.firstName ? "firstName-error" : undefined }
+                                defaultValue={ actionData?.fields?.synopsis } 
+                                aria-invalid={ Boolean(actionData?.fieldErrors?.synopsis) }
+                                aria-errormessage={ actionData?.fieldErrors?.synopsis ? "synopsis-error" : undefined }
                                 />
                             {
-                                actionData?.fieldErrors?.firstName ? (
+                                actionData?.fieldErrors?.synopsis ? (
                                     <p
                                         className="form-validation-error"
                                         role="alert"
-                                        id="firstName-error"
+                                        id="synopsis-error"
                                         >
-                                        {actionData.fieldErrors.firstName}
+                                        {actionData.fieldErrors.synopsis}
                                     </p>
                                 ) : null
                             }
                         </Box>
                         <Box sx={{ my: 2 }}>
                             <TextField 
-                                id="lastName-input" 
-                                name="lastName"
+                                id="description-input" 
+                                name="description"
                                 variant="outlined" 
-                                label="last name" 
+                                label="description (full description)" 
                                 type="text" 
+                                multiline
+                                rows={6}
                                 fullWidth={ true }
                                 color="secondary"
-                                defaultValue={ actionData?.fields?.lastName } 
-                                aria-invalid={ Boolean(actionData?.fieldErrors?.lastName) }
-                                aria-errormessage={ actionData?.fieldErrors?.lastName ? "lastName-error" : undefined }
+                                defaultValue={ actionData?.fields?.description } 
+                                aria-invalid={ Boolean(actionData?.fieldErrors?.description) }
+                                aria-errormessage={ actionData?.fieldErrors?.description ? "description-error" : undefined }
                                 />
                             {
-                                actionData?.fieldErrors?.lastName ? (
+                                actionData?.fieldErrors?.description ? (
                                     <p
                                         className="form-validation-error"
                                         role="alert"
-                                        id="lastName-error"
+                                        id="description-error"
                                         >
-                                        {actionData.fieldErrors.lastName}
+                                        {actionData.fieldErrors.description}
                                     </p>
                                 ) : null
                             }
                         </Box>
                         <Box sx={{ my: 2 }}>
                             <TextField 
-                                id="devType-input" 
-                                name="devType"
+                                id="techStack-input" 
+                                name="techStack"
                                 variant="outlined" 
-                                label="dev type" 
+                                label="begin date (mm/dd/yyyy)" 
                                 type="text" 
                                 fullWidth={ true }
                                 color="secondary"
-                                defaultValue={ actionData?.fields?.devType } 
-                                aria-invalid={ Boolean(actionData?.fieldErrors?.devType) }
-                                aria-errormessage={ actionData?.fieldErrors?.devType ? "devType-error" : undefined }
+                                defaultValue={ actionData?.fields?.techStack } 
+                                aria-invalid={ Boolean(actionData?.fieldErrors?.techStack) }
+                                aria-errormessage={ actionData?.fieldErrors?.techStack ? "techStack-error" : undefined }
                                 />
                             {
-                                actionData?.fieldErrors?.devType ? (
+                                actionData?.fieldErrors?.techStack ? (
                                     <p
                                         className="form-validation-error"
                                         role="alert"
-                                        id="devType-error"
+                                        id="techStack-error"
                                         >
-                                        {actionData.fieldErrors.devType}
+                                        {actionData.fieldErrors.techStack}
                                     </p>
                                 ) : null
                             }
                         </Box>
-                        <div id="form-error-message">
+                        <Box sx={{ my: 2 }}>
+                            <TextField 
+                                id="beginDate-input" 
+                                name="beginDate"
+                                variant="outlined" 
+                                label="end date (mm/dd/yyyy)" 
+                                type="text" 
+                                fullWidth={ true }
+                                color="secondary"
+                                defaultValue={ actionData?.fields?.beginDate } 
+                                aria-invalid={ Boolean(actionData?.fieldErrors?.beginDate) }
+                                aria-errormessage={ actionData?.fieldErrors?.beginDate ? "beginDate-error" : undefined }
+                                />
                             {
-                                actionData?.formError ? (
+                                actionData?.fieldErrors?.beginDate ? (
+                                    <p
+                                        className="form-validation-error"
+                                        role="alert"
+                                        id="beginDate-error"
+                                        >
+                                        {actionData.fieldErrors.beginDate}
+                                    </p>
+                                ) : null
+                            }
+                        </Box>
+                        <Box sx={{ my: 2 }}>
+                            <TextField 
+                                id="endDate-input" 
+                                name="endDate"
+                                variant="outlined" 
+                                label="tech stack" 
+                                type="text" 
+                                fullWidth={ true }
+                                color="secondary"
+                                defaultValue={ actionData?.fields?.endDate } 
+                                aria-invalid={ Boolean(actionData?.fieldErrors?.endDate) }
+                                aria-errormessage={ actionData?.fieldErrors?.endDate ? "endDate-error" : undefined }
+                                />
+                            {
+                                actionData?.fieldErrors?.endDate ? (
+                                    <p
+                                        className="form-validation-error"
+                                        role="alert"
+                                        id="endDate-error"
+                                        >
+                                        {actionData.fieldErrors.endDate}
+                                    </p>
+                                ) : null
+                            }
+                        </Box>
+                        <FormControl>
+                            <FormLabel id="project-active-radio-choice">active development</FormLabel>
+                            <RadioGroup
+                                row
+                                aria-labelledby="project-active-radio-choice"
+                                name="project-active-radio-group"
+                                defaultValue={ actionData?.fields?.active ?? true}
+                                aria-invalid={ actionData?.fields?.active === undefined ? true : false }
+                                // aria-errormessage={ actionData?.fields?.active === undefined ? "active-error" : null }
+                                >
+                                <FormControlLabel value="true" control={<Radio />} label="true" />
+                                <FormControlLabel value="false" control={<Radio />} label="false" />
+                            </RadioGroup>
+                        </FormControl>
+                        <Box sx={{ my: 2 }}>
+                            <TextField 
+                                id="fundingGoal-input" 
+                                name="fundingGoal"
+                                variant="outlined" 
+                                label="funding goal" 
+                                type="text" 
+                                fullWidth={ true }
+                                color="secondary"
+                                onChange={handleFundingChange}
+                                InputProps={{
+                                    inputComponent: NumericFormatCustom as any,
+                                }}
+                                />
+                        </Box>
+                        {/* <div id="form-error-message">
+                            {
+                                actionData?.formError?.techStack ? (
                                     <p
                                         className="form-validation-error"
                                         role="alert"
                                         >
-                                        {actionData.formError}
+                                        {actionData.formError?.techStack}
                                     </p>
                                 ) : null
                             }
-                        </div>
+                        </div> */}
                         <div className="flex items-center justify-center">
                             <div className="text-center text-sm text-gray-500">
                                 already have an project? go to {" "}
                                 <Link
                                     className="text-blue-500 underline"
                                     to={{
-                                        pathname: "/login",
+                                        pathname: "/dashboard/project",
                                         search: searchParams.toString(),
                                     }}
                                     >
-                                    login
+                                    your projects
                                 </Link>
                             </div>
                         </div>
                         <Button variant="outlined" type="submit" className="button" sx={{ mt: '1rem'}}>
-                            create project
+                            create new project
                         </Button>
                     </Form>
                 </div>
             </Paper>
+            {/* <UsersTeamPicker /> */}
 		</Box>
 	);
 }

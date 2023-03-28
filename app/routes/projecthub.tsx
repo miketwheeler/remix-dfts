@@ -24,11 +24,11 @@ const projectSpecificProps = {
     }, 
     redirectQButtonProps: {
         message: "creating a new project?",
-        redirectToValue: "project",
+        redirectToValue: "/create-project",
     },
     messageBoxProps: {
         messageBoxType: 1,
-        primaryHeader: "send a message to a project",
+        primaryHeader: "ask to join or co-op a project",
         secondaryHeader: "select projects to message",
         redirectToValue: "dashboard", // TODO: change to dispatch to current project(s)' owner
     },
