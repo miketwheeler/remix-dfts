@@ -63,7 +63,7 @@ export default function CustomTabs() {
 				{
 					links.map((link, index) => (
 						<Tab 
-							key={ `tab-${index}` } 
+							key={ `dash-tab-${index}` } 
 							id={ link.name }
 							label={ link.name } 
 							component={Link}

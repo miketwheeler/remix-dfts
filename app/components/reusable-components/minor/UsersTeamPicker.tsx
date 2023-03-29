@@ -1,43 +1,22 @@
 // import { Skeleton } from "@mui/material";
-import type { ActionArgs, LoaderArgs, MetaFunction } from "@remix-run/node";
-import { json, redirect } from "@remix-run/node";
-import { useCatch, useLoaderData, useOutletContext, useParams } from "@remix-run/react";
+// import type { ActionArgs, LoaderArgs, MetaFunction } from "@ remix-run/node";
+// import { json, redirect } from "@remix-run/node";
+import { Form, useCatch } from "@remix-run/react";
 import DetailsCard from "~/components/reusable-components/minor/DetailsCard";
 
-import { getUsersTeamData } from "~/utils/display.server";
-import { getUserId } from "~/utils/session.server";
-import { db } from "~/utils/db.server";
-
-
-
-
-export const loader = async ( { request }: LoaderArgs) => {
-    const userId = await getUserId(request);
-    let userTeamData;
-    if(userId)
-        userTeamData = await getUsersTeamData(userId);
-    // if the user does not have any associate teams or there isn't a userId,
-    //      throw a 404 error --> needs to send back error message only
-	if (!userId || !userTeamData) {
-		throw new Response("You don't have any teams right now, be sure to assign the team you're on or you've created to get this project rolling.", { status: 404 });
-	}
-    
-	return json({ userId, userTeamData });
-};
 
 
 
 export default function UsersTeamPicker({ props }: any) {
-	const data = useLoaderData<typeof loader>();
-    const { detailsCardType } = useOutletContext<{ detailsCardType: number }>();
-
+	const usersTeamData = props;
+    
 	return ( 
-        <>
-            <div> 
+        <Form method="get">
+            <div style={{ display: 'flex', position: 'fixed', top: 100, right: 40, maxWidth: 300,}}> 
                 This is returned from the TEAMS PICK component:
-                { JSON.stringify(data, null, 4)}
+                { JSON.stringify(usersTeamData, null, 4)}
             </div>
-        </>
+        </Form>
         // <DetailsCard 
         //     type={detailsCardType}
         //     heading={data.project.name}

@@ -11,13 +11,14 @@ import { Box, Typography, Divider, Button, Paper, TextField, FormControl, FormLa
 import { NumericFormat, NumericFormatProps } from "react-number-format";
 
 
-// import UsersTeamPicker from "~/components/reusable-components/minor/UsersTeamPicker";
+import UsersTeamPicker from "~/components/reusable-components/minor/UsersTeamPicker";
 
 // import for data from DB
 import { db } from "~/utils/db.server";
 import { badRequest } from "~/utils/request.server";
 import { requireUserId } from "~/utils/session.server";
 import { createProject } from "~/utils/create.server";
+import { getUsersTeamData } from "~/utils/display.server";
 
 
 
@@ -28,9 +29,14 @@ interface CustomProps {
 
 // requires the user to be logged in - on load, so is hack but works because of the order necessary within the login process
 export async function loader({ request }: LoaderArgs) {
-	await requireUserId(request);
+	// const userId = await requireUserId(request);
+    
+    const usersTeams = await getUsersTeamData(request);
 
-	return json({});
+	return json({ 
+        // userId, 
+        usersTeams 
+    });
 }
 
 export const meta: MetaFunction = () => ({
@@ -90,6 +96,7 @@ function validateUrl(url: string) {
 	}
 	return "/dashboard";
 }
+
 
 export const action = async ({ request }: ActionArgs) => {
     const form = await request.formData();
@@ -520,7 +527,7 @@ export default function CreateProject() {
                     </Form>
                 </div>
             </Paper>
-            {/* <UsersTeamPicker /> */}
+            <UsersTeamPicker props={{ usersTeamData: loaderData}} />
 		</Box>
 	);
 }
