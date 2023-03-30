@@ -38,7 +38,7 @@ const RedirectQButton = ({props}: any) => {
                             to={ `/${props.toWhere}` }
                             sx={{ minWidth: '100px'}}
                             >
-                            create {props.toWhere}
+                            create
                         </Button>
                     </Box>
                 </Box>

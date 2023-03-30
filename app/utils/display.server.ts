@@ -41,27 +41,16 @@ export async function getProject( params: { id: number }) {
 export async function getUsersTeamData(request: Request) {
     const userId = await getUserId(request);
     console.log("userId: ", userId)
-    // let userTeams = [];
     if(userId) {
         const userTeams = await db.user.findUnique({
             // where: { teamLeadId: userId },
-            where: { id: userId},
+            where: { id: userId },
             select: { teams: true }
         });
-        return userTeams;
+        
+
+        return ({userTeams, userId});
     }
-
-    // return { teams: [] };
-    // const userId = await getUserId(request);
-    // let userTeams;
-    // if(userId) {
-    //     userTeams = await db.user.findUnique({
-    //         where: { id: userId },
-    //         select: { teams: true }
-    //     });
-    // }
-
-    // return userTeams;
 }
 
 // async function setProjectTeam( id: string ) {

@@ -24,7 +24,7 @@ const membersSpecificProps = {
     }, 
     redirectQButtonProps: {
         message: "assembling a new crew?",
-        redirectToValue: "team",
+        redirectToValue: "create-team",
     },
     messageBoxProps: {
         messageBoxType: 1,

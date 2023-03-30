@@ -24,7 +24,7 @@ const projectSpecificProps = {
     }, 
     redirectQButtonProps: {
         message: "creating a new project?",
-        redirectToValue: "/create-project",
+        redirectToValue: "create-project",
     },
     messageBoxProps: {
         messageBoxType: 1,
