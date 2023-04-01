@@ -7,7 +7,20 @@ import type {
 import React, { useState } from "react";
 import { json, redirect } from "@remix-run/node"
 import { Link, useSearchParams, Form, useActionData, useLoaderData } from "@remix-run/react";
-import { Box, Typography, Divider, Button, Paper, TextField, FormControl, FormLabel, RadioGroup, FormControlLabel, Radio } from "@mui/material";
+import { 
+    Box, 
+    Typography, 
+    Divider, 
+    Button, 
+    Paper, 
+    TextField, 
+    FormControl, 
+    FormLabel, 
+    RadioGroup, 
+    FormControlLabel, 
+    Radio,
+    Stepper, Step, StepLabel, StepContent, StepButton,
+} from "@mui/material";
 import Grid from '@mui/material/Unstable_Grid2'
 import { NumericFormat, NumericFormatProps } from "react-number-format";
 
@@ -19,7 +32,7 @@ import UsersTeamPicker from "~/components/reusable-components/minor/UsersTeamPic
 import { db } from "~/utils/db.server";
 import { badRequest } from "~/utils/request.server";
 import { requireUserId } from "~/utils/session.server";
-import { createProject } from "~/utils/create.server";
+import { createProject } from "~/utils/project.server";
 import { getUsersTeamData } from "~/utils/display.server";
 
 
@@ -160,6 +173,35 @@ const styles = {
     }
 };
 
+const steps = [
+    {
+        label: "name & category",
+        description: "give your project a name and general category: this will allow others to find your project and whether their skill set is a good fit",
+    },
+    {
+        label: "synopsis & description",
+        description: "you'll need to provide a description for your project: a synopsis should be an brief abstract (as much info as you want to exhibit publicly) that is public faciing - limited is probably best. Then include a bit more detail in your description that will only be available to who you share it with directly",
+    },
+    {
+        label: "tech stack",
+        description: "what tech or tech stack will you be using? this is a great way to find others and for them to find you quickly, it's also good to define the scope up front"
+    },
+    {
+        label: "development timeframe & status",
+        description: "give a start, end date, and if you'd like to set it as active -- you can change this later if you need to",
+    },
+    {
+        label: "funding goal",
+        description: "lets set a rough estimate for a funding goal: a funding goal is part-motivation part-estimation -- you can change this later as needed"
+    },
+    {
+        label: "assign a team",
+        description: "you can assign a team to your project: this will allow you to share your project with them and they can contribute to it as well"
+    }
+]
+
+
+
 const NumericFormatCustom = React.forwardRef<NumericFormatProps, CustomProps>(
 	function NumericFormatCustom(props, ref) {
 		const { onChange, ...other } = props;
@@ -191,7 +233,13 @@ export default function CreateProject() {
 	const [searchParams] = useSearchParams();
     const [projectNameState, setProjectNameState] = useState('');
     const [fundingValue, setFundingValue] = useState({numberFormat: '0.00'});
+    const [assignTeam, setAssignTeam] = useState({});
+    const [activeStep, setActiveStep] = useState(0);
 
+    const handleNext = () => { setActiveStep((prevActiveStep) => prevActiveStep + 1) };
+    const handleBack = () => { setActiveStep((prevActiveStep) => prevActiveStep - 1) };
+    const handleReset = () => { setActiveStep(0) };
+    const handleStep = (step: number) => () => { setActiveStep(step) };
 
     const handleFundingChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setFundingValue({
@@ -200,280 +248,361 @@ export default function CreateProject() {
         });
     };
 
+    const ForwardBack = ({props}: any) => {
+        return (
+            <Box sx={{ mb: 2 }}>
+                <div>
+                    {
+                        props.index !== steps.length -1
+                        ?
+                        <Button variant="contained" onClick={handleNext} sx={{ mt: 1, mr: 1 }}>
+                            continue
+                        </Button>
+                        : null
+                    }
+                    {
+                        props.index !== 0
+                        ?
+                        <Button onClick={handleBack} sx={{ mt: 1, mr: 1 }}>
+                            Back
+                        </Button>
+                        : null
+                    }
+                </div>
+            </Box>
+        )
+    }
+
+    // const CustomTextField = ({props}: any) => {
+    //     return (
+    //         <TextField
+    //             id={`${props.id}-input`}
+    //             fullWidth
+    //             type="text"
+    //             name={props.id}
+    //             variant="outlined"
+    //             multiline={props.multVal}
+    //             label={props.id}
+    //         />
+    //     )
+    // }
+
 
 	return (
-        <Grid container spacing={2} sx={{justifyContent: 'center', mt: 2.5}}>
-            <Grid sm={12} md={6}>
-                <Box sx={styles.container}>
-                    <Typography variant="h4" component="h1" gutterBottom>
-                        create a new project
-                    </Typography>
-                    <Typography variant="body1" gutterBottom>
-                        set up a new project to kick something off
-                    </Typography>
-                    <Paper sx={styles.paper}>
-                        <div className="content" data-light="">
-                            <Typography
-                                variant="h5" 
-                                sx={{my: .5, display: 'inline-flex', wrap: 'nowrap'}}
-                                >
-                                    project
-                                    { projectNameState !== "" ? <div style={{opacity: .5}}>&nbsp; - {projectNameState}</div> : null }
-                            </Typography>
-                            <Form method="post">
-                                <input
-                                    type="hidden"
-                                    name="redirectTo"
-                                    value={searchParams.get("redirectTo") ?? undefined}
+        <Box sx={styles.container}>
+            <Typography variant="h4" component="h1" gutterBottom>
+                create a new project
+            </Typography>
+            <Typography variant="body1" gutterBottom>
+                already have a project going? go to {" "}
+                <Link
+                    to={{
+                        pathname: "/dashboard/project",
+                        search: searchParams.toString(),
+                    }}
+                    >
+                    your projects
+                </Link>
+                &nbsp; -- else, let's get started
+            </Typography>
+                <Paper sx={styles.paper}>
+                    <div className="content" data-light="">
+                        <Typography
+                            variant="h5" 
+                            sx={{my: .5, display: 'inline-flex', wrap: 'nowrap'}}
+                            >
+                                project
+                                { projectNameState !== "" ? <div style={{opacity: .5}}>&nbsp; - {projectNameState}</div> : null }
+                        </Typography>
+                        <Form method="post">
+                            <input
+                                type="hidden"
+                                name="redirectTo"
+                                value={searchParams.get("redirectTo") ?? undefined}
                                 />
-                                <Box sx={{ my: 2 }}>
-                                    <TextField 
-                                        id="name-input" 
-                                        name="name"
-                                        variant="outlined" 
-                                        label="name" 
-                                        type="text" 
-                                        fullWidth={ true }
-                                        onChange={(e) => {
-                                            e.preventDefault();
-                                            setProjectNameState(e.target.value);
-                                        }}
-                                        defaultValue={ actionData?.fields?.name } 
-                                        aria-invalid={ Boolean(actionData?.fieldErrors?.name) }
-                                        aria-errormessage={ actionData?.fieldErrors?.name ? "name-error" : undefined }
-                                        />
-                                    {
-                                        actionData?.fieldErrors?.name 
-                                        ? (
-                                            <p
-                                                className="form-validation-error"
-                                                role="alert"
-                                                id="name-error"
+
+                            <Stepper activeStep={activeStep} orientation="vertical">
+                                <Step key={'step-0'}>
+                                    <StepButton color="inherit" onClick={handleStep(0)}>{steps[0].label}</StepButton>
+                                    <StepContent>
+                                        <Typography>{steps[0].description}</Typography>
+                                        <Box sx={{ my: 2 }}>
+                                            {/* <CustomTextField
+                                                props={{id: 'name'}}
+                                                value={ actionData?.fields?.name } 
+                                                onChange={(e) => {
+                                                    e.preventDefault();
+                                                    setProjectNameState(e.target?.value);
+                                                }}
+                                                defaultValue={ actionData?.fields?.name } 
+                                                aria-invalid={ Boolean(actionData?.fieldErrors?.name) }
+                                                aria-errormessage={ actionData?.fieldErrors?.name ? "name-error" : undefined }
+                                                /> */}
+                                            <TextField 
+                                                id="name-input" 
+                                                name="name"
+                                                variant="outlined" 
+                                                value={ actionData?.fields?.name } 
+                                                label="name" 
+                                                type="text"
+                                                fullWidth={ true }
+                                                onChange={(e) => {
+                                                    e.preventDefault();
+                                                    setProjectNameState(e.target.value);
+                                                }}
+                                                defaultValue={ actionData?.fields?.name } 
+                                                aria-invalid={ Boolean(actionData?.fieldErrors?.name) }
+                                                aria-errormessage={ actionData?.fieldErrors?.name ? "name-error" : undefined }
+                                                />
+                                            {
+                                                actionData?.fieldErrors?.name 
+                                                ? (
+                                                    <p
+                                                        className="form-validation-error"
+                                                        role="alert"
+                                                        id="name-error"
+                                                        >
+                                                        {actionData?.fieldErrors?.name}
+                                                    </p>
+                                                ) : null
+                                            }
+                                        </Box>
+                                        <Box sx={{ my: 2 }}>
+                                            <TextField 
+                                                id="type-input" 
+                                                name="type"
+                                                value={ actionData?.fields?.type }
+                                                variant="outlined" 
+                                                label="type (e.g. web app, mobile app, etc.)" 
+                                                type="text"
+                                                fullWidth={ true }
+                                                color="secondary"
+                                                defaultValue={ actionData?.fields?.type } 
+                                                aria-invalid={ Boolean(actionData?.fieldErrors?.type) }
+                                                aria-errormessage={ actionData?.fieldErrors?.type ? "type-error" : undefined }
+                                                />
+                                            {
+                                                actionData?.fieldErrors?.type ? (
+                                                    <p
+                                                        className="form-validation-error"
+                                                        role="alert"
+                                                        id="type-error"
+                                                        >
+                                                        {actionData.fieldErrors.type}
+                                                    </p>
+                                                ) : null
+                                            }
+                                        </Box>
+                                        <ForwardBack props={{index: 0}} />
+                                    </StepContent>
+                                </Step>
+                                <Step key={'step-1'}>
+                                    <StepButton color="inherit" onClick={handleStep(1)}>{steps[1].label}</StepButton>
+                                    <StepContent>
+                                    <Typography>{steps[1].description}</Typography>
+                                        <Box sx={{ my: 2 }}>
+                                            <TextField 
+                                                id="synopsis-input" 
+                                                name="synopsis"
+                                                value={ actionData?.fields?.synopsis }
+                                                variant="outlined" 
+                                                label="synopsis (shortened description)" 
+                                                type="text"
+                                                multiline 
+                                                rows={1}
+                                                fullWidth={ true }
+                                                color="secondary"
+                                                defaultValue={ actionData?.fields?.synopsis } 
+                                                aria-invalid={ Boolean(actionData?.fieldErrors?.synopsis) }
+                                                aria-errormessage={ actionData?.fieldErrors?.synopsis ? "synopsis-error" : undefined }
+                                                />
+                                            {
+                                                actionData?.fieldErrors?.synopsis ? (
+                                                    <p
+                                                        className="form-validation-error"
+                                                        role="alert"
+                                                        id="synopsis-error"
+                                                        >
+                                                        {actionData.fieldErrors.synopsis}
+                                                    </p>
+                                                ) : null
+                                            }
+                                        </Box>
+                                        <Box sx={{ my: 2 }}>
+                                            <TextField 
+                                                id="description-input" 
+                                                name="description"
+                                                value={ actionData?.fields?.description }
+                                                variant="outlined" 
+                                                label="description (full description)" 
+                                                type="text" 
+                                                multiline
+                                                rows={6}
+                                                fullWidth={ true }
+                                                color="secondary"
+                                                defaultValue={ actionData?.fields?.description } 
+                                                aria-invalid={ Boolean(actionData?.fieldErrors?.description) }
+                                                aria-errormessage={ actionData?.fieldErrors?.description ? "description-error" : undefined }
+                                                />
+                                            {
+                                                actionData?.fieldErrors?.description ? (
+                                                    <p
+                                                        className="form-validation-error"
+                                                        role="alert"
+                                                        id="description-error"
+                                                        >
+                                                        {actionData.fieldErrors.description}
+                                                    </p>
+                                                ) : null
+                                            }
+                                        </Box>
+                                        <ForwardBack props={{index: 1}} />
+                                    </StepContent>
+                                </Step>
+                                <Step key={'step-2'}>
+                                    <StepButton color="inherit" onClick={handleStep(2)}>{steps[2].label}</StepButton>
+                                    <StepContent>
+                                        <Typography>{steps[2].description}</Typography>
+                                        <Box sx={{ my: 2 }}>
+                                            <TextField 
+                                                id="techStack-input" 
+                                                name="techStack"
+                                                value={ actionData?.fields?.techStack }
+                                                variant="outlined" 
+                                                label="tech stack (e.g. React, Node, etc.)" 
+                                                type="text" 
+                                                fullWidth={ true }
+                                                color="secondary"
+                                                defaultValue={ actionData?.fields?.techStack } 
+                                                aria-invalid={ Boolean(actionData?.fieldErrors?.techStack) }
+                                                aria-errormessage={ actionData?.fieldErrors?.techStack ? "techStack-error" : undefined }
+                                                />
+                                            {
+                                                actionData?.fieldErrors?.techStack ? (
+                                                    <p
+                                                        className="form-validation-error"
+                                                        role="alert"
+                                                        id="techStack-error"
+                                                        >
+                                                        {actionData.fieldErrors.techStack}
+                                                    </p>
+                                                ) : null
+                                            }
+                                        </Box>
+                                        <ForwardBack props={{index: 2}} />
+                                    </StepContent>
+                                </Step>
+                                <Step key={'step-3'}>
+                                    <StepButton color="inherit" onClick={handleStep(3)}>{steps[3].label}</StepButton>
+                                    <StepContent>
+                                        <Typography>{steps[3].description}</Typography>
+                                        <Box sx={{ my: 2 }}>
+                                            <TextField 
+                                                id="beginDate-input" 
+                                                name="beginDate"
+                                                value={ actionData?.fields?.beginDate }
+                                                variant="outlined" 
+                                                label="end date (mm/dd/yyyy)" 
+                                                type="text" 
+                                                fullWidth={ true }
+                                                color="secondary"
+                                                defaultValue={ actionData?.fields?.beginDate } 
+                                                aria-invalid={ Boolean(actionData?.fieldErrors?.beginDate) }
+                                                aria-errormessage={ actionData?.fieldErrors?.beginDate ? "beginDate-error" : undefined }
+                                                />
+                                            {
+                                                actionData?.fieldErrors?.beginDate ? (
+                                                    <p
+                                                        className="form-validation-error"
+                                                        role="alert"
+                                                        id="beginDate-error"
+                                                        >
+                                                        {actionData.fieldErrors.beginDate}
+                                                    </p>
+                                                ) : null
+                                            }
+                                        </Box>
+                                        <Box sx={{ my: 2 }}>
+                                            <TextField 
+                                                id="endDate-input" 
+                                                name="endDate"
+                                                value={ actionData?.fields?.endDate }
+                                                variant="outlined" 
+                                                label="tech stack" 
+                                                type="text" 
+                                                fullWidth={ true }
+                                                color="secondary"
+                                                defaultValue={ actionData?.fields?.endDate } 
+                                                aria-invalid={ Boolean(actionData?.fieldErrors?.endDate) }
+                                                aria-errormessage={ actionData?.fieldErrors?.endDate ? "endDate-error" : undefined }
+                                                />
+                                            {
+                                                actionData?.fieldErrors?.endDate ? (
+                                                    <p
+                                                        className="form-validation-error"
+                                                        role="alert"
+                                                        id="endDate-error"
+                                                        >
+                                                        {actionData.fieldErrors.endDate}
+                                                    </p>
+                                                ) : null
+                                            }
+                                        </Box>
+                                        <FormControl>
+                                            <FormLabel id="project-active-radio-choice">active development</FormLabel>
+                                            <RadioGroup
+                                                row
+                                                aria-labelledby="project-active-radio-choice"
+                                                name="project-active-radio-group"
+                                                value={ actionData?.fields?.active }
+                                                defaultValue={ actionData?.fields?.active ?? true}
+                                                aria-invalid={ actionData?.fields?.active === undefined ? true : false }
                                                 >
-                                                {actionData?.fieldErrors?.name}
-                                            </p>
-                                        ) : null
-                                    }
-                                </Box>
-                                <Box sx={{ my: 2 }}>
-                                    <TextField 
-                                        id="type-input" 
-                                        name="type"
-                                        variant="outlined" 
-                                        label="type (e.g. web app, mobile app, etc.)" 
-                                        type="text"
-                                        fullWidth={ true }
-                                        color="secondary"
-                                        defaultValue={ actionData?.fields?.type } 
-                                        aria-invalid={ Boolean(actionData?.fieldErrors?.type) }
-                                        aria-errormessage={ actionData?.fieldErrors?.type ? "type-error" : undefined }
-                                        />
-                                    {
-                                        actionData?.fieldErrors?.type ? (
-                                            <p
-                                                className="form-validation-error"
-                                                role="alert"
-                                                id="type-error"
-                                                >
-                                                {actionData.fieldErrors.type}
-                                            </p>
-                                        ) : null
-                                    }
-                                </Box>
-                                <Box sx={{ my: 2 }}>
-                                    <TextField 
-                                        id="synopsis-input" 
-                                        name="synopsis"
-                                        variant="outlined" 
-                                        label="synopsis (shortened description)" 
-                                        type="text"
-                                        multiline 
-                                        rows={4}
-                                        fullWidth={ true }
-                                        color="secondary"
-                                        defaultValue={ actionData?.fields?.synopsis } 
-                                        aria-invalid={ Boolean(actionData?.fieldErrors?.synopsis) }
-                                        aria-errormessage={ actionData?.fieldErrors?.synopsis ? "synopsis-error" : undefined }
-                                        />
-                                    {
-                                        actionData?.fieldErrors?.synopsis ? (
-                                            <p
-                                                className="form-validation-error"
-                                                role="alert"
-                                                id="synopsis-error"
-                                                >
-                                                {actionData.fieldErrors.synopsis}
-                                            </p>
-                                        ) : null
-                                    }
-                                </Box>
-                                <Box sx={{ my: 2 }}>
-                                    <TextField 
-                                        id="description-input" 
-                                        name="description"
-                                        variant="outlined" 
-                                        label="description (full description)" 
-                                        type="text" 
-                                        multiline
-                                        rows={6}
-                                        fullWidth={ true }
-                                        color="secondary"
-                                        defaultValue={ actionData?.fields?.description } 
-                                        aria-invalid={ Boolean(actionData?.fieldErrors?.description) }
-                                        aria-errormessage={ actionData?.fieldErrors?.description ? "description-error" : undefined }
-                                        />
-                                    {
-                                        actionData?.fieldErrors?.description ? (
-                                            <p
-                                                className="form-validation-error"
-                                                role="alert"
-                                                id="description-error"
-                                                >
-                                                {actionData.fieldErrors.description}
-                                            </p>
-                                        ) : null
-                                    }
-                                </Box>
-                                <Box sx={{ my: 2 }}>
-                                    <TextField 
-                                        id="techStack-input" 
-                                        name="techStack"
-                                        variant="outlined" 
-                                        label="begin date (mm/dd/yyyy)" 
-                                        type="text" 
-                                        fullWidth={ true }
-                                        color="secondary"
-                                        defaultValue={ actionData?.fields?.techStack } 
-                                        aria-invalid={ Boolean(actionData?.fieldErrors?.techStack) }
-                                        aria-errormessage={ actionData?.fieldErrors?.techStack ? "techStack-error" : undefined }
-                                        />
-                                    {
-                                        actionData?.fieldErrors?.techStack ? (
-                                            <p
-                                                className="form-validation-error"
-                                                role="alert"
-                                                id="techStack-error"
-                                                >
-                                                {actionData.fieldErrors.techStack}
-                                            </p>
-                                        ) : null
-                                    }
-                                </Box>
-                                <Box sx={{ my: 2 }}>
-                                    <TextField 
-                                        id="beginDate-input" 
-                                        name="beginDate"
-                                        variant="outlined" 
-                                        label="end date (mm/dd/yyyy)" 
-                                        type="text" 
-                                        fullWidth={ true }
-                                        color="secondary"
-                                        defaultValue={ actionData?.fields?.beginDate } 
-                                        aria-invalid={ Boolean(actionData?.fieldErrors?.beginDate) }
-                                        aria-errormessage={ actionData?.fieldErrors?.beginDate ? "beginDate-error" : undefined }
-                                        />
-                                    {
-                                        actionData?.fieldErrors?.beginDate ? (
-                                            <p
-                                                className="form-validation-error"
-                                                role="alert"
-                                                id="beginDate-error"
-                                                >
-                                                {actionData.fieldErrors.beginDate}
-                                            </p>
-                                        ) : null
-                                    }
-                                </Box>
-                                <Box sx={{ my: 2 }}>
-                                    <TextField 
-                                        id="endDate-input" 
-                                        name="endDate"
-                                        variant="outlined" 
-                                        label="tech stack" 
-                                        type="text" 
-                                        fullWidth={ true }
-                                        color="secondary"
-                                        defaultValue={ actionData?.fields?.endDate } 
-                                        aria-invalid={ Boolean(actionData?.fieldErrors?.endDate) }
-                                        aria-errormessage={ actionData?.fieldErrors?.endDate ? "endDate-error" : undefined }
-                                        />
-                                    {
-                                        actionData?.fieldErrors?.endDate ? (
-                                            <p
-                                                className="form-validation-error"
-                                                role="alert"
-                                                id="endDate-error"
-                                                >
-                                                {actionData.fieldErrors.endDate}
-                                            </p>
-                                        ) : null
-                                    }
-                                </Box>
-                                <FormControl>
-                                    <FormLabel id="project-active-radio-choice">active development</FormLabel>
-                                    <RadioGroup
-                                        row
-                                        aria-labelledby="project-active-radio-choice"
-                                        name="project-active-radio-group"
-                                        defaultValue={ actionData?.fields?.active ?? true}
-                                        aria-invalid={ actionData?.fields?.active === undefined ? true : false }
-                                        >
-                                        <FormControlLabel value="true" label="yes" control={ <Radio /> } />
-                                        <FormControlLabel value="false" label="no" control={ <Radio /> } />
-                                    </RadioGroup>
-                                </FormControl>
-                                <Box sx={{ my: 2 }}>
-                                    <TextField 
-                                        id="fundingGoal-input" 
-                                        name="fundingGoal"
-                                        variant="outlined" 
-                                        label="funding goal" 
-                                        type="text" 
-                                        fullWidth={ true }
-                                        color="secondary"
-                                        onChange={handleFundingChange}
-                                        InputProps={{
-                                            inputComponent: NumericFormatCustom as any,
-                                        }}
-                                        />
-                                </Box>
-                                {/* <div id="form-error-message">
-                                    {
-                                        actionData?.formError?.techStack ? (
-                                            <p
-                                                className="form-validation-error"
-                                                role="alert"
-                                                >
-                                                {actionData.formError?.techStack}
-                                            </p>
-                                        ) : null
-                                    }
-                                </div> */}
-                                <div className="flex items-center justify-center">
-                                    <div className="text-center text-sm text-gray-500">
-                                        already have an project? go to {" "}
-                                        <Link
-                                            // className="text-purple-500 underline"
-                                            to={{
-                                                pathname: "/dashboard/project",
-                                                search: searchParams.toString(),
-                                            }}
-                                            >
-                                            your projects
-                                        </Link>
-                                    </div>
-                                </div>
+                                                <FormControlLabel value="true" label="yes" control={ <Radio /> } />
+                                                <FormControlLabel value="false" label="no" control={ <Radio /> } />
+                                            </RadioGroup>
+                                        </FormControl>
+                                        <ForwardBack props={{index: 3}} />
+                                    </StepContent>
+                                </Step>
+                                <Step key={'step-4'}>
+                                    <StepButton color="inherit" onClick={handleStep(4)}>{steps[4].label}</StepButton>
+                                    <StepContent>
+                                        <Typography>{steps[4].description}</Typography>
+                                        <Box sx={{ my: 2 }}>
+                                            <TextField 
+                                                id="fundingGoal-input" 
+                                                name="fundingGoal"
+                                                variant="outlined" 
+                                                label="funding goal" 
+                                                type="text" 
+                                                fullWidth={ true }
+                                                color="secondary"
+                                                onChange={handleFundingChange}
+                                                InputProps={{
+                                                    inputComponent: NumericFormatCustom as any,
+                                                }}
+                                                />
+                                        </Box>
+                                        <ForwardBack props={{index: 4}} />
+                                    </StepContent>
+                                </Step>
+                                <Step>
+                                    <StepButton color="inherit" onClick={handleStep(5)}>{steps[5].label}</StepButton>
+                                    <StepContent>
+                                        <Typography>{steps[5].description}</Typography>
+                                        <UsersTeamPicker props={{ loaderData }} teamAssignment={{ assignTeam, setAssignTeam }} />
+                                        <ForwardBack props={{index: 5}} />
+                                    </StepContent>
+                                </Step>
+                                
                                 <Button variant="outlined" type="submit" className="button" sx={{ mt: '1rem' }}>
                                     create new project
                                 </Button>
-                            </Form>
-                        </div>
-                    </Paper>
-                </Box>
-            </Grid>
-            <Grid sm={12} md={6}>
-                <UsersTeamPicker props={{ loaderData }} />
-            </Grid>
-        </Grid>
+                        </Stepper>
+                    </Form>
+                </div>
+            </Paper>
+        </Box>
 	);
 }

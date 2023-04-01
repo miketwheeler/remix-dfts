@@ -8,13 +8,14 @@ import { Form, useCatch } from "@remix-run/react";
 
 
 
-export default function UsersTeamPicker({ props }: any) {
+export default function UsersTeamPicker({ props, teamAssignment }: any) {
 	const data = props;
+	const assign = teamAssignment;
 
 	const usersTeams = data.loaderData.userTeams.teams;
     
 	return ( 
-        <Form method="get">
+        <Form method="get" style={{ margin: 'auto 1rem'}}>
 			<Typography variant="h4" component="h1" gutterBottom>
                 {" "}
             </Typography>
@@ -43,7 +44,7 @@ export default function UsersTeamPicker({ props }: any) {
 						row
 						aria-labelledby="project-active-radio-choice"
 						name="project-active-radio-group"
-						defaultValue={ true}
+						defaultValue={ true }
 						aria-invalid={ false }
 						>
 						<FormControlLabel value="true" label="yes" control={ <Radio /> } />
@@ -64,15 +65,6 @@ export default function UsersTeamPicker({ props }: any) {
 				}
 			</Typography>
         </Form>
-        // <DetailsCard 
-        //     type={detailsCardType}
-        //     heading={data.project.name}
-        //     active={data.project.active}
-        //     projectType={data.project.type}
-        //     activeSince={data.project.beginDate}
-        //     stack={data.project.techStack}
-        //     bio={data.project.synopsis}
-        // />
     )
 }
 
