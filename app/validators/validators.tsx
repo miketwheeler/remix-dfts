@@ -51,5 +51,10 @@ export const createProjectValidators = {
         if (typeof projectEndDate !== "string" || projectEndDate.length < 6) {
             return "The password must be at least 6 characters long";
         }
+    },
+    validateProjectFundingGoal: function validateProjectFundingGoal(projectFundingGoal: number) {
+        if(typeof projectFundingGoal !== "number" || projectFundingGoal < 0) {
+            return "The funding goal must be a positive";
+        }
     }
 }
