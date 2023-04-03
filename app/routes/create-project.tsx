@@ -380,7 +380,7 @@ export default function CreateProject() {
                                                 name="type"
                                                 value={ formState.type }
                                                 variant="outlined" 
-                                                label="type (e.g. web app, mobile app, etc.)" 
+                                                label="type (e.g. web app, mobile app)" 
                                                 type="text"
                                                 fullWidth={ true }
                                                 color="secondary"
@@ -641,10 +641,27 @@ export default function CreateProject() {
                                         <ForwardBack props={{index: 5}} />
                                     </StepContent>
                                 </Step>
-                                
-                                <Button variant="outlined" type="submit" className="button" sx={{ mt: '1rem' }}>
-                                    create new project
-                                </Button>
+                                <Box flexGrow={1} sx={{ display: 'flex-row', py: 2 }}>
+                                    <Button 
+                                        variant="contained" 
+                                        type="submit" 
+                                        className="button" 
+                                        sx={{ mt: 1 }}
+                                        >
+                                        create new project
+                                    </Button>
+                                    <Button 
+                                        type="submit" 
+                                        className="button" 
+                                        sx={{ mt: 1, ml: 2 }}
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            handleReset();
+                                        }}
+                                        >
+                                        cancel all
+                                    </Button>
+                                </Box>
                         </Stepper>
                     </Form>
                 </div>
