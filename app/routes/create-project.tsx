@@ -251,6 +251,7 @@ export default function CreateProject() {
     const [fundingValue, setFundingValue] = useState({numberFormat: '0.00'});
     const [assignTeam, setAssignTeam] = useState({});
     const [activeStep, setActiveStep] = useState(0);
+    const [techStackContext, setTechStackContext] = useState('');
 
     const handleNext = () => { setActiveStep((prevActiveStep) => prevActiveStep + 1) };
     const handleBack = () => { setActiveStep((prevActiveStep) => prevActiveStep - 1) };
@@ -483,35 +484,9 @@ export default function CreateProject() {
                                     <StepContent>
                                         <Typography>{steps[2].description}</Typography>
                                         <Box sx={{ my: 2 }}>
-                                            <MultiselectPicker />
-                                            {/* <TextField 
-                                                id="techStack-input" 
-                                                name="techStack"
-                                                value={ formState.techStack }
-                                                variant="outlined" 
-                                                label="tech stack (e.g. React, Node, etc.)" 
-                                                type="text" 
-                                                fullWidth={ true }
-                                                color="secondary"
-                                                onChange={(e) => {
-                                                    e.preventDefault();
-                                                    setFormState((prevState) => ({ ...prevState, techStack: e.target.value  }));
-                                                }}
-                                                defaultValue={ actionData?.fields?.techStack } 
-                                                aria-invalid={ Boolean(actionData?.fieldErrors?.techStack) }
-                                                aria-errormessage={ actionData?.fieldErrors?.techStack ? "techStack-error" : undefined }
-                                                />
-                                            {
-                                                actionData?.fieldErrors?.techStack ? (
-                                                    <p
-                                                        className="form-validation-error"
-                                                        role="alert"
-                                                        id="techStack-error"
-                                                        >
-                                                        {actionData.fieldErrors.techStack}
-                                                    </p>
-                                                ) : null
-                                            } */}
+
+                                            <MultiselectPicker props={{ formState, setFormState }} />
+                                        
                                         </Box>
                                         <ForwardBack props={{index: 2}} />
                                     </StepContent>

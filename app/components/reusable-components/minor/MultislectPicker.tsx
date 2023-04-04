@@ -1,9 +1,12 @@
 import * as React from "react";
-import { Checkbox , TextField, Box, Button } from '@mui/material';
+import { Checkbox , TextField, Box, Button, Chip } from '@mui/material';
 import Check from '@mui/icons-material/Check';
 import Autocomplete, { createFilterOptions } from "@mui/material/Autocomplete";
 import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
 import CheckBoxIcon from '@mui/icons-material/CheckBox';
+import ChangeCircle from '@mui/icons-material/ChangeCircle';
+import Clear from '@mui/icons-material/Clear';
+
 
 
 interface TechOptionType {
@@ -212,90 +215,129 @@ const topTech: readonly TechOptionType[] = [
 ];
 
 
-export default function MultiselectPicker() {
+export default function MultiselectPicker({props}: any) {
 	const [techNameList, setTechNameList] = React.useState<string[]>([]);
+    const newArray = [] as any[];
+    const { formState, setFormState } = props;
 
     const handleInputObjChange = (event: React.SyntheticEvent<Element, Event>, newValue: any) => {
         event.preventDefault();
         setTechNameList(newValue);
-        
-        // console.log(`techNameList after new value: ${techNameList}`)
     }
 
     const handleFinished = (event: React.SyntheticEvent<Element, Event>) => {
         event.preventDefault();
-
-        const newArray = [];
         for(let i = 0; i < techNameList.length; i++) {
             newArray.push(Object.values(techNameList[i]));
         }
-        // newArray.push(Object.values(techNameList).forEach((item) => item[1]));
-
-        console.log(`newArray: ${newArray}`)
+        setFormState({ ...formState, techStack: newArray.join(",")})
     }
+    const handleChangeCurrentStack = (event: React.SyntheticEvent<Element, Event>) => {
+        event.preventDefault();
+        setFormState({ ...formState, techStack: ""})
+    }
+
+    React.useEffect(() => {
+        console.log(`formState.techStack: ${formState.techStack}; type: ${typeof formState.techStack}`)
+    }, [formState.techStack])
 
 	return (
         <Box sx={{ display: 'flex', flexDirection: 'row' }}>
-            <Autocomplete
-                multiple
-                id="tech-stack-multiselection"
-                // value={techNameList}
-                filterOptions={(options, params) => {
-                    const filtered = filter(options, params);
-                    
-                    const { inputValue } = params;
-                    // Suggest the creation of a new value
-                    const isExisting = options.some((option) => inputValue.toLowerCase() === option.name.toLowerCase());
-                    if (inputValue !== "" && !isExisting) {
-                        filtered.push({
-                            inputValue,
-                            name: `Add "${inputValue}"`,
-                        });
-                    }
+            {
+                formState.techStack.length
+                ?
+                <>
+                    <Box sx={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', gap: 1 }}>
+                        {
+                            formState.techStack.split(',').map((tech: string) => {
+                                return <Chip key={`current-stack-chip-${tech}`} label={tech.toLowerCase()} />
+                            })
+                        }
+                    </Box>
+                    <Button 
+                        startIcon={<ChangeCircle />} 
+                        variant="outlined" 
+                        onClick={handleChangeCurrentStack} 
+                        sx={{ ml: 2, minWidth: '168px' }}
+                        >
+                        change the stack
+                    </Button>
+                </>
+                :
+                <>
+                    <Autocomplete
+                        multiple
+                        id="tech-stack-multiselection"
+                        filterOptions={(options, params) => {
+                            const filtered = filter(options, params);                    
+                            const { inputValue } = params;
+                            // Suggest the creation of a new value
+                            const isExisting = options.some((option) => inputValue.toLowerCase() === option.name.toLowerCase());
+                            if (inputValue !== "" && !isExisting) {
+                                filtered.push({
+                                    inputValue,
+                                    name: `add "${inputValue}"`,
+                                });
+                            }
 
-                    return filtered;
-                }}
-                disableCloseOnSelect
-                options={topTech}
-                selectOnFocus
-                clearOnBlur
-                handleHomeEndKeys
-                getOptionLabel={(option) => {
-                    // Value selected with enter, right from the input
-                    if (typeof option === "string") {
-                        return option;
-                    }
-                    // Add "xxx" option created dynamically
-                    if (option.inputValue) {
-                        return option.inputValue;
-                    }
-                    // Regular option
-                    return option.name;
-                }}
-                renderOption={(props, option, { selected }) => ( 
-                    <li {...props}>
-                        <Checkbox
-                            icon={icon}
-                            checkedIcon={checkedIcon}
-                            style={{ marginRight: 8 }}
-                            checked={selected}
-                        />
-                        {option.name}
-                        
-                    </li>
-                )}
-                sx={{ width: 500 }}
-                renderInput={(params) => (
-                    <TextField {...params} label="select a tech stack" placeholder="select to add more" />
-                )}
-                onChange={(event, currentValsObj) => {
-                    handleInputObjChange(event, currentValsObj)
-                    // console.log(`current techStack from picker: ${JSON.stringify(currentValsObj, null, 4)}`)
-                }}
-            />
-            <Button startIcon={<Check />} variant="outlined" onClick={handleFinished} sx={{ml: 2}}>
-                Finished
-            </Button>
+                            return filtered;
+                        }}
+                        disableCloseOnSelect
+                        options={topTech}
+                        selectOnFocus
+                        clearOnBlur
+                        handleHomeEndKeys
+                        getOptionLabel={(option) => {
+                            if (typeof option === "string") { // Value selected with enter, right from the input
+                                return option;
+                            }
+                            if (option.inputValue) { // Add "xxx" option created dynamically
+                                return option.inputValue;
+                            }
+                            
+                            return option.name; // Regular option
+                        }}
+                        renderOption={(props, option, { selected }) => ( 
+                            <li {...props}>
+                                <Checkbox
+                                    icon={icon}
+                                    checkedIcon={checkedIcon}
+                                    style={{ marginRight: 8 }}
+                                    checked={selected}
+                                />
+                                {option.name.toLowerCase()}
+                            </li>
+                        )}
+                        sx={{ width: 500 }}
+                        renderInput={(params) => (
+                            <TextField {...params} label="select a tech stack" placeholder="select to add more" />
+                        )}
+                        onChange={(event, currentValsObj) => { handleInputObjChange(event, currentValsObj) }}
+                    />
+                    {/* {
+                        techNameList.length && !techNameList.length
+                        ?
+                        <Button 
+                            startIcon={<Clear />}
+                            variant="outlined" 
+                            onClick={handleFinished} 
+                            sx={{ml: 2, minWidth: '168px'}}
+                            >
+                            cancel
+                        </Button>
+                        : */}
+                        <Button 
+                            startIcon={<Check />} 
+                            variant="outlined" 
+                            onClick={handleFinished} 
+                            sx={{ml: 2, minWidth: '168px'}}
+                            disabled={techNameList.length === 0 || formState.techStack.length === 0}
+                            >
+                            finished
+                        </Button>
+                    {/* } */}
+                </>
+            }
         </Box>
 	);
 }
