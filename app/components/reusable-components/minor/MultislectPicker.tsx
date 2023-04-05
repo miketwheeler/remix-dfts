@@ -260,7 +260,7 @@ export default function MultiselectPicker({props}: any) {
                         onClick={handleChangeCurrentStack} 
                         sx={{ ml: 2, minWidth: '168px' }}
                         >
-                        change the stack
+                        change this stack
                     </Button>
                 </>
                 :
@@ -331,7 +331,7 @@ export default function MultiselectPicker({props}: any) {
                             variant="outlined" 
                             onClick={handleFinished} 
                             sx={{ml: 2, minWidth: '168px'}}
-                            disabled={techNameList.length === 0 || formState.techStack.length === 0}
+                            disabled={techNameList.length === 0}
                             >
                             finished
                         </Button>

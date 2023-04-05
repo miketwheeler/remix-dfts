@@ -23,38 +23,46 @@ export const createProjectValidators = {
         }
     },
     validateProjectType: function validateProjectType(projectType: string) {
-        if (typeof projectType !== "string" || projectType.length < 4) {
-            return "The password must be at least 6 characters long";
+        if (typeof projectType !== "string" || projectType.length < 2) {
+            return "a project name is required, and there isn't a name in business that's only 1 character long";
         }
     },
     validateProjectSynopsis: function validateProjectSynopsis(projectSynopsis: string) {
         if (typeof projectSynopsis !== "string" || projectSynopsis.length < 10) {
-            return "The password must be at least 6 characters long";
+            return "your synopsis is important, it should be at least 10 characters long";
         }
     },
     validateProjectDescription: function validateProjectDescription(projectDescription: string) {
         if (typeof projectDescription !== "string" || projectDescription.length < 60) {
-            return "The password must be at least 6 characters long";
+            return "your description should be 10 characters long at a minimum, but you can do better than that";
         }
     },
     validateProjectTechStack: function validateProjectTechStack(projectTechStack: string) {
-        if (typeof projectTechStack !== "string" || projectTechStack.length < 6) {
-            return "The password must be at least 6 characters long";
-        }
-    },
-    validateProjectBeginDate: function validateProjectBeginDate(projectBeginDate: string) {
-        if (typeof projectBeginDate !== "string" || projectBeginDate.length < 6) {
-            return "The password must be at least 6 characters long";
-        }
-    },
-    validateProjectEndDate: function validateProjectEndDate(projectEndDate: string) {
-        if (typeof projectEndDate !== "string" || projectEndDate.length < 6) {
-            return "The password must be at least 6 characters long";
+        if (typeof projectTechStack !== "string" || projectTechStack.split(',').length < 2) {
+            return "your tech stack is lacking, you need at least 2 to make a stack";
         }
     },
     validateProjectFundingGoal: function validateProjectFundingGoal(projectFundingGoal: number) {
         if(typeof projectFundingGoal !== "number" || projectFundingGoal < 0) {
-            return "The funding goal must be a positive";
+            return "the funding goal for any project must be a positive, even if a dollar";
         }
-    }
+    },
+    validateDate: function validateDate(date: string) {
+        const regex = /^([0-9]{1,2})\/?([0-9]{1,2})?\/?([0-9]{0,4})?$/;
+        const match = date.replace(/\D/g, '').match(regex);
+        if(match === null) {
+            return '';
+        }
+        let formatted = '';
+        if(match[1]) {
+            formatted += match[1];
+            if(match[2]) {
+                formatted += '/' + match[2];
+                if(match[3]) {
+                    formatted += '/' + match[3];
+                }
+            }
+        }
+        return formatted;
+    } 
 }

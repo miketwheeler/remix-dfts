@@ -32,7 +32,7 @@ import MultiselectPicker from "~/components/reusable-components/minor/Multislect
 // import for data from DB
 import { db } from "~/utils/db.server";
 import { badRequest } from "~/utils/request.server";
-import { requireUserId } from "~/utils/session.server";
+// import { requireUserId } from "~/utils/session.server";
 import { createProject } from "~/utils/project.server";
 import { getUsersTeamData } from "~/utils/display.server";
 
@@ -68,7 +68,7 @@ export const action = async ({ request }: ActionArgs) => {
     const beginDate = form.get("beginDate");
     const endDate = form.get("endDate");
     const active = form.get("active") ?? true;
-    const fundingGoal = form.get("fundingGoal") ?? 0.0;
+    const fundingGoal = form.get("fundingGoal");
     // const category = form.get('category');
     // const team = form.get('team');
 
@@ -113,8 +113,8 @@ export const action = async ({ request }: ActionArgs) => {
         synopsis: createProjectValidators.validateProjectSynopsis(synopsis),
         description: createProjectValidators.validateProjectDescription(description),
         techStack: createProjectValidators.validateProjectTechStack(techStack),
-        beginDate: createProjectValidators.validateProjectBeginDate(beginDate),
-        endDate: createProjectValidators.validateProjectEndDate(endDate),
+        beginDate: createProjectValidators.validateDate(beginDate),
+        endDate: createProjectValidators.validateDate(endDate),
         fundingGoal: createProjectValidators.validateProjectFundingGoal(fundingGoal),
         // projectCategories: validateProjectCategories(projectCategories),
         // projectTeam: validateProjectTeam(projectTeam),
@@ -242,17 +242,15 @@ export default function CreateProject() {
         beginDate: '',
         endDate: '',
         active: false,
-        fundingGoal: 0.00,
+        fundingGoal: 1,
         // category: '',
         // team: '',
     })
 
-    const [projectNameState, setProjectNameState] = useState('');
-    const [fundingValue, setFundingValue] = useState({numberFormat: '0.00'});
     const [assignTeam, setAssignTeam] = useState({});
     const [activeStep, setActiveStep] = useState(0);
-    const [techStackContext, setTechStackContext] = useState('');
 
+    // Expandable Step Form Actions
     const handleNext = () => { setActiveStep((prevActiveStep) => prevActiveStep + 1) };
     const handleBack = () => { setActiveStep((prevActiveStep) => prevActiveStep - 1) };
     const handleReset = () => { 
@@ -266,20 +264,12 @@ export default function CreateProject() {
             beginDate: '',
             endDate: '',
             active: false,
-            fundingGoal: 0.00,
+            fundingGoal: 1,
             // category: '',
             // team: '',
         }) 
     };
     const handleStep = (step: number) => () => { setActiveStep(step) };
-
-    const handleFundingChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setFormState((prevState) => ({
-            ...prevState,
-            [event.target.name]: event.target.value,
-        }));
-    };
-
     const ForwardBack = ({props}: any) => {
         return (
             <Box sx={{ mb: 2 }}>
@@ -304,6 +294,24 @@ export default function CreateProject() {
             </Box>
         )
     }
+
+    // Form Field - specific actions
+    const handleFundingChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setFormState((prevState) => ({
+            ...prevState,
+            [event.target.name]: event.target.value,
+        }));
+    };
+
+    const handleDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        // event.preventDefault();
+        const formattedDate = createProjectValidators.validateDate(event.target.value);
+        setFormState((prevState) => ({ ...prevState, [event.target.name]: formattedDate  }))
+    }
+
+    // const errorListener = document.addEventListener("Mui-error", (event) => {
+    //     return true;    
+    // });
 
 
 
@@ -333,7 +341,7 @@ export default function CreateProject() {
                                 project
                                 { formState.name !== "" ? <div style={{opacity: .5}}>&nbsp; - {formState.name}</div> : null }
                         </Typography>
-                        <Form method="post">
+                        <Form method="post" id="create-project-form">
                             <input
                                 type="hidden"
                                 name="redirectTo"
@@ -350,17 +358,18 @@ export default function CreateProject() {
                                                 id="name-input" 
                                                 name="name"
                                                 variant="outlined" 
+                                                required
                                                 value={ formState.name } 
-                                                label="name" 
+                                                label="project name" 
                                                 type="text"
                                                 fullWidth={ true }
                                                 onChange={(e) => {
                                                     e.preventDefault();
                                                     setFormState((prevState) => ({ ...prevState, name: e.target.value  }));
                                                 }}
-                                                defaultValue={ actionData?.fields?.name } 
+                                                error={ (formState.name.length >= 1 && formState.name.length < 3) }
                                                 aria-invalid={ Boolean(actionData?.fieldErrors?.name) }
-                                                aria-errormessage={ actionData?.fieldErrors?.name ? "name-error" : undefined }
+                                                aria-errormessage={ actionData?.fieldErrors?.name ? "project-name-error" : undefined }
                                                 />
                                             {
                                                 actionData?.fieldErrors?.name 
@@ -379,6 +388,7 @@ export default function CreateProject() {
                                             <TextField 
                                                 id="type-input" 
                                                 name="type"
+                                                required
                                                 value={ formState.type }
                                                 variant="outlined" 
                                                 label="type (e.g. web app, mobile app)" 
@@ -389,9 +399,9 @@ export default function CreateProject() {
                                                     e.preventDefault();
                                                     setFormState((prevState) => ({ ...prevState, type: e.target.value  }));
                                                 }}
-                                                defaultValue={ actionData?.fields?.type } 
+                                                error={ (formState.type.length >= 1 && formState.type.length < 2)}
                                                 aria-invalid={ Boolean(actionData?.fieldErrors?.type) }
-                                                aria-errormessage={ actionData?.fieldErrors?.type ? "type-error" : undefined }
+                                                aria-errormessage={ actionData?.fieldErrors?.type ? "project-type-error" : undefined }
                                                 />
                                             {
                                                 actionData?.fieldErrors?.type ? (
@@ -416,6 +426,7 @@ export default function CreateProject() {
                                             <TextField 
                                                 id="synopsis-input" 
                                                 name="synopsis"
+                                                required
                                                 value={ formState.synopsis }
                                                 variant="outlined" 
                                                 label="synopsis (shortened description)" 
@@ -428,7 +439,7 @@ export default function CreateProject() {
                                                     e.preventDefault();
                                                     setFormState((prevState) => ({ ...prevState, synopsis: e.target.value  }));
                                                 }}
-                                                defaultValue={ actionData?.fields?.synopsis } 
+                                                error={ (formState.synopsis.length >= 1 && formState.synopsis.length < 8) }
                                                 aria-invalid={ Boolean(actionData?.fieldErrors?.synopsis) }
                                                 aria-errormessage={ actionData?.fieldErrors?.synopsis ? "synopsis-error" : undefined }
                                                 />
@@ -448,6 +459,7 @@ export default function CreateProject() {
                                             <TextField 
                                                 id="description-input" 
                                                 name="description"
+                                                required
                                                 value={ formState.description }
                                                 variant="outlined" 
                                                 label="description (full description)" 
@@ -460,7 +472,7 @@ export default function CreateProject() {
                                                     e.preventDefault();
                                                     setFormState((prevState) => ({ ...prevState, description: e.target.value  }));
                                                 }}
-                                                defaultValue={ actionData?.fields?.description } 
+                                                error={ (formState.description.length >= 1 && formState.description.length < 10) } 
                                                 aria-invalid={ Boolean(actionData?.fieldErrors?.description) }
                                                 aria-errormessage={ actionData?.fieldErrors?.description ? "description-error" : undefined }
                                                 />
@@ -484,9 +496,8 @@ export default function CreateProject() {
                                     <StepContent>
                                         <Typography>{steps[2].description}</Typography>
                                         <Box sx={{ my: 2 }}>
-
+                                            {/* This is a separated tech stack picker component - returns a string of techs */}
                                             <MultiselectPicker props={{ formState, setFormState }} />
-                                        
                                         </Box>
                                         <ForwardBack props={{index: 2}} />
                                     </StepContent>
@@ -499,17 +510,16 @@ export default function CreateProject() {
                                             <TextField 
                                                 id="beginDate-input" 
                                                 name="beginDate"
+                                                required
                                                 value={ formState.beginDate }
                                                 variant="outlined" 
-                                                label="end date (mm/dd/yyyy)" 
+                                                label="begin date (mm/dd/yyyy)" 
                                                 type="text" 
+                                                inputProps={{ maxLength: 10, minlength: 10}}
                                                 fullWidth={ true }
                                                 color="secondary"
-                                                onChange={(e) => {
-                                                    e.preventDefault();
-                                                    setFormState((prevState) => ({ ...prevState, beginDate: e.target.value  }));
-                                                }}
-                                                defaultValue={ actionData?.fields?.beginDate } 
+                                                onChange={ handleDateChange }
+                                                error={ (formState.beginDate.length >= 1 && formState.beginDate.length < 10) }
                                                 aria-invalid={ Boolean(actionData?.fieldErrors?.beginDate) }
                                                 aria-errormessage={ actionData?.fieldErrors?.beginDate ? "beginDate-error" : undefined }
                                                 />
@@ -529,17 +539,16 @@ export default function CreateProject() {
                                             <TextField 
                                                 id="endDate-input" 
                                                 name="endDate"
+                                                required
                                                 value={ formState.endDate }
                                                 variant="outlined" 
                                                 label="end date (mm/dd/yyyy)" 
                                                 type="text" 
+                                                inputProps={{ maxLength: 10, minlength: 10}}
                                                 fullWidth={ true }
                                                 color="secondary"
-                                                onChange={(e) => {
-                                                    e.preventDefault();
-                                                    setFormState((prevState) => ({ ...prevState, endDate: e.target.value  }));
-                                                }}
-                                                defaultValue={ actionData?.fields?.endDate } 
+                                                onChange={ handleDateChange }
+                                                error={ (formState.endDate.length >= 1 && formState.endDate.length < 10) }
                                                 aria-invalid={ Boolean(actionData?.fieldErrors?.endDate) }
                                                 aria-errormessage={ actionData?.fieldErrors?.endDate ? "endDate-error" : undefined }
                                                 />
@@ -582,6 +591,7 @@ export default function CreateProject() {
                                             <TextField 
                                                 id="fundingGoal-input" 
                                                 name="fundingGoal"
+                                                required
                                                 variant="outlined" 
                                                 label="funding goal" 
                                                 value={ formState.fundingGoal }
@@ -589,9 +599,10 @@ export default function CreateProject() {
                                                 fullWidth={ true }
                                                 color="secondary"
                                                 onChange={handleFundingChange}
-                                                InputProps={{
-                                                    inputComponent: NumericFormatCustom as any,
-                                                }}
+                                                InputProps={{ inputComponent: NumericFormatCustom as any }}
+                                                error={ (formState.fundingGoal < 1) }
+                                                aria-invalid={ Boolean(actionData?.fieldErrors?.fundingGoal) }
+                                                aria-errormessage={ actionData?.fieldErrors?.fundingGoal ? "fundingGoal-error" : undefined }
                                                 />
                                             {
                                                 actionData?.fieldErrors?.fundingGoal ? (
@@ -622,11 +633,11 @@ export default function CreateProject() {
                                         type="submit" 
                                         className="button" 
                                         sx={{ mt: 1 }}
+                                        // disabled={ () => errorListener }
                                         >
                                         create new project
                                     </Button>
                                     <Button 
-                                        type="submit" 
                                         className="button" 
                                         sx={{ mt: 1, ml: 2 }}
                                         onClick={(e) => {
