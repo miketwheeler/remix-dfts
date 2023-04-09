@@ -37,7 +37,7 @@ export async function createProject({
         },
 	});
 
-	return { id: project.id, name };
+	return { id: project.id, name, message: `successfully created your new project ${name}!` };
 }
 
 // READ

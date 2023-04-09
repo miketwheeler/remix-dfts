@@ -3,7 +3,6 @@ import type {
     MetaFunction,
     LoaderArgs,
 } from "@remix-run/node";
-// import type { Decimal } from '@prisma/client/runtime';
 import React, { useState } from "react";
 import { json, redirect } from "@remix-run/node"
 import { Link, useSearchParams, Form, useActionData, useLoaderData } from "@remix-run/react";
@@ -19,12 +18,12 @@ import {
     RadioGroup, 
     FormControlLabel, 
     Radio,
-    Stepper, Step, StepLabel, StepContent, StepButton,
+    Stepper, Step, StepLabel, StepContent, StepButton, Alert,
 } from "@mui/material";
 import Grid from '@mui/material/Unstable_Grid2'
 import { NumericFormat, NumericFormatProps } from "react-number-format";
 
-import { createProjectValidators, validateUrl } from "~/validators/validators";
+import { createProjectValidators } from "~/validators/validators";
 
 import UsersTeamPicker from "~/components/reusable-components/minor/UsersTeamPicker";
 import MultiselectPicker from "~/components/reusable-components/minor/MultislectPicker";
@@ -69,10 +68,9 @@ export const action = async ({ request }: ActionArgs) => {
     const endDate = form.get("endDate");
     const active = form.get("active") ?? true;
     const fundingGoal = form.get("fundingGoal");
-    // const category = form.get('category');
     // const team = form.get('team');
 
-	const redirectTo = validateUrl.validateFn(form.get("redirectTo")?.toString() ?? "/dashboard/project");
+	const redirectTo = createProjectValidators.validateUrl(form.get("redirectTo")?.toString() ?? "/dashboard/project");
 
 	if (
 		typeof name !== "string" ||
@@ -104,7 +102,6 @@ export const action = async ({ request }: ActionArgs) => {
         endDate: endDate, 
         active: active, 
         fundingGoal: fundingGoal, 
-        // category,
         // team,
     };
 	const fieldErrors = {
@@ -116,7 +113,6 @@ export const action = async ({ request }: ActionArgs) => {
         beginDate: createProjectValidators.validateDate(beginDate),
         endDate: createProjectValidators.validateDate(endDate),
         fundingGoal: createProjectValidators.validateProjectFundingGoal(fundingGoal),
-        // projectCategories: validateProjectCategories(projectCategories),
         // projectTeam: validateProjectTeam(projectTeam),
 	};
 	if(Object.values(fieldErrors).some(Boolean)) {
@@ -147,7 +143,6 @@ export const action = async ({ request }: ActionArgs) => {
         endDate,
         active,
         fundingGoal,
-        // category,
         // team,
     });
     if(!project) {
@@ -232,8 +227,12 @@ export default function CreateProject() {
     const actionData = useActionData<typeof action>();
     const loaderData = useLoaderData<typeof loader>();
 	const [searchParams] = useSearchParams();
+    const [assignTeam, setAssignTeam] = useState({});
+    const [activeStep, setActiveStep] = useState(0);
+    const [formErrors, setFormErrors] = useState<Record<string, string>>({});
+    const [formIsValid, setFormIsValid] = useState(false);
 
-    const [formState, setFormState] = useState({
+    const defaultState = {
         name: '',
         type: '',
         synopsis: '',
@@ -243,31 +242,17 @@ export default function CreateProject() {
         endDate: '',
         active: false,
         fundingGoal: 1,
-        // category: '',
         // team: '',
-    })
+    }
 
-    const [assignTeam, setAssignTeam] = useState({});
-    const [activeStep, setActiveStep] = useState(0);
+    const [formState, setFormState] = useState(defaultState);
 
     // Expandable Step Form Actions
     const handleNext = () => { setActiveStep((prevActiveStep) => prevActiveStep + 1) };
     const handleBack = () => { setActiveStep((prevActiveStep) => prevActiveStep - 1) };
     const handleReset = () => { 
         setActiveStep(0);
-        setFormState({
-            name: '',
-            type: '',
-            synopsis: '',
-            description: '',
-            techStack: '',
-            beginDate: '',
-            endDate: '',
-            active: false,
-            fundingGoal: 1,
-            // category: '',
-            // team: '',
-        }) 
+        setFormState(defaultState);
     };
     const handleStep = (step: number) => () => { setActiveStep(step) };
     const ForwardBack = ({props}: any) => {
@@ -309,14 +294,72 @@ export default function CreateProject() {
         setFormState((prevState) => ({ ...prevState, [event.target.name]: formattedDate  }))
     }
 
-    // const errorListener = document.addEventListener("Mui-error", (event) => {
-    //     return true;    
-    // });
+
+    const validateForm = () => {
+        let errors: Record<string, string> = {};
+        if(!formState.name) { 
+            errors.name = "name is required" 
+        } else if(!createProjectValidators.validateProjectName(formState.name)) { 
+            errors.name = "name is invalid" 
+        };
+        if(!formState.type) {
+            errors.type = "type is required"
+        } else if(!createProjectValidators.validateProjectType(formState.type)) {
+            errors.type = "type is invalid"
+        };
+        if(!formState.synopsis) {
+            errors.synopsis = "synopsis is required"
+        } else if(!createProjectValidators.validateProjectSynopsis(formState.synopsis)) {
+            errors.synopsis = "synopsis is invalid"
+        };
+        if(!formState.description) {
+            errors.description = "description is required"
+        } else if(!createProjectValidators.validateProjectDescription(formState.description)) {
+            errors.description = "description is invalid"
+        };
+        if(!formState.techStack) {
+            errors.techStack = "tech stack is required"
+        } else if(!createProjectValidators.validateProjectTechStack(formState.techStack)) {
+            errors.techStack = "tech stack is invalid"
+        };
+        if(!formState.beginDate) {
+            errors.beginDate = "begin date is required"
+        } else if (!(formState.endDate.length >= 1 && formState.endDate.length < 10)) {
+            errors.beginDate = "begin date is incomplete"
+        }
+        if(!formState.endDate) {
+            errors.endDate = "end date is required"
+        } else if (!(formState.endDate.length >= 1 && formState.endDate.length < 10)) {
+            errors.endDate = "end date is incomplete"
+        }
+        // if(!formState.team) {
+        //     errors.team = "team is required"
+        // } else if(!createProjectValidators.validateProjectTeam(formState.team)) {
+        //     errors.team = "team is invalid"
+        // };
+
+        setFormErrors(errors);
+        setFormIsValid(Object.keys(errors).length === 0);
+
+        return Object.keys(errors).length === 0;
+    }
+
+    const handleFormSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+        return validateForm();
+    }
 
 
 
 	return (
         <Box sx={styles.container}>
+            {/* {
+                actionData ? 
+                <Alert severity="success" sx={{ mb: 2 }}>
+                    <p>{actionData?.message}</p>
+                </Alert>
+                : null
+            } */}
             <Typography variant="h4" component="h1" gutterBottom>
                 create a new project
             </Typography>
@@ -341,7 +384,7 @@ export default function CreateProject() {
                                 project
                                 { formState.name !== "" ? <div style={{opacity: .5}}>&nbsp; - {formState.name}</div> : null }
                         </Typography>
-                        <Form method="post" id="create-project-form">
+                        <Form method="post" id="create-project-form" onSubmit={ handleFormSubmit }>
                             <input
                                 type="hidden"
                                 name="redirectTo"
@@ -367,7 +410,8 @@ export default function CreateProject() {
                                                     e.preventDefault();
                                                     setFormState((prevState) => ({ ...prevState, name: e.target.value  }));
                                                 }}
-                                                error={ (formState.name.length >= 1 && formState.name.length < 3) }
+                                                error={ Boolean(formErrors.name) }
+                                                helperText={ formErrors.name }
                                                 aria-invalid={ Boolean(actionData?.fieldErrors?.name) }
                                                 aria-errormessage={ actionData?.fieldErrors?.name ? "project-name-error" : undefined }
                                                 />
@@ -399,7 +443,8 @@ export default function CreateProject() {
                                                     e.preventDefault();
                                                     setFormState((prevState) => ({ ...prevState, type: e.target.value  }));
                                                 }}
-                                                error={ (formState.type.length >= 1 && formState.type.length < 2)}
+                                                error={ Boolean(formErrors.type) }
+                                                helperText={ formErrors.type }
                                                 aria-invalid={ Boolean(actionData?.fieldErrors?.type) }
                                                 aria-errormessage={ actionData?.fieldErrors?.type ? "project-type-error" : undefined }
                                                 />
@@ -439,7 +484,8 @@ export default function CreateProject() {
                                                     e.preventDefault();
                                                     setFormState((prevState) => ({ ...prevState, synopsis: e.target.value  }));
                                                 }}
-                                                error={ (formState.synopsis.length >= 1 && formState.synopsis.length < 8) }
+                                                error={ Boolean(formErrors.synopsis) }
+                                                helperText={ formErrors.synopsis }
                                                 aria-invalid={ Boolean(actionData?.fieldErrors?.synopsis) }
                                                 aria-errormessage={ actionData?.fieldErrors?.synopsis ? "synopsis-error" : undefined }
                                                 />
@@ -472,7 +518,8 @@ export default function CreateProject() {
                                                     e.preventDefault();
                                                     setFormState((prevState) => ({ ...prevState, description: e.target.value  }));
                                                 }}
-                                                error={ (formState.description.length >= 1 && formState.description.length < 10) } 
+                                                error={ Boolean(formErrors.description) } 
+                                                helperText={ formErrors.description }
                                                 aria-invalid={ Boolean(actionData?.fieldErrors?.description) }
                                                 aria-errormessage={ actionData?.fieldErrors?.description ? "description-error" : undefined }
                                                 />
@@ -519,7 +566,8 @@ export default function CreateProject() {
                                                 fullWidth={ true }
                                                 color="secondary"
                                                 onChange={ handleDateChange }
-                                                error={ (formState.beginDate.length >= 1 && formState.beginDate.length < 10) }
+                                                error={ Boolean(formErrors.beginDate) }
+                                                helperText={ formErrors.beginDate }
                                                 aria-invalid={ Boolean(actionData?.fieldErrors?.beginDate) }
                                                 aria-errormessage={ actionData?.fieldErrors?.beginDate ? "beginDate-error" : undefined }
                                                 />
@@ -548,7 +596,8 @@ export default function CreateProject() {
                                                 fullWidth={ true }
                                                 color="secondary"
                                                 onChange={ handleDateChange }
-                                                error={ (formState.endDate.length >= 1 && formState.endDate.length < 10) }
+                                                error={ Boolean(formErrors.endDate) }
+                                                helperText={ formErrors.endDate }
                                                 aria-invalid={ Boolean(actionData?.fieldErrors?.endDate) }
                                                 aria-errormessage={ actionData?.fieldErrors?.endDate ? "endDate-error" : undefined }
                                                 />
@@ -600,7 +649,8 @@ export default function CreateProject() {
                                                 color="secondary"
                                                 onChange={handleFundingChange}
                                                 InputProps={{ inputComponent: NumericFormatCustom as any }}
-                                                error={ (formState.fundingGoal < 1) }
+                                                error={ Boolean(formErrors.fundingGoal) }
+                                                helperText={ formErrors.fundingGoal }
                                                 aria-invalid={ Boolean(actionData?.fieldErrors?.fundingGoal) }
                                                 aria-errormessage={ actionData?.fieldErrors?.fundingGoal ? "fundingGoal-error" : undefined }
                                                 />
@@ -629,17 +679,8 @@ export default function CreateProject() {
                                 </Step>
                                 <Box flexGrow={1} sx={{ display: 'flex-row', py: 2 }}>
                                     <Button 
-                                        variant="contained" 
-                                        type="submit" 
                                         className="button" 
-                                        sx={{ mt: 1 }}
-                                        // disabled={ () => errorListener }
-                                        >
-                                        create new project
-                                    </Button>
-                                    <Button 
-                                        className="button" 
-                                        sx={{ mt: 1, ml: 2 }}
+                                        sx={{ mt: 1}}
                                         onClick={(e) => {
                                             e.preventDefault();
                                             handleReset();
@@ -647,6 +688,16 @@ export default function CreateProject() {
                                         >
                                         cancel all
                                     </Button>
+                                    <Button 
+                                        variant="contained" 
+                                        type="submit" 
+                                        className="button" 
+                                        sx={{ mt: 1, ml: 2  }}
+                                        // disabled={ !formIsValid }
+                                        >
+                                        create new project
+                                    </Button>
+                                    
                                 </Box>
                         </Stepper>
                     </Form>
