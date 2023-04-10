@@ -232,6 +232,10 @@ export default function MultiselectPicker({props}: any) {
         }
         setFormState({ ...formState, techStack: newArray.join(",")})
     }
+    const handleCancelled = (event: React.SyntheticEvent<Element, Event>) => {
+        event.preventDefault();
+        
+    }
     const handleChangeCurrentStack = (event: React.SyntheticEvent<Element, Event>) => {
         event.preventDefault();
         setFormState({ ...formState, techStack: ""})
@@ -258,9 +262,9 @@ export default function MultiselectPicker({props}: any) {
                         startIcon={<ChangeCircle />} 
                         variant="outlined" 
                         onClick={handleChangeCurrentStack} 
-                        sx={{ ml: 2, minWidth: '168px' }}
+                        sx={{ ml: 2, minWidth: 'fit-content', flexWrap: 'nowrap' }}
                         >
-                        change this stack
+                        change stack
                     </Button>
                 </>
                 :
@@ -292,10 +296,10 @@ export default function MultiselectPicker({props}: any) {
                                 return option;
                             }
                             if (option.inputValue) { // Add "xxx" option created dynamically
-                                return option.inputValue;
+                                return option.inputValue.toLowerCase();
                             }
                             
-                            return option.name; // Regular option
+                            return option.name.toLowerCase(); // Regular option
                         }}
                         renderOption={(props, option, { selected }) => ( 
                             <li {...props}>
@@ -315,22 +319,22 @@ export default function MultiselectPicker({props}: any) {
                         onChange={(event, currentValsObj) => { handleInputObjChange(event, currentValsObj) }}
                     />
                     {/* {
-                        techNameList.length && !techNameList.length
+                        techNameList.length
                         ?
                         <Button 
                             startIcon={<Clear />}
                             variant="outlined" 
-                            onClick={handleFinished} 
+                            onClick={handleCancelled} 
                             sx={{ml: 2, minWidth: '168px'}}
                             >
-                            cancel
+                            cancel edits
                         </Button>
                         : */}
                         <Button 
                             startIcon={<Check />} 
                             variant="outlined" 
                             onClick={handleFinished} 
-                            sx={{ml: 2, minWidth: '168px'}}
+                            sx={{ml: 2, minWidth: 'fit-content', flexWrap: 'nowrap'}}
                             disabled={techNameList.length === 0}
                             >
                             finished

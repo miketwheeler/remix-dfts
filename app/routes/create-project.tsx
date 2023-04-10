@@ -42,6 +42,13 @@ interface CustomProps {
     name: string;
 }
 
+interface FormState {
+    [key: string]: {
+        value: string | boolean;
+        error: string | null;
+    }
+}
+
 // requires the user to be logged in - on load, so is hack but works because of the order necessary within the login process
 export async function loader({ request }: LoaderArgs) {
 	// const userId = await requireUserId(request);
@@ -232,6 +239,8 @@ export default function CreateProject() {
     const [formErrors, setFormErrors] = useState<Record<string, string>>({});
     const [formIsValid, setFormIsValid] = useState(false);
 
+    const [newFormState, setNewFormState] = useState<FormState>({});
+
     const defaultState = {
         name: '',
         type: '',
@@ -262,7 +271,12 @@ export default function CreateProject() {
                     {
                         props.index !== steps.length -1
                         ?
-                        <Button variant="contained" onClick={handleNext} sx={{ mt: 1, mr: 1 }}>
+                        <Button 
+                            variant="contained" 
+                            disabled={ Object.entries(newFormState).some(([key, item]) => item.value === "active" ? false : item.error ) } 
+                            onClick={handleNext} 
+                            sx={{ mt: 1, mr: 1 }}
+                            >
                             continue
                         </Button>
                         : null
@@ -289,7 +303,6 @@ export default function CreateProject() {
     };
 
     const handleDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        // event.preventDefault();
         const formattedDate = createProjectValidators.validateDate(event.target.value);
         setFormState((prevState) => ({ ...prevState, [event.target.name]: formattedDate  }))
     }
@@ -298,39 +311,39 @@ export default function CreateProject() {
     const validateForm = () => {
         let errors: Record<string, string> = {};
         if(!formState.name) { 
-            errors.name = "name is required" 
+            errors.name = "name is required";
         } else if(!createProjectValidators.validateProjectName(formState.name)) { 
-            errors.name = "name is invalid" 
+            errors.name = "name is invalid";
         };
         if(!formState.type) {
-            errors.type = "type is required"
+            errors.type = "type is required";
         } else if(!createProjectValidators.validateProjectType(formState.type)) {
-            errors.type = "type is invalid"
+            errors.type = "type is invalid";
         };
         if(!formState.synopsis) {
-            errors.synopsis = "synopsis is required"
+            errors.synopsis = "synopsis is required";
         } else if(!createProjectValidators.validateProjectSynopsis(formState.synopsis)) {
-            errors.synopsis = "synopsis is invalid"
+            errors.synopsis = "synopsis is invalid";
         };
         if(!formState.description) {
-            errors.description = "description is required"
+            errors.description = "description is required";
         } else if(!createProjectValidators.validateProjectDescription(formState.description)) {
-            errors.description = "description is invalid"
+            errors.description = "description is invalid";
         };
         if(!formState.techStack) {
-            errors.techStack = "tech stack is required"
+            errors.techStack = "tech stack is required";
         } else if(!createProjectValidators.validateProjectTechStack(formState.techStack)) {
-            errors.techStack = "tech stack is invalid"
+            errors.techStack = "tech stack is invalid";
         };
         if(!formState.beginDate) {
-            errors.beginDate = "begin date is required"
+            errors.beginDate = "begin date is required";
         } else if (!(formState.endDate.length >= 1 && formState.endDate.length < 10)) {
-            errors.beginDate = "begin date is incomplete"
+            errors.beginDate = "begin date is incomplete";
         }
         if(!formState.endDate) {
-            errors.endDate = "end date is required"
+            errors.endDate = "end date is required";
         } else if (!(formState.endDate.length >= 1 && formState.endDate.length < 10)) {
-            errors.endDate = "end date is incomplete"
+            errors.endDate = "end date is incomplete";
         }
         // if(!formState.team) {
         //     errors.team = "team is required"
@@ -349,6 +362,66 @@ export default function CreateProject() {
         return validateForm();
     }
 
+    const validateDate = (date: string) => {
+        const regex = /^([0-9]{1,2})\/?([0-9]{1,2})?\/?([0-9]{0,4})?$/;
+        const match = date.replace(/\D/g, '').match(regex);
+        if(match === null) {
+            return '';
+        }
+        let formatted = '';
+        if(match[1]) {
+            formatted += match[1];
+            if(match[2]) {
+                formatted += '/' + match[2];
+                if(match[3]) {
+                    formatted += '/' + match[3];
+                }
+            }
+        }
+        return formatted;
+    } 
+
+    const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const { name, value } = event.target;
+        let error: string | null = null;
+        let formattedValue = value;
+
+        if(name === "beginDate" || name === "endDate") {
+            formattedValue = validateDate(value);
+        }
+
+        // const error = validateField(name, value);
+        setNewFormState({ ...newFormState, [name]: { value: formattedValue, error } });
+    };
+
+    const validateField = (name: string, value: string): string | null => {
+        switch (name) {
+            case "name":
+                return (value.length > 2) ? null : "name must be at least 3 characters";
+            case "type":
+                return (value.length > 4) ? null : "type must be at least 3 characters";
+            case "synopsis":
+                return (value.length > 10) ? null : "synopsis is a sentance and must be at least 10 characters";
+            case "description":
+                return (value.length > 60) ? null : "description is too short, it must be at least 60 characters";
+            case "techStack":
+                return (value.length > 2) ? null : "tech stack must be at least 3 characters";
+            case "beginDate":
+                return (value.length > 2) ? null : "begin date must be at least 3 characters";
+            case "endDate":
+                return (value.length > 2) ? null : "end date must be at least 3 characters";
+            case "team":
+                return (value.length > 2) ? null : "team must be at least 3 characters";
+            default:
+                return null;
+        }
+    }
+
+    const handleBlur = (event: React.FocusEvent<HTMLInputElement>) => {
+        const { name, value } = event.target;
+        const error = validateField(name, value);
+        setNewFormState({ ...newFormState, [name]: { ...newFormState[name], error } });
+    };
 
 
 	return (
@@ -402,18 +475,21 @@ export default function CreateProject() {
                                                 name="name"
                                                 variant="outlined" 
                                                 required
-                                                value={ formState.name } 
+                                                // value={ formState.name }
+                                                value={ newFormState.name?.value || "" } 
                                                 label="project name" 
                                                 type="text"
                                                 fullWidth={ true }
-                                                onChange={(e) => {
-                                                    e.preventDefault();
-                                                    setFormState((prevState) => ({ ...prevState, name: e.target.value  }));
-                                                }}
-                                                error={ Boolean(formErrors.name) }
-                                                helperText={ formErrors.name }
-                                                aria-invalid={ Boolean(actionData?.fieldErrors?.name) }
-                                                aria-errormessage={ actionData?.fieldErrors?.name ? "project-name-error" : undefined }
+                                                onChange={ handleInputChange }
+                                                onBlur={ handleBlur }
+                                                error={ Boolean(newFormState.name?.error) }
+                                                helperText={ newFormState.name?.error || "" }
+                                                // onChange={(e) => {
+                                                //     e.preventDefault();
+                                                //     setFormState((prevState) => ({ ...prevState, name: e.target.value  }));
+                                                // }}
+                                                // aria-invalid={ Boolean(actionData?.fieldErrors?.name) }
+                                                // aria-errormessage={ actionData?.fieldErrors?.name ? "project-name-error" : undefined }
                                                 />
                                             {
                                                 actionData?.fieldErrors?.name 
@@ -423,7 +499,7 @@ export default function CreateProject() {
                                                         role="alert"
                                                         id="name-error"
                                                         >
-                                                        {actionData?.fieldErrors?.name}
+                                                        There was an {actionData?.fieldErrors?.name}
                                                     </p>
                                                 ) : null
                                             }
@@ -433,20 +509,23 @@ export default function CreateProject() {
                                                 id="type-input" 
                                                 name="type"
                                                 required
-                                                value={ formState.type }
+                                                // value={ formState.type }
+                                                value={ newFormState.type?.value || "" } 
                                                 variant="outlined" 
                                                 label="type (e.g. web app, mobile app)" 
                                                 type="text"
                                                 fullWidth={ true }
                                                 color="secondary"
-                                                onChange={(e) => {
-                                                    e.preventDefault();
-                                                    setFormState((prevState) => ({ ...prevState, type: e.target.value  }));
-                                                }}
-                                                error={ Boolean(formErrors.type) }
-                                                helperText={ formErrors.type }
-                                                aria-invalid={ Boolean(actionData?.fieldErrors?.type) }
-                                                aria-errormessage={ actionData?.fieldErrors?.type ? "project-type-error" : undefined }
+                                                onChange={ handleInputChange }
+                                                onBlur={ handleBlur }
+                                                error={ Boolean(newFormState.type?.error) }
+                                                helperText={ newFormState.type?.error || "" }
+                                                // onChange={(e) => {
+                                                //     e.preventDefault();
+                                                //     setFormState((prevState) => ({ ...prevState, type: e.target.value  }));
+                                                // }}
+                                                // aria-invalid={ Boolean(actionData?.fieldErrors?.type) }
+                                                // aria-errormessage={ actionData?.fieldErrors?.type ? "project-type-error" : undefined }
                                                 />
                                             {
                                                 actionData?.fieldErrors?.type ? (
@@ -472,7 +551,8 @@ export default function CreateProject() {
                                                 id="synopsis-input" 
                                                 name="synopsis"
                                                 required
-                                                value={ formState.synopsis }
+                                                // value={ formState.synopsis }
+                                                value={ newFormState.synopsis?.value || "" }
                                                 variant="outlined" 
                                                 label="synopsis (shortened description)" 
                                                 type="text"
@@ -480,14 +560,16 @@ export default function CreateProject() {
                                                 rows={1}
                                                 fullWidth={ true }
                                                 color="secondary"
-                                                onChange={(e) => {
-                                                    e.preventDefault();
-                                                    setFormState((prevState) => ({ ...prevState, synopsis: e.target.value  }));
-                                                }}
-                                                error={ Boolean(formErrors.synopsis) }
-                                                helperText={ formErrors.synopsis }
-                                                aria-invalid={ Boolean(actionData?.fieldErrors?.synopsis) }
-                                                aria-errormessage={ actionData?.fieldErrors?.synopsis ? "synopsis-error" : undefined }
+                                                onChange={ handleInputChange }
+                                                onBlur={ handleBlur }
+                                                error={ Boolean(newFormState.synopsis?.error) }
+                                                helperText={ newFormState.synopsis?.error || "" }
+                                                // onChange={(e) => {
+                                                //     e.preventDefault();
+                                                //     setFormState((prevState) => ({ ...prevState, synopsis: e.target.value  }));
+                                                // }}
+                                                // aria-invalid={ Boolean(actionData?.fieldErrors?.synopsis) }
+                                                // aria-errormessage={ actionData?.fieldErrors?.synopsis ? "synopsis-error" : undefined }
                                                 />
                                             {
                                                 actionData?.fieldErrors?.synopsis ? (
@@ -506,7 +588,8 @@ export default function CreateProject() {
                                                 id="description-input" 
                                                 name="description"
                                                 required
-                                                value={ formState.description }
+                                                // value={ formState.description }
+                                                value={ newFormState.description?.value || "" }
                                                 variant="outlined" 
                                                 label="description (full description)" 
                                                 type="text" 
@@ -514,14 +597,16 @@ export default function CreateProject() {
                                                 rows={6}
                                                 fullWidth={ true }
                                                 color="secondary"
-                                                onChange={(e) => {
-                                                    e.preventDefault();
-                                                    setFormState((prevState) => ({ ...prevState, description: e.target.value  }));
-                                                }}
-                                                error={ Boolean(formErrors.description) } 
-                                                helperText={ formErrors.description }
-                                                aria-invalid={ Boolean(actionData?.fieldErrors?.description) }
-                                                aria-errormessage={ actionData?.fieldErrors?.description ? "description-error" : undefined }
+                                                onChange={ handleInputChange }
+                                                onBlur={ handleBlur }
+                                                error={ Boolean(newFormState.description?.error) }
+                                                helperText={ newFormState.description?.error || "" }
+                                                // onChange={(e) => {
+                                                //     e.preventDefault();
+                                                //     setFormState((prevState) => ({ ...prevState, description: e.target.value  }));
+                                                // }}
+                                                // aria-invalid={ Boolean(actionData?.fieldErrors?.description) }
+                                                // aria-errormessage={ actionData?.fieldErrors?.description ? "description-error" : undefined }
                                                 />
                                             {
                                                 actionData?.fieldErrors?.description ? (
@@ -558,18 +643,21 @@ export default function CreateProject() {
                                                 id="beginDate-input" 
                                                 name="beginDate"
                                                 required
-                                                value={ formState.beginDate }
+                                                // value={ formState.beginDate }
+                                                value={ newFormState.beginDate?.value || ""}
                                                 variant="outlined" 
                                                 label="begin date (mm/dd/yyyy)" 
                                                 type="text" 
                                                 inputProps={{ maxLength: 10, minlength: 10}}
                                                 fullWidth={ true }
                                                 color="secondary"
-                                                onChange={ handleDateChange }
-                                                error={ Boolean(formErrors.beginDate) }
-                                                helperText={ formErrors.beginDate }
-                                                aria-invalid={ Boolean(actionData?.fieldErrors?.beginDate) }
-                                                aria-errormessage={ actionData?.fieldErrors?.beginDate ? "beginDate-error" : undefined }
+                                                onChange={ handleInputChange }
+                                                onBlur={ handleBlur }
+                                                error={ Boolean(newFormState.beginDate?.error) }
+                                                helperText={ newFormState.beginDate?.error || "" }
+                                                // onChange={ handleDateChange }
+                                                // aria-invalid={ Boolean(actionData?.fieldErrors?.beginDate) }
+                                                // aria-errormessage={ actionData?.fieldErrors?.beginDate ? "beginDate-error" : undefined }
                                                 />
                                             {
                                                 actionData?.fieldErrors?.beginDate ? (
@@ -588,18 +676,21 @@ export default function CreateProject() {
                                                 id="endDate-input" 
                                                 name="endDate"
                                                 required
-                                                value={ formState.endDate }
+                                                // value={ formState.endDate }
+                                                value={ newFormState.endDate?.value || "" }
                                                 variant="outlined" 
                                                 label="end date (mm/dd/yyyy)" 
                                                 type="text" 
                                                 inputProps={{ maxLength: 10, minlength: 10}}
                                                 fullWidth={ true }
                                                 color="secondary"
-                                                onChange={ handleDateChange }
-                                                error={ Boolean(formErrors.endDate) }
-                                                helperText={ formErrors.endDate }
-                                                aria-invalid={ Boolean(actionData?.fieldErrors?.endDate) }
-                                                aria-errormessage={ actionData?.fieldErrors?.endDate ? "endDate-error" : undefined }
+                                                onChange={ handleInputChange }
+                                                onBlur={ handleBlur }
+                                                error={ Boolean(newFormState.endDate?.error) }
+                                                helperText={ newFormState.endDate?.error || "" }
+                                                // onChange={ handleDateChange }
+                                                // aria-invalid={ Boolean(actionData?.fieldErrors?.endDate) }
+                                                // aria-errormessage={ actionData?.fieldErrors?.endDate ? "endDate-error" : undefined }
                                                 />
                                             {
                                                 actionData?.fieldErrors?.endDate ? (
@@ -613,17 +704,26 @@ export default function CreateProject() {
                                                 ) : null
                                             }
                                         </Box>
+                                        <Divider sx={{ mt: 1, mb: 2 }}/>
                                         <FormControl>
-                                            <FormLabel id="project-active-radio-choice">active development</FormLabel>
+                                            <FormLabel id="project-active-radio-choice">initialize this project in active development?</FormLabel>
                                             <RadioGroup
                                                 row
                                                 aria-labelledby="project-active-radio-choice"
-                                                name="project-active-radio-group"
-                                                value={ formState.active }
-                                                onChange={(e) => {
-                                                    e.preventDefault();
-                                                    setFormState((prevState) => ({ ...prevState, active: !formState.active }));
-                                                }}
+                                                name="active"
+                                                // value={ formState.active }
+                                                value={ newFormState.active?.value || false }
+                                                onChange={(event) => setNewFormState({ 
+                                                    ...newFormState, 
+                                                    [event?.target.name]: { 
+                                                        value: !newFormState.active?.value, 
+                                                        error: null
+                                                    } 
+                                                })}
+                                                // onChange={(e) => {
+                                                //     e.preventDefault();
+                                                //     setFormState((prevState) => ({ ...prevState, active: !formState.active }));
+                                                // }}
                                                 >
                                                 <FormControlLabel value={true} label="yes" control={ <Radio /> } />
                                                 <FormControlLabel value={false} label="no" control={ <Radio /> } />
