@@ -180,26 +180,32 @@ const steps = [
     {
         label: "name & category",
         description: "give your project a name and general category: this will allow others to find your project and whether their skill set is a good fit",
+        fieldNames: ["name", "type"],
     },
     {
         label: "synopsis & description",
         description: "you'll need to provide a description for your project: a synopsis should be an brief abstract (as much info as you want to exhibit publicly) that is public faciing - limited is probably best. Then include a bit more detail in your description that will only be available to who you share it with directly",
+        fieldNames: ["synopsis", "description"],
     },
     {
         label: "tech stack",
-        description: "what tech or tech stack will you be using? this is a great way to find others and for them to find you quickly, it's also good to define the scope up front"
+        description: "what tech or tech stack will you be using? this is a great way to find others and for them to find you quickly, it's also good to define the scope up front",
+        fieldNames: ["techStack"],
     },
     {
         label: "development timeframe & status",
         description: "give a start, end date, and if you'd like to set it as active -- you can change this later if you need to",
+        fieldNames: ["beginDate", "endDate", "active"],
     },
     {
         label: "funding goal",
-        description: "lets set a rough estimate for a funding goal: a funding goal is part-motivation part-estimation -- you can change this later as needed"
+        description: "lets set a rough estimate for a funding goal: a funding goal is part-motivation part-estimation -- you can change this later as needed",
+        fieldNames: ["fundingGoal"],
     },
     {
         label: "assign a team",
-        description: "you can assign a team to your project: this will allow you to share your project with them and they can contribute to it as well"
+        description: "you can assign a team to your project: this will allow you to share your project with them and they can contribute to it as well",
+        fieldNames: ["team"],
     }
 ]
 
@@ -262,9 +268,21 @@ export default function CreateProject() {
     const handleReset = () => { 
         setActiveStep(0);
         setFormState(defaultState);
+        setNewFormState({});
     };
     const handleStep = (step: number) => () => { setActiveStep(step) };
+
+
+    const determineDisabled = (fieldValues: any[]) => {
+        let returnValue = true;
+        fieldValues.forEach((fieldName) => returnValue = !newFormState[fieldName] )
+
+        return returnValue;
+    }
+
     const ForwardBack = ({props}: any) => {
+        const stepNames =  steps[props.index].fieldNames;
+
         return (
             <Box sx={{ mb: 2 }}>
                 <div>
@@ -273,8 +291,18 @@ export default function CreateProject() {
                         ?
                         <Button 
                             variant="contained" 
-                            disabled={ Object.entries(newFormState).some(([key, item]) => item.value === "active" ? false : item.error ) } 
-                            onClick={handleNext} 
+                            disabled={ 
+                                // Needs to be disabled by default (true), then checked for bool or error state of field to enable
+                                determineDisabled(stepNames) ||
+                                Object.values(newFormState)?.some((item) => 
+                                    item.value === "active" 
+                                    ? false 
+                                    // : item.value === "techStack"
+                                    // ? Boolean(item.value.split(',').length < 2)
+                                    : item.error
+                                ) 
+                            } 
+                            onClick={ handleNext } 
                             sx={{ mt: 1, mr: 1 }}
                             >
                             continue
@@ -284,8 +312,8 @@ export default function CreateProject() {
                     {
                         props.index !== 0
                         ?
-                        <Button onClick={handleBack} sx={{ mt: 1, mr: 1 }}>
-                            Back
+                        <Button onClick={ handleBack } sx={{ mt: 1, mr: 1 }}>
+                            back
                         </Button>
                         : null
                     }
@@ -302,10 +330,10 @@ export default function CreateProject() {
         }));
     };
 
-    const handleDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const formattedDate = createProjectValidators.validateDate(event.target.value);
-        setFormState((prevState) => ({ ...prevState, [event.target.name]: formattedDate  }))
-    }
+    // const handleDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    //     const formattedDate = createProjectValidators.validateDate(event.target.value);
+    //     setFormState((prevState) => ({ ...prevState, [event.target.name]: formattedDate  }))
+    // }
 
 
     const validateForm = () => {
@@ -384,14 +412,17 @@ export default function CreateProject() {
     const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = event.target;
         let error: string | null = null;
-        let formattedValue = value;
+        let formattedValue;
 
         if(name === "beginDate" || name === "endDate") {
             formattedValue = validateDate(value);
+            error = validateField(name, formattedValue);
+        }
+        else {
+            error = validateField(name, value);
         }
 
-        // const error = validateField(name, value);
-        setNewFormState({ ...newFormState, [name]: { value: formattedValue, error } });
+        setNewFormState({ ...newFormState, [name]: { value: formattedValue ?? value, error } });
     };
 
     const validateField = (name: string, value: string): string | null => {
@@ -405,11 +436,12 @@ export default function CreateProject() {
             case "description":
                 return (value.length > 60) ? null : "description is too short, it must be at least 60 characters";
             case "techStack":
-                return (value.length > 2) ? null : "tech stack must be at least 3 characters";
+                return (value?.split(',').length > 2) ? null : "tech stack cannot consist of 0 technologies";
+                // return (typeof value !== "string" || value.split(',').length < 2)
             case "beginDate":
-                return (value.length > 2) ? null : "begin date must be at least 3 characters";
+                return (value.length >= 10) ? null : "that is not a valid date, please use the format mm/dd/yyyy";
             case "endDate":
-                return (value.length > 2) ? null : "end date must be at least 3 characters";
+                return (value.length >= 10) ? null : "that is not a valid date, please use the format mm/dd/yyyy";
             case "team":
                 return (value.length > 2) ? null : "team must be at least 3 characters";
             default:
@@ -417,11 +449,12 @@ export default function CreateProject() {
         }
     }
 
-    const handleBlur = (event: React.FocusEvent<HTMLInputElement>) => {
-        const { name, value } = event.target;
-        const error = validateField(name, value);
-        setNewFormState({ ...newFormState, [name]: { ...newFormState[name], error } });
-    };
+    // const handleBlur = (event: React.FocusEvent<HTMLInputElement>) => {
+    //     const { name, value } = event.target;
+    //     const error = validateField(name, value);
+    //     setNewFormState({ ...newFormState, [name]: { ...newFormState[name], error } });
+    // };
+    
 
 
 	return (
@@ -455,7 +488,7 @@ export default function CreateProject() {
                             sx={{my: .5, display: 'inline-flex', wrap: 'nowrap'}}
                             >
                                 project
-                                { formState.name !== "" ? <div style={{opacity: .5}}>&nbsp; - {formState.name}</div> : null }
+                                { newFormState.name?.value ? <div style={{opacity: .5}}>&nbsp; - {newFormState.name?.value}</div> : null }
                         </Typography>
                         <Form method="post" id="create-project-form" onSubmit={ handleFormSubmit }>
                             <input
@@ -481,7 +514,7 @@ export default function CreateProject() {
                                                 type="text"
                                                 fullWidth={ true }
                                                 onChange={ handleInputChange }
-                                                onBlur={ handleBlur }
+                                                // onBlur={ handleBlur }
                                                 error={ Boolean(newFormState.name?.error) }
                                                 helperText={ newFormState.name?.error || "" }
                                                 // onChange={(e) => {
@@ -517,7 +550,7 @@ export default function CreateProject() {
                                                 fullWidth={ true }
                                                 color="secondary"
                                                 onChange={ handleInputChange }
-                                                onBlur={ handleBlur }
+                                                // onBlur={ handleBlur }
                                                 error={ Boolean(newFormState.type?.error) }
                                                 helperText={ newFormState.type?.error || "" }
                                                 // onChange={(e) => {
@@ -539,7 +572,7 @@ export default function CreateProject() {
                                                 ) : null
                                             }
                                         </Box>
-                                        <ForwardBack props={{index: 0}} />
+                                        <ForwardBack props={{ index: 0 }} />
                                     </StepContent>
                                 </Step>
                                 <Step key={'step-1'}>
@@ -561,7 +594,7 @@ export default function CreateProject() {
                                                 fullWidth={ true }
                                                 color="secondary"
                                                 onChange={ handleInputChange }
-                                                onBlur={ handleBlur }
+                                                // onBlur={ handleBlur }
                                                 error={ Boolean(newFormState.synopsis?.error) }
                                                 helperText={ newFormState.synopsis?.error || "" }
                                                 // onChange={(e) => {
@@ -598,7 +631,7 @@ export default function CreateProject() {
                                                 fullWidth={ true }
                                                 color="secondary"
                                                 onChange={ handleInputChange }
-                                                onBlur={ handleBlur }
+                                                // onBlur={ handleBlur }
                                                 error={ Boolean(newFormState.description?.error) }
                                                 helperText={ newFormState.description?.error || "" }
                                                 // onChange={(e) => {
@@ -629,7 +662,7 @@ export default function CreateProject() {
                                         <Typography>{steps[2].description}</Typography>
                                         <Box sx={{ my: 2 }}>
                                             {/* This is a separated tech stack picker component - returns a string of techs */}
-                                            <MultiselectPicker props={{ formState, setFormState }} />
+                                            <MultiselectPicker props={{ newFormState, setNewFormState }} />
                                         </Box>
                                         <ForwardBack props={{index: 2}} />
                                     </StepContent>
@@ -652,7 +685,7 @@ export default function CreateProject() {
                                                 fullWidth={ true }
                                                 color="secondary"
                                                 onChange={ handleInputChange }
-                                                onBlur={ handleBlur }
+                                                // onBlur={ handleBlur }
                                                 error={ Boolean(newFormState.beginDate?.error) }
                                                 helperText={ newFormState.beginDate?.error || "" }
                                                 // onChange={ handleDateChange }
@@ -685,7 +718,7 @@ export default function CreateProject() {
                                                 fullWidth={ true }
                                                 color="secondary"
                                                 onChange={ handleInputChange }
-                                                onBlur={ handleBlur }
+                                                // onBlur={ handleBlur }
                                                 error={ Boolean(newFormState.endDate?.error) }
                                                 helperText={ newFormState.endDate?.error || "" }
                                                 // onChange={ handleDateChange }

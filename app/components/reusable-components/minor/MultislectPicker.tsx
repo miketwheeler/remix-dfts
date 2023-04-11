@@ -5,7 +5,7 @@ import Autocomplete, { createFilterOptions } from "@mui/material/Autocomplete";
 import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
 import CheckBoxIcon from '@mui/icons-material/CheckBox';
 import ChangeCircle from '@mui/icons-material/ChangeCircle';
-import Clear from '@mui/icons-material/Clear';
+// import Clear from '@mui/icons-material/Clear';
 
 
 
@@ -13,6 +13,7 @@ interface TechOptionType {
 	inputValue?: string;
 	name: string;
 }
+
 
 const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
 const checkedIcon = <CheckBoxIcon fontSize="small" />;
@@ -218,11 +219,20 @@ const topTech: readonly TechOptionType[] = [
 export default function MultiselectPicker({props}: any) {
 	const [techNameList, setTechNameList] = React.useState<string[]>([]);
     const newArray = [] as any[];
-    const { formState, setFormState } = props;
+    const { newFormState, setNewFormState } = props;
 
     const handleInputObjChange = (event: React.SyntheticEvent<Element, Event>, newValue: any) => {
         event.preventDefault();
         setTechNameList(newValue);
+    }
+
+    // const handleCancelled = (event: React.SyntheticEvent<Element, Event>) => {
+    //     event.preventDefault();
+    // }
+
+    const handleChangeCurrentStack = (event: React.SyntheticEvent<Element, Event>) => {
+        event.preventDefault();
+        setNewFormState({ ...newFormState, techStack: { value: "" }})
     }
 
     const handleFinished = (event: React.SyntheticEvent<Element, Event>) => {
@@ -230,38 +240,32 @@ export default function MultiselectPicker({props}: any) {
         for(let i = 0; i < techNameList.length; i++) {
             newArray.push(Object.values(techNameList[i]));
         }
-        setFormState({ ...formState, techStack: newArray.join(",")})
-    }
-    const handleCancelled = (event: React.SyntheticEvent<Element, Event>) => {
-        event.preventDefault();
-        
-    }
-    const handleChangeCurrentStack = (event: React.SyntheticEvent<Element, Event>) => {
-        event.preventDefault();
-        setFormState({ ...formState, techStack: ""})
+        setNewFormState({ ...newFormState, techStack: { value: newArray.join(",") } });
     }
 
-    React.useEffect(() => {
-        console.log(`formState.techStack: ${formState.techStack}; type: ${typeof formState.techStack}`)
-    }, [formState.techStack])
+    // React.useEffect(() => {
+    //     console.log(`newFormState.techStack: ${JSON.stringify(newFormState.techStack, null, 2)}; type: ${typeof newFormState.techStack}`)
+    //     console.log(`techNameList: ${JSON.stringify(techNameList, null, 2)}; type: ${typeof techNameList}`);
+    // }, [newFormState.techStack, techNameList])
+
 
 	return (
         <Box sx={{ display: 'flex', flexDirection: 'row' }}>
             {
-                formState.techStack.length
+                newFormState.techStack?.value.length
                 ?
                 <>
                     <Box sx={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', gap: 1 }}>
                         {
-                            formState.techStack.split(',').map((tech: string) => {
+                            newFormState.techStack?.value.split(',').map((tech: string) => {
                                 return <Chip key={`current-stack-chip-${tech}`} label={tech.toLowerCase()} />
                             })
                         }
                     </Box>
                     <Button 
-                        startIcon={<ChangeCircle />} 
+                        startIcon={ <ChangeCircle /> } 
                         variant="outlined" 
-                        onClick={handleChangeCurrentStack} 
+                        onClick={ handleChangeCurrentStack } 
                         sx={{ ml: 2, minWidth: 'fit-content', flexWrap: 'nowrap' }}
                         >
                         change stack
@@ -304,12 +308,12 @@ export default function MultiselectPicker({props}: any) {
                         renderOption={(props, option, { selected }) => ( 
                             <li {...props}>
                                 <Checkbox
-                                    icon={icon}
-                                    checkedIcon={checkedIcon}
+                                    icon={ icon }
+                                    checkedIcon={ checkedIcon }
                                     style={{ marginRight: 8 }}
                                     checked={selected}
                                 />
-                                {option.name.toLowerCase()}
+                                { option.name.toLowerCase() }
                             </li>
                         )}
                         sx={{ width: 500 }}
@@ -331,11 +335,11 @@ export default function MultiselectPicker({props}: any) {
                         </Button>
                         : */}
                         <Button 
-                            startIcon={<Check />} 
+                            startIcon={ <Check /> } 
                             variant="outlined" 
-                            onClick={handleFinished} 
-                            sx={{ml: 2, minWidth: 'fit-content', flexWrap: 'nowrap'}}
-                            disabled={techNameList.length === 0}
+                            onClick={ handleFinished } 
+                            sx={{ ml: 2, minWidth: 'fit-content', flexWrap: 'nowrap' }}
+                            disabled={ techNameList?.length === 0 }
                             >
                             finished
                         </Button>
