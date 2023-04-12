@@ -207,7 +207,66 @@ const steps = [
         description: "you can assign a team to your project: this will allow you to share your project with them and they can contribute to it as well",
         fieldNames: ["team"],
     }
-]
+];
+
+const formFieldData = [
+    {
+        name: {
+            name: "name",
+            label: "project name",
+            fieldType: "text",
+            required: true,
+        },
+        type: {
+            name: "type",
+            label: "project type (e.g. web app, mobile app, etc.)",
+            fieldType: "text",
+            required: true,
+        },
+    },
+    {
+        synopsis: {
+            name: "synopsis",
+            label: "synopsis (shortened description)",
+            fieldType: "text",
+            required: true,
+        },
+        description: {
+            name: "description",
+            label: "description (full description)",
+            fieldType: "text",
+            required: true,
+        },
+    },
+    {
+        techStack: {},
+    },
+    {
+        beginDate: {
+            name: "beginDate",
+            label: "begin date (mm/dd/yyyy)",
+            type: "text",
+            required: true,
+        },
+        endDate: {
+            name: "endDate",
+            label: "end date (mm/dd/yyyy)",
+            type: "text",
+            required: true,
+        },
+        active: {},
+    },
+    {
+        fundingGoal: {
+            name: "fundingGoal",
+            label: "funding goal",
+            type: "text",
+        },
+    },
+    {
+        team: {},
+    }
+];
 
 
 
@@ -234,6 +293,8 @@ const NumericFormatCustom = React.forwardRef<NumericFormatProps, CustomProps>(
 		);
 	}
 );
+
+
 
 
 export default function CreateProject() {
@@ -267,7 +328,7 @@ export default function CreateProject() {
     const handleBack = () => { setActiveStep((prevActiveStep) => prevActiveStep - 1) };
     const handleReset = () => { 
         setActiveStep(0);
-        setFormState(defaultState);
+        // setFormState(defaultState);
         setNewFormState({});
     };
     const handleStep = (step: number) => () => { setActiveStep(step) };
@@ -324,9 +385,9 @@ export default function CreateProject() {
 
     // Form Field - specific actions
     const handleFundingChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setFormState((prevState) => ({
+        setNewFormState((prevState) => ({
             ...prevState,
-            [event.target.name]: event.target.value,
+            [event.target.name]: { value: event.target.value, error: null },
         }));
     };
 
@@ -421,6 +482,7 @@ export default function CreateProject() {
         else {
             error = validateField(name, value);
         }
+        // console.log(`value on input change: ${value}, if formatted: ${formattedValue}, techStack: ${newFormState.techStack?.value}`)
 
         setNewFormState({ ...newFormState, [name]: { value: formattedValue ?? value, error } });
     };
@@ -437,16 +499,110 @@ export default function CreateProject() {
                 return (value.length > 60) ? null : "description is too short, it must be at least 60 characters";
             case "techStack":
                 return (value?.split(',').length > 2) ? null : "tech stack cannot consist of 0 technologies";
-                // return (typeof value !== "string" || value.split(',').length < 2)
             case "beginDate":
                 return (value.length >= 10) ? null : "that is not a valid date, please use the format mm/dd/yyyy";
             case "endDate":
                 return (value.length >= 10) ? null : "that is not a valid date, please use the format mm/dd/yyyy";
-            case "team":
-                return (value.length > 2) ? null : "team must be at least 3 characters";
+            case "fundingGoal":
+                return (Number(value) >= 1) ? null : "funding goal should at least be a dollar";
             default:
                 return null;
         }
+    }
+
+    const CreateFormFields = ({props}: any) => {
+        const formFieldSet = formFieldData[props.index];
+        const fundingExtraProp = { InputProps: { inputComponent: NumericFormatCustom as any } };
+
+        return (
+            <>
+                {
+                    Object.values(formFieldSet).forEach((value) => (
+                        (value === "techStack" || value === "team") 
+                        ?
+                        null
+                        :
+                            <Box sx={{my: 2}}>
+                                <TextField 
+                                    key={`key-for-${value.name}-input`}
+                                    id={`${value.name}-input`}
+                                    name={ value.name }
+                                    required={ value.required ?? false }
+                                    value={ newFormState[value.name]?.value || "" } 
+                                    variant="outlined" 
+                                    label={ value.label } 
+                                    type={ value.type }
+                                    fullWidth={ true }
+                                    color="secondary"
+                                    onChange={ handleInputChange }
+                                    error={ Boolean(newFormState[value.name]?.error) }
+                                    helperText={ newFormState[value.name]?.error || "" }
+                                    { ...value === "fundingGoal" ? fundingExtraProp : null }
+                                    />
+                            </Box>
+                    ))
+                }
+            </>
+        )
+    }
+
+    const CreateStepWithFieldset = ({props}: any) => {
+        
+        return (
+            <Step key={`step-created-for-${props.index}`}>
+                <StepButton color="inherit" onClick={ handleStep(props.index) }>{ props.step.label }</StepButton>
+                <StepContent>
+                    <Typography>{ props.step.description }</Typography>
+                    <CreateFormFields propp={ props } />
+                    <ForwardBack props={ props } />
+                </StepContent>
+            </Step>
+            // Object.values(formFieldSet).forEach((value) => (
+            //     (value === "techStack" || value === "team") 
+            //     ?
+            //     null
+            //     :
+            //         // value === "fundingGoal" 
+            //         // ?
+            //         // <Box sx={{my: 2}}>
+            //         //     <TextField 
+            //         //         key={`key-for-${value.name}-input`}
+            //         //         id={`${value.name}-input`}
+            //         //         name={ value.name }
+            //         //         required={ value.required ?? false }
+            //         //         value={ newFormState[value.name]?.value || "" } 
+            //         //         variant="outlined" 
+            //         //         label={`${value.label}`} 
+            //         //         type={ value.type }
+            //         //         fullWidth={ true }
+            //         //         color="secondary"
+            //         //         onChange={ handleInputChange }
+            //         //         error={ Boolean(newFormState[value.name]?.error) }
+            //         //         helperText={ newFormState[value.name]?.error || "" }
+            //         //         InputProps={{ inputComponent: NumericFormatCustom as any }}
+            //         //         />
+            //         // </Box>
+            //         // :
+            //         <Box sx={{my: 2}}>
+            //             <TextField 
+            //                 key={`key-for-${value.name}-input`}
+            //                 id={`${value.name}-input`}
+            //                 name={ value.name }
+            //                 required={ value.required ?? false }
+            //                 value={ newFormState[value.name]?.value || "" } 
+            //                 variant="outlined" 
+            //                 label={`${value.label}`} 
+            //                 type={ value.type }
+            //                 fullWidth={ true }
+            //                 color="secondary"
+            //                 onChange={ handleInputChange }
+            //                 error={ Boolean(newFormState[value.name]?.error) }
+            //                 helperText={ newFormState[value.name]?.error || "" }
+            //                 { ...value === "fundingGoal" ? fundingExtraProp : null }
+            //                 />
+            //         </Box>
+            // ))
+        )
     }
 
     // const handleBlur = (event: React.FocusEvent<HTMLInputElement>) => {
@@ -496,320 +652,21 @@ export default function CreateProject() {
                                 name="redirectTo"
                                 value={searchParams.get("redirectTo") ?? undefined}
                                 />
-
                             <Stepper activeStep={activeStep} orientation="vertical">
-                                <Step key={'step-0'}>
-                                    <StepButton color="inherit" onClick={handleStep(0)}>{steps[0].label}</StepButton>
-                                    <StepContent>
-                                        <Typography>{steps[0].description}</Typography>
-                                        <Box sx={{ my: 2 }}>
-                                            <TextField 
-                                                id="name-input" 
-                                                name="name"
-                                                variant="outlined" 
-                                                required
-                                                // value={ formState.name }
-                                                value={ newFormState.name?.value || "" } 
-                                                label="project name" 
-                                                type="text"
-                                                fullWidth={ true }
-                                                onChange={ handleInputChange }
-                                                // onBlur={ handleBlur }
-                                                error={ Boolean(newFormState.name?.error) }
-                                                helperText={ newFormState.name?.error || "" }
-                                                // onChange={(e) => {
-                                                //     e.preventDefault();
-                                                //     setFormState((prevState) => ({ ...prevState, name: e.target.value  }));
-                                                // }}
-                                                // aria-invalid={ Boolean(actionData?.fieldErrors?.name) }
-                                                // aria-errormessage={ actionData?.fieldErrors?.name ? "project-name-error" : undefined }
-                                                />
-                                            {
-                                                actionData?.fieldErrors?.name 
-                                                ? (
-                                                    <p
-                                                        className="form-validation-error"
-                                                        role="alert"
-                                                        id="name-error"
-                                                        >
-                                                        There was an {actionData?.fieldErrors?.name}
-                                                    </p>
-                                                ) : null
-                                            }
-                                        </Box>
-                                        <Box sx={{ my: 2 }}>
-                                            <TextField 
-                                                id="type-input" 
-                                                name="type"
-                                                required
-                                                // value={ formState.type }
-                                                value={ newFormState.type?.value || "" } 
-                                                variant="outlined" 
-                                                label="type (e.g. web app, mobile app)" 
-                                                type="text"
-                                                fullWidth={ true }
-                                                color="secondary"
-                                                onChange={ handleInputChange }
-                                                // onBlur={ handleBlur }
-                                                error={ Boolean(newFormState.type?.error) }
-                                                helperText={ newFormState.type?.error || "" }
-                                                // onChange={(e) => {
-                                                //     e.preventDefault();
-                                                //     setFormState((prevState) => ({ ...prevState, type: e.target.value  }));
-                                                // }}
-                                                // aria-invalid={ Boolean(actionData?.fieldErrors?.type) }
-                                                // aria-errormessage={ actionData?.fieldErrors?.type ? "project-type-error" : undefined }
-                                                />
-                                            {
-                                                actionData?.fieldErrors?.type ? (
-                                                    <p
-                                                        className="form-validation-error"
-                                                        role="alert"
-                                                        id="type-error"
-                                                        >
-                                                        {actionData.fieldErrors.type}
-                                                    </p>
-                                                ) : null
-                                            }
-                                        </Box>
-                                        <ForwardBack props={{ index: 0 }} />
-                                    </StepContent>
-                                </Step>
-                                <Step key={'step-1'}>
-                                    <StepButton color="inherit" onClick={handleStep(1)}>{steps[1].label}</StepButton>
-                                    <StepContent>
-                                    <Typography>{steps[1].description}</Typography>
-                                        <Box sx={{ my: 2 }}>
-                                            <TextField 
-                                                id="synopsis-input" 
-                                                name="synopsis"
-                                                required
-                                                // value={ formState.synopsis }
-                                                value={ newFormState.synopsis?.value || "" }
-                                                variant="outlined" 
-                                                label="synopsis (shortened description)" 
-                                                type="text"
-                                                multiline 
-                                                rows={1}
-                                                fullWidth={ true }
-                                                color="secondary"
-                                                onChange={ handleInputChange }
-                                                // onBlur={ handleBlur }
-                                                error={ Boolean(newFormState.synopsis?.error) }
-                                                helperText={ newFormState.synopsis?.error || "" }
-                                                // onChange={(e) => {
-                                                //     e.preventDefault();
-                                                //     setFormState((prevState) => ({ ...prevState, synopsis: e.target.value  }));
-                                                // }}
-                                                // aria-invalid={ Boolean(actionData?.fieldErrors?.synopsis) }
-                                                // aria-errormessage={ actionData?.fieldErrors?.synopsis ? "synopsis-error" : undefined }
-                                                />
-                                            {
-                                                actionData?.fieldErrors?.synopsis ? (
-                                                    <p
-                                                        className="form-validation-error"
-                                                        role="alert"
-                                                        id="synopsis-error"
-                                                        >
-                                                        {actionData.fieldErrors.synopsis}
-                                                    </p>
-                                                ) : null
-                                            }
-                                        </Box>
-                                        <Box sx={{ my: 2 }}>
-                                            <TextField 
-                                                id="description-input" 
-                                                name="description"
-                                                required
-                                                // value={ formState.description }
-                                                value={ newFormState.description?.value || "" }
-                                                variant="outlined" 
-                                                label="description (full description)" 
-                                                type="text" 
-                                                multiline
-                                                rows={6}
-                                                fullWidth={ true }
-                                                color="secondary"
-                                                onChange={ handleInputChange }
-                                                // onBlur={ handleBlur }
-                                                error={ Boolean(newFormState.description?.error) }
-                                                helperText={ newFormState.description?.error || "" }
-                                                // onChange={(e) => {
-                                                //     e.preventDefault();
-                                                //     setFormState((prevState) => ({ ...prevState, description: e.target.value  }));
-                                                // }}
-                                                // aria-invalid={ Boolean(actionData?.fieldErrors?.description) }
-                                                // aria-errormessage={ actionData?.fieldErrors?.description ? "description-error" : undefined }
-                                                />
-                                            {
-                                                actionData?.fieldErrors?.description ? (
-                                                    <p
-                                                        className="form-validation-error"
-                                                        role="alert"
-                                                        id="description-error"
-                                                        >
-                                                        {actionData.fieldErrors.description}
-                                                    </p>
-                                                ) : null
-                                            }
-                                        </Box>
-                                        <ForwardBack props={{index: 1}} />
-                                    </StepContent>
-                                </Step>
-                                <Step key={'step-2'}>
-                                    <StepButton color="inherit" onClick={handleStep(2)}>{steps[2].label}</StepButton>
-                                    <StepContent>
-                                        <Typography>{steps[2].description}</Typography>
-                                        <Box sx={{ my: 2 }}>
-                                            {/* This is a separated tech stack picker component - returns a string of techs */}
-                                            <MultiselectPicker props={{ newFormState, setNewFormState }} />
-                                        </Box>
-                                        <ForwardBack props={{index: 2}} />
-                                    </StepContent>
-                                </Step>
-                                <Step key={'step-3'}>
-                                    <StepButton color="inherit" onClick={handleStep(3)}>{steps[3].label}</StepButton>
-                                    <StepContent>
-                                        <Typography>{steps[3].description}</Typography>
-                                        <Box sx={{ my: 2 }}>
-                                            <TextField 
-                                                id="beginDate-input" 
-                                                name="beginDate"
-                                                required
-                                                // value={ formState.beginDate }
-                                                value={ newFormState.beginDate?.value || ""}
-                                                variant="outlined" 
-                                                label="begin date (mm/dd/yyyy)" 
-                                                type="text" 
-                                                inputProps={{ maxLength: 10, minlength: 10}}
-                                                fullWidth={ true }
-                                                color="secondary"
-                                                onChange={ handleInputChange }
-                                                // onBlur={ handleBlur }
-                                                error={ Boolean(newFormState.beginDate?.error) }
-                                                helperText={ newFormState.beginDate?.error || "" }
-                                                // onChange={ handleDateChange }
-                                                // aria-invalid={ Boolean(actionData?.fieldErrors?.beginDate) }
-                                                // aria-errormessage={ actionData?.fieldErrors?.beginDate ? "beginDate-error" : undefined }
-                                                />
-                                            {
-                                                actionData?.fieldErrors?.beginDate ? (
-                                                    <p
-                                                        className="form-validation-error"
-                                                        role="alert"
-                                                        id="beginDate-error"
-                                                        >
-                                                        {actionData.fieldErrors.beginDate}
-                                                    </p>
-                                                ) : null
-                                            }
-                                        </Box>
-                                        <Box sx={{ my: 2 }}>
-                                            <TextField 
-                                                id="endDate-input" 
-                                                name="endDate"
-                                                required
-                                                // value={ formState.endDate }
-                                                value={ newFormState.endDate?.value || "" }
-                                                variant="outlined" 
-                                                label="end date (mm/dd/yyyy)" 
-                                                type="text" 
-                                                inputProps={{ maxLength: 10, minlength: 10}}
-                                                fullWidth={ true }
-                                                color="secondary"
-                                                onChange={ handleInputChange }
-                                                // onBlur={ handleBlur }
-                                                error={ Boolean(newFormState.endDate?.error) }
-                                                helperText={ newFormState.endDate?.error || "" }
-                                                // onChange={ handleDateChange }
-                                                // aria-invalid={ Boolean(actionData?.fieldErrors?.endDate) }
-                                                // aria-errormessage={ actionData?.fieldErrors?.endDate ? "endDate-error" : undefined }
-                                                />
-                                            {
-                                                actionData?.fieldErrors?.endDate ? (
-                                                    <p
-                                                        className="form-validation-error"
-                                                        role="alert"
-                                                        id="endDate-error"
-                                                        >
-                                                        {actionData.fieldErrors.endDate}
-                                                    </p>
-                                                ) : null
-                                            }
-                                        </Box>
-                                        <Divider sx={{ mt: 1, mb: 2 }}/>
-                                        <FormControl>
-                                            <FormLabel id="project-active-radio-choice">initialize this project in active development?</FormLabel>
-                                            <RadioGroup
-                                                row
-                                                aria-labelledby="project-active-radio-choice"
-                                                name="active"
-                                                // value={ formState.active }
-                                                value={ newFormState.active?.value || false }
-                                                onChange={(event) => setNewFormState({ 
-                                                    ...newFormState, 
-                                                    [event?.target.name]: { 
-                                                        value: !newFormState.active?.value, 
-                                                        error: null
-                                                    } 
-                                                })}
-                                                // onChange={(e) => {
-                                                //     e.preventDefault();
-                                                //     setFormState((prevState) => ({ ...prevState, active: !formState.active }));
-                                                // }}
-                                                >
-                                                <FormControlLabel value={true} label="yes" control={ <Radio /> } />
-                                                <FormControlLabel value={false} label="no" control={ <Radio /> } />
-                                            </RadioGroup>
-                                        </FormControl>
-                                        <ForwardBack props={{index: 3}} />
-                                    </StepContent>
-                                </Step>
-                                <Step key={'step-4'}>
-                                    <StepButton color="inherit" onClick={handleStep(4)}>{steps[4].label}</StepButton>
-                                    <StepContent>
-                                        <Typography>{steps[4].description}</Typography>
-                                        <Box sx={{ my: 2 }}>
-                                            <TextField 
-                                                id="fundingGoal-input" 
-                                                name="fundingGoal"
-                                                required
-                                                variant="outlined" 
-                                                label="funding goal" 
-                                                value={ formState.fundingGoal }
-                                                type="text" 
-                                                fullWidth={ true }
-                                                color="secondary"
-                                                onChange={handleFundingChange}
-                                                InputProps={{ inputComponent: NumericFormatCustom as any }}
-                                                error={ Boolean(formErrors.fundingGoal) }
-                                                helperText={ formErrors.fundingGoal }
-                                                aria-invalid={ Boolean(actionData?.fieldErrors?.fundingGoal) }
-                                                aria-errormessage={ actionData?.fieldErrors?.fundingGoal ? "fundingGoal-error" : undefined }
-                                                />
-                                            {
-                                                actionData?.fieldErrors?.fundingGoal ? (
-                                                    <p
-                                                        className="form-validation-error"
-                                                        role="alert"
-                                                        id="fundingGoal-error"
-                                                        >
-                                                        {actionData.fieldErrors.fundingGoal}
-                                                    </p>
-                                                ) : null
-                                            }
-                                        </Box>
-                                        <ForwardBack props={{index: 4}} />
-                                    </StepContent>
-                                </Step>
-                                <Step>
-                                    <StepButton color="inherit" onClick={handleStep(5)}>{steps[5].label}</StepButton>
-                                    <StepContent>
-                                        <Typography>{steps[5].description}</Typography>
-                                        <UsersTeamPicker props={{ loaderData }} teamAssignment={{ assignTeam, setAssignTeam }} />
-                                        <ForwardBack props={{index: 5}} />
-                                    </StepContent>
-                                </Step>
+
+                {/* THIS IS REPLACEMENT FOR ALL FIELDS DYNAMIC */}
+
+                                {
+                                    steps.map((step, index) => (
+                                        <CreateStepWithFieldset 
+                                            props={{ step, index }} 
+                                            key={`step-${index}`} 
+                                            />
+                                    ))
+                                }
+
+                 {/* REMOVED CODE GOES HERE */}
+
                                 <Box flexGrow={1} sx={{ display: 'flex-row', py: 2 }}>
                                     <Button 
                                         className="button" 
@@ -826,6 +683,11 @@ export default function CreateProject() {
                                         type="submit" 
                                         className="button" 
                                         sx={{ mt: 1, ml: 2  }}
+                                        disabled={
+                                            !newFormState ??
+                                            Object.values(newFormState).some((item) => item.value && item.error)
+                                            
+                                        }
                                         // disabled={ !formIsValid }
                                         >
                                         create new project
