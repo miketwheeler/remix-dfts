@@ -214,13 +214,13 @@ const formFieldData = [
         name: {
             name: "name",
             label: "project name",
-            fieldType: "text",
+            // fieldType: "text",
             required: true,
         },
         type: {
             name: "type",
             label: "project type (e.g. web app, mobile app, etc.)",
-            fieldType: "text",
+            // fieldType: "text",
             required: true,
         },
     },
@@ -228,43 +228,49 @@ const formFieldData = [
         synopsis: {
             name: "synopsis",
             label: "synopsis (shortened description)",
-            fieldType: "text",
+            // fieldType: "text",
             required: true,
         },
         description: {
             name: "description",
             label: "description (full description)",
-            fieldType: "text",
+            // fieldType: "text",
             required: true,
         },
     },
     {
-        techStack: {},
+        techStack: {
+            name: "techStack",
+        },
     },
     {
         beginDate: {
             name: "beginDate",
             label: "begin date (mm/dd/yyyy)",
-            type: "text",
+            // type: "text",
             required: true,
         },
         endDate: {
             name: "endDate",
             label: "end date (mm/dd/yyyy)",
-            type: "text",
+            // type: "text",
             required: true,
         },
-        active: {},
+        active: {
+            name: "active",
+        },
     },
     {
         fundingGoal: {
             name: "fundingGoal",
             label: "funding goal",
-            type: "text",
+            // type: "text",
         },
     },
     {
-        team: {},
+        team: { 
+            name: "team",
+        },
     }
 ];
 
@@ -342,7 +348,8 @@ export default function CreateProject() {
     }
 
     const ForwardBack = ({props}: any) => {
-        const stepNames =  steps[props.index].fieldNames;
+        const stepNames = steps[props.index].fieldNames;
+        // console.log(`stepNames: ${stepNames}`)
 
         return (
             <Box sx={{ mb: 2 }}>
@@ -358,8 +365,8 @@ export default function CreateProject() {
                                 Object.values(newFormState)?.some((item) => 
                                     item.value === "active" 
                                     ? false 
-                                    // : item.value === "techStack"
-                                    // ? Boolean(item.value.split(',').length < 2)
+                                    : item.value === "techStack"
+                                    ? Boolean(item.value.split(',').length < 2)
                                     : item.error
                                 ) 
                             } 
@@ -472,18 +479,14 @@ export default function CreateProject() {
 
     const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = event.target;
-        let error: string | null = null;
+        let error: string | null;
         let formattedValue;
 
         if(name === "beginDate" || name === "endDate") {
             formattedValue = validateDate(value);
-            error = validateField(name, formattedValue);
         }
-        else {
-            error = validateField(name, value);
-        }
+        error = validateField(name, formattedValue !== undefined ? formattedValue : value);
         // console.log(`value on input change: ${value}, if formatted: ${formattedValue}, techStack: ${newFormState.techStack?.value}`)
-
         setNewFormState({ ...newFormState, [name]: { value: formattedValue ?? value, error } });
     };
 
@@ -512,32 +515,72 @@ export default function CreateProject() {
 
     const CreateFormFields = ({props}: any) => {
         const formFieldSet = formFieldData[props.index];
+        // console.log(`formFieldSet: ${JSON.stringify(formFieldSet, null, 2)};; formfieldset type: ${typeof formFieldSet}`)
         const fundingExtraProp = { InputProps: { inputComponent: NumericFormatCustom as any } };
+        const dateExtraProp = { inputProps: { maxLength: 10, minLength: 10 } };
+        const multilineExtraProp = { multiline: true, rows: 5 }
 
         return (
             <>
                 {
-                    Object.values(formFieldSet).forEach((value) => (
-                        (value === "techStack" || value === "team") 
+                    Object.values(formFieldSet)?.map((formFieldEntry) => (
+                        (formFieldEntry.name === "techStack" || formFieldEntry.name === "team" || formFieldEntry.name === "active") 
                         ?
-                        null
+                            <Box sx={{my: 2}} key={`textfield-container-${formFieldEntry.name}`}>
+                                {
+                                    formFieldEntry.name === "techStack"
+                                    ? 
+                                        //  This is external techstack picker component - returns a string of techs
+                                        <MultiselectPicker props={{ newFormState, setNewFormState }} />
+                                    :
+                                    formFieldEntry.name === "team"
+                                    ?
+                                        //  This is external team picker component - returns a string of team members
+                                        <UsersTeamPicker props={{ newFormState, setNewFormState }} />
+                                    :
+                                    <>
+                                        <Divider sx={{ mt: 1, mb: 2 }}/>
+                                        <FormControl>
+                                            <FormLabel id="project-active-radio-choice">initialize this project in active development?</FormLabel>
+                                            <RadioGroup
+                                                row
+                                                aria-labelledby="project-active-radio-choice"
+                                                name="active"
+                                                value={ newFormState[formFieldEntry.name]?.value || false }
+                                                onChange={(event) => setNewFormState({ 
+                                                    ...newFormState, 
+                                                    [event?.target.name]: { 
+                                                        value: !newFormState.active?.value, 
+                                                        error: null
+                                                    } 
+                                                })}
+                                                >
+                                                <FormControlLabel value={true} label="yes" control={ <Radio /> } />
+                                                <FormControlLabel value={false} label="no" control={ <Radio /> } />
+                                            </RadioGroup>
+                                        </FormControl>
+                                    </>
+                                }
+                            </Box>
                         :
-                            <Box sx={{my: 2}}>
+                            <Box sx={{my: 2}} key={`textfield-container-${formFieldEntry.name}`}>
                                 <TextField 
-                                    key={`key-for-${value.name}-input`}
-                                    id={`${value.name}-input`}
-                                    name={ value.name }
-                                    required={ value.required ?? false }
-                                    value={ newFormState[value.name]?.value || "" } 
+                                    key={`key-for-${formFieldEntry.name}-input`}
+                                    id={`${formFieldEntry.name}-input`}
+                                    name={ formFieldEntry.name }
+                                    required={ formFieldEntry.required ?? false }
+                                    value={ newFormState[formFieldEntry.name]?.value || "" } 
                                     variant="outlined" 
-                                    label={ value.label } 
-                                    type={ value.type }
+                                    label={ formFieldEntry.label } 
+                                    type="text"
                                     fullWidth={ true }
                                     color="secondary"
                                     onChange={ handleInputChange }
-                                    error={ Boolean(newFormState[value.name]?.error) }
-                                    helperText={ newFormState[value.name]?.error || "" }
-                                    { ...value === "fundingGoal" ? fundingExtraProp : null }
+                                    error={ Boolean(newFormState[formFieldEntry.name]?.error) }
+                                    helperText={ newFormState[formFieldEntry.name]?.error || "" }
+                                    { ...(formFieldEntry.name === "description" ? multilineExtraProp : null) }
+                                    { ...(formFieldEntry.name === "beginDate" || formFieldEntry.name === "endDate" ? dateExtraProp : null) }
+                                    { ...(formFieldEntry.name === "fundingGoal" ? fundingExtraProp : null) }
                                     />
                             </Box>
                     ))
@@ -545,72 +588,6 @@ export default function CreateProject() {
             </>
         )
     }
-
-    const CreateStepWithFieldset = ({props}: any) => {
-        
-        return (
-            <Step key={`step-created-for-${props.index}`}>
-                <StepButton color="inherit" onClick={ handleStep(props.index) }>{ props.step.label }</StepButton>
-                <StepContent>
-                    <Typography>{ props.step.description }</Typography>
-                    <CreateFormFields propp={ props } />
-                    <ForwardBack props={ props } />
-                </StepContent>
-            </Step>
-            // Object.values(formFieldSet).forEach((value) => (
-            //     (value === "techStack" || value === "team") 
-            //     ?
-            //     null
-            //     :
-            //         // value === "fundingGoal" 
-            //         // ?
-            //         // <Box sx={{my: 2}}>
-            //         //     <TextField 
-            //         //         key={`key-for-${value.name}-input`}
-            //         //         id={`${value.name}-input`}
-            //         //         name={ value.name }
-            //         //         required={ value.required ?? false }
-            //         //         value={ newFormState[value.name]?.value || "" } 
-            //         //         variant="outlined" 
-            //         //         label={`${value.label}`} 
-            //         //         type={ value.type }
-            //         //         fullWidth={ true }
-            //         //         color="secondary"
-            //         //         onChange={ handleInputChange }
-            //         //         error={ Boolean(newFormState[value.name]?.error) }
-            //         //         helperText={ newFormState[value.name]?.error || "" }
-            //         //         InputProps={{ inputComponent: NumericFormatCustom as any }}
-            //         //         />
-            //         // </Box>
-            //         // :
-            //         <Box sx={{my: 2}}>
-            //             <TextField 
-            //                 key={`key-for-${value.name}-input`}
-            //                 id={`${value.name}-input`}
-            //                 name={ value.name }
-            //                 required={ value.required ?? false }
-            //                 value={ newFormState[value.name]?.value || "" } 
-            //                 variant="outlined" 
-            //                 label={`${value.label}`} 
-            //                 type={ value.type }
-            //                 fullWidth={ true }
-            //                 color="secondary"
-            //                 onChange={ handleInputChange }
-            //                 error={ Boolean(newFormState[value.name]?.error) }
-            //                 helperText={ newFormState[value.name]?.error || "" }
-            //                 { ...value === "fundingGoal" ? fundingExtraProp : null }
-            //                 />
-            //         </Box>
-            // ))
-        )
-    }
-
-    // const handleBlur = (event: React.FocusEvent<HTMLInputElement>) => {
-    //     const { name, value } = event.target;
-    //     const error = validateField(name, value);
-    //     setNewFormState({ ...newFormState, [name]: { ...newFormState[name], error } });
-    // };
-    
 
 
 	return (
@@ -653,20 +630,19 @@ export default function CreateProject() {
                                 value={searchParams.get("redirectTo") ?? undefined}
                                 />
                             <Stepper activeStep={activeStep} orientation="vertical">
-
-                {/* THIS IS REPLACEMENT FOR ALL FIELDS DYNAMIC */}
-
+{/* THIS IS REPLACEMENT FOR ALL FIELDS DYNAMIC - delete map to replace with orig code */}
                                 {
                                     steps.map((step, index) => (
-                                        <CreateStepWithFieldset 
-                                            props={{ step, index }} 
-                                            key={`step-${index}`} 
-                                            />
+                                        <Step key={`step-created-for-${index}`}>
+                                            <StepButton color="inherit" onClick={ handleStep(index) }>{ step.label }</StepButton>
+                                            <StepContent>
+                                                <Typography>{ step.description }</Typography>
+                                                <CreateFormFields props={{ index }} />
+                                                <ForwardBack props={{ index }} />
+                                            </StepContent>
+                                        </Step>
                                     ))
                                 }
-
-                 {/* REMOVED CODE GOES HERE */}
-
                                 <Box flexGrow={1} sx={{ display: 'flex-row', py: 2 }}>
                                     <Button 
                                         className="button" 
@@ -684,9 +660,7 @@ export default function CreateProject() {
                                         className="button" 
                                         sx={{ mt: 1, ml: 2  }}
                                         disabled={
-                                            !newFormState ??
-                                            Object.values(newFormState).some((item) => item.value && item.error)
-                                            
+                                            (activeStep !== steps.length && !Object.values(newFormState).some((field) => field.error))
                                         }
                                         // disabled={ !formIsValid }
                                         >
