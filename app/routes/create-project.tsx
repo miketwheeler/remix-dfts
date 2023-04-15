@@ -9,38 +9,22 @@ import { Link, useSearchParams, Form, useActionData, useLoaderData } from "@remi
 import { 
     Box, 
     Typography, 
-    Divider, 
     Button, 
     Paper, 
-    TextField, 
-    FormControl, 
-    FormLabel, 
-    RadioGroup, 
-    FormControlLabel, 
-    Radio,
-    Stepper, Step, StepLabel, StepContent, StepButton, Alert,
+    Stepper, Step, StepContent, StepButton,
 } from "@mui/material";
-import Grid from '@mui/material/Unstable_Grid2'
-import { NumericFormat, NumericFormatProps } from "react-number-format";
-
 import { createProjectValidators } from "~/validators/validators";
-
-import UsersTeamPicker from "~/components/reusable-components/minor/UsersTeamPicker";
-import MultiselectPicker from "~/components/reusable-components/minor/MultislectPicker";
+import { CreateFormFields } from "~/components/reusable-components/minor/CreateFormFields";
+import { ForwardBack } from "~/components/reusable-components/minor/ForwardBackStep";
 
 // import for data from DB
 import { db } from "~/utils/db.server";
 import { badRequest } from "~/utils/request.server";
-// import { requireUserId } from "~/utils/session.server";
+import { requireUserId } from "~/utils/session.server";
 import { createProject } from "~/utils/project.server";
 import { getUsersTeamData } from "~/utils/display.server";
 
 
-
-interface CustomProps {
-    onChange: (event: { target: { name: string; value: string } }) => void;
-    name: string;
-}
 
 interface FormState {
     [key: string]: {
@@ -52,17 +36,15 @@ interface FormState {
 // requires the user to be logged in - on load, so is hack but works because of the order necessary within the login process
 export async function loader({ request }: LoaderArgs) {
 	// const userId = await requireUserId(request);
-    const teams = await getUsersTeamData(request);
+    const usersTeams = await getUsersTeamData(request);
 
-	return json(teams);
+	return json(usersTeams);
 }
 
 export const meta: MetaFunction = () => ({
 	description: "Create a project and access it on your dashboard.",
 	title: "dev foyer | create project",
 });
-
-
 
 export const action = async ({ request }: ActionArgs) => {
     const form = await request.formData();
@@ -168,7 +150,8 @@ const styles = {
 		flexGrow: 1,
 		padding: ".5rem",
 		borderRadius: "4px",
-        mx: 1,
+        mx: 2,
+        my: 2,
 		boxShadow: "0 0 10px 0 rgba(0,0,0,.1)",
 	},
     paper: {
@@ -209,406 +192,170 @@ const steps = [
     }
 ];
 
-const formFieldData = [
-    {
-        name: {
-            name: "name",
-            label: "project name",
-            // fieldType: "text",
-            required: true,
-        },
-        type: {
-            name: "type",
-            label: "project type (e.g. web app, mobile app, etc.)",
-            // fieldType: "text",
-            required: true,
-        },
-    },
-    {
-        synopsis: {
-            name: "synopsis",
-            label: "synopsis (shortened description)",
-            // fieldType: "text",
-            required: true,
-        },
-        description: {
-            name: "description",
-            label: "description (full description)",
-            // fieldType: "text",
-            required: true,
-        },
-    },
-    {
-        techStack: {
-            name: "techStack",
-        },
-    },
-    {
-        beginDate: {
-            name: "beginDate",
-            label: "begin date (mm/dd/yyyy)",
-            // type: "text",
-            required: true,
-        },
-        endDate: {
-            name: "endDate",
-            label: "end date (mm/dd/yyyy)",
-            // type: "text",
-            required: true,
-        },
-        active: {
-            name: "active",
-        },
-    },
-    {
-        fundingGoal: {
-            name: "fundingGoal",
-            label: "funding goal",
-            // type: "text",
-        },
-    },
-    {
-        team: { 
-            name: "team",
-        },
-    }
-];
-
-
-
-const NumericFormatCustom = React.forwardRef<NumericFormatProps, CustomProps>(
-	function NumericFormatCustom(props, ref) {
-		const { onChange, ...other } = props;
-
-		return (
-			<NumericFormat
-				{...other}
-				getInputRef={ref}
-				onValueChange={(values) => {
-					onChange({
-						target: {
-							name: props.name,
-							value: values.value,
-						},
-					});
-				}}
-				thousandSeparator
-				valueIsNumericString
-				prefix="$"
-			/>
-		);
-	}
-);
-
-
 
 
 export default function CreateProject() {
     const actionData = useActionData<typeof action>();
     const loaderData = useLoaderData<typeof loader>();
 	const [searchParams] = useSearchParams();
-    const [assignTeam, setAssignTeam] = useState({});
     const [activeStep, setActiveStep] = useState(0);
+
+    const [assignTeam, setAssignTeam] = useState({});
     const [formErrors, setFormErrors] = useState<Record<string, string>>({});
     const [formIsValid, setFormIsValid] = useState(false);
 
     const [newFormState, setNewFormState] = useState<FormState>({});
 
-    const defaultState = {
-        name: '',
-        type: '',
-        synopsis: '',
-        description: '',
-        techStack: '',
-        beginDate: '',
-        endDate: '',
-        active: false,
-        fundingGoal: 1,
-        // team: '',
-    }
-
-    const [formState, setFormState] = useState(defaultState);
+    // const defaultState = {
+    //     name: '',
+    //     type: '',
+    //     synopsis: '',
+    //     description: '',
+    //     techStack: '',
+    //     beginDate: '',
+    //     endDate: '',
+    //     active: false,
+    //     fundingGoal: 1,
+    //     // team: '',
+    // }
+    // const [formState, setFormState] = useState(defaultState);
 
     // Expandable Step Form Actions
-    const handleNext = () => { setActiveStep((prevActiveStep) => prevActiveStep + 1) };
-    const handleBack = () => { setActiveStep((prevActiveStep) => prevActiveStep - 1) };
-    const handleReset = () => { 
+    const handleStep = (step: number) => () => { setActiveStep(step) };
+
+    const handleAllFieldsReset = () => { 
         setActiveStep(0);
         // setFormState(defaultState);
         setNewFormState({});
     };
-    const handleStep = (step: number) => () => { setActiveStep(step) };
 
+    // const determineDisabled = (fieldValues: any[]) => {
+    //     let returnValue = true;
+    //     fieldValues.forEach((fieldName) => returnValue = !newFormState[fieldName] )
 
-    const determineDisabled = (fieldValues: any[]) => {
-        let returnValue = true;
-        fieldValues.forEach((fieldName) => returnValue = !newFormState[fieldName] )
-
-        return returnValue;
-    }
-
-    const ForwardBack = ({props}: any) => {
-        const stepNames = steps[props.index].fieldNames;
-        // console.log(`stepNames: ${stepNames}`)
-
-        return (
-            <Box sx={{ mb: 2 }}>
-                <div>
-                    {
-                        props.index !== steps.length -1
-                        ?
-                        <Button 
-                            variant="contained" 
-                            disabled={ 
-                                // Needs to be disabled by default (true), then checked for bool or error state of field to enable
-                                determineDisabled(stepNames) ||
-                                Object.values(newFormState)?.some((item) => 
-                                    item.value === "active" 
-                                    ? false 
-                                    : item.value === "techStack"
-                                    ? Boolean(item.value.split(',').length < 2)
-                                    : item.error
-                                ) 
-                            } 
-                            onClick={ handleNext } 
-                            sx={{ mt: 1, mr: 1 }}
-                            >
-                            continue
-                        </Button>
-                        : null
-                    }
-                    {
-                        props.index !== 0
-                        ?
-                        <Button onClick={ handleBack } sx={{ mt: 1, mr: 1 }}>
-                            back
-                        </Button>
-                        : null
-                    }
-                </div>
-            </Box>
-        )
-    }
-
-    // Form Field - specific actions
-    const handleFundingChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setNewFormState((prevState) => ({
-            ...prevState,
-            [event.target.name]: { value: event.target.value, error: null },
-        }));
-    };
-
-    // const handleDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    //     const formattedDate = createProjectValidators.validateDate(event.target.value);
-    //     setFormState((prevState) => ({ ...prevState, [event.target.name]: formattedDate  }))
+    //     return returnValue;
     // }
 
+    // const ForwardBack = ({props}: any) => {
+    //     const stepNames = steps[props.index].fieldNames;
 
-    const validateForm = () => {
-        let errors: Record<string, string> = {};
-        if(!formState.name) { 
-            errors.name = "name is required";
-        } else if(!createProjectValidators.validateProjectName(formState.name)) { 
-            errors.name = "name is invalid";
-        };
-        if(!formState.type) {
-            errors.type = "type is required";
-        } else if(!createProjectValidators.validateProjectType(formState.type)) {
-            errors.type = "type is invalid";
-        };
-        if(!formState.synopsis) {
-            errors.synopsis = "synopsis is required";
-        } else if(!createProjectValidators.validateProjectSynopsis(formState.synopsis)) {
-            errors.synopsis = "synopsis is invalid";
-        };
-        if(!formState.description) {
-            errors.description = "description is required";
-        } else if(!createProjectValidators.validateProjectDescription(formState.description)) {
-            errors.description = "description is invalid";
-        };
-        if(!formState.techStack) {
-            errors.techStack = "tech stack is required";
-        } else if(!createProjectValidators.validateProjectTechStack(formState.techStack)) {
-            errors.techStack = "tech stack is invalid";
-        };
-        if(!formState.beginDate) {
-            errors.beginDate = "begin date is required";
-        } else if (!(formState.endDate.length >= 1 && formState.endDate.length < 10)) {
-            errors.beginDate = "begin date is incomplete";
-        }
-        if(!formState.endDate) {
-            errors.endDate = "end date is required";
-        } else if (!(formState.endDate.length >= 1 && formState.endDate.length < 10)) {
-            errors.endDate = "end date is incomplete";
-        }
-        // if(!formState.team) {
-        //     errors.team = "team is required"
-        // } else if(!createProjectValidators.validateProjectTeam(formState.team)) {
-        //     errors.team = "team is invalid"
-        // };
+    //     return (
+    //         <Box sx={{ mb: 2 }}>
+    //             <div>
+    //                 {
+    //                     props.index !== steps.length -1
+    //                     ?
+    //                     <Button 
+    //                         variant="contained" 
+    //                         disabled={ 
+    //                             // Needs to be disabled by default (true), then checked for bool or error state of field to enable
+    //                             determineDisabled(stepNames) ||
+    //                             Object.values(newFormState)?.some((item) => 
+    //                                 item.value === "active" 
+    //                                 ? false 
+    //                                 : item.value === "techStack"
+    //                                 ? Boolean(item.value.split(',').length < 2)
+    //                                 : item.error
+    //                             ) 
+    //                         } 
+    //                         onClick={ handleNext } 
+    //                         sx={{ mt: 1, mr: 1 }}
+    //                         >
+    //                         continue
+    //                     </Button>
+    //                     : null
+    //                 }
+    //                 {
+    //                     props.index !== 0
+    //                     ?
+    //                     <Button onClick={ handleBack } sx={{ mt: 1, mr: 1 }}>
+    //                         back
+    //                     </Button>
+    //                     : null
+    //                 }
+    //             </div>
+    //         </Box>
+    //     )
+    // }
 
-        setFormErrors(errors);
-        setFormIsValid(Object.keys(errors).length === 0);
+    // Form Field - specific actions
+    // const handleFundingChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    //     setNewFormState((prevState) => ({
+    //         ...prevState,
+    //         [event.target.name]: { value: event.target.value, error: null },
+    //     }));
+    // };
 
-        return Object.keys(errors).length === 0;
-    }
+    // const validateForm = () => {
+    //     let errors: Record<string, string> = {};
+    //     if(!newFormState.name) { 
+    //         errors.name = "name is required";
+    //     } else if(!createProjectValidators.validateProjectName(newFormState[name]?.value)) { 
+    //         errors.name = "name is invalid";
+    //     };
+    //     if(!newFormState.type) {
+    //         errors.type = "type is required";
+    //     } else if(!createProjectValidators.validateProjectType(newFormState[type]?.value.length)) {
+    //         errors.type = "type is invalid";
+    //     };
+    //     if(!newFormState.synopsis) {
+    //         errors.synopsis = "synopsis is required";
+    //     } else if(!createProjectValidators.validateProjectSynopsis(newFormState.synopsis)) {
+    //         errors.synopsis = "synopsis is invalid";
+    //     };
+    //     if(!newFormState.description) {
+    //         errors.description = "description is required";
+    //     } else if(!createProjectValidators.validateProjectDescription(newFormState.description)) {
+    //         errors.description = "description is invalid";
+    //     };
+    //     if(!newFormState.techStack) {
+    //         errors.techStack = "tech stack is required";
+    //     } else if(!createProjectValidators.validateProjectTechStack(newFormState.techStack)) {
+    //         errors.techStack = "tech stack is invalid";
+    //     };
+    //     if(!newFormState.beginDate) {
+    //         errors.beginDate = "begin date is required";
+    //     } else if (!(newFormState.endDate.length >= 1 && newFormState.endDate.length < 10)) {
+    //         errors.beginDate = "begin date is incomplete";
+    //     }
+    //     if(!newFormState.endDate) {
+    //         errors.endDate = "end date is required";
+    //     } else if (!(newFormState.endDate.length >= 1 && newFormState.endDate.length < 10)) {
+    //         errors.endDate = "end date is incomplete";
+    //     }
+    //     // if(!formState.team) {
+    //     //     errors.team = "team is required"
+    //     // } else if(!createProjectValidators.validateProjectTeam(formState.team)) {
+    //     //     errors.team = "team is invalid"
+    //     // };
+
+    //     setFormErrors(errors);
+    //     setFormIsValid(Object.keys(errors).length === 0);
+
+    //     return Object.keys(errors).length === 0;
+    // }
 
     const handleFormSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        return validateForm();
-    }
-
-    const validateDate = (date: string) => {
-        const regex = /^([0-9]{1,2})\/?([0-9]{1,2})?\/?([0-9]{0,4})?$/;
-        const match = date.replace(/\D/g, '').match(regex);
-        if(match === null) {
-            return '';
-        }
-        let formatted = '';
-        if(match[1]) {
-            formatted += match[1];
-            if(match[2]) {
-                formatted += '/' + match[2];
-                if(match[3]) {
-                    formatted += '/' + match[3];
-                }
-            }
-        }
-        return formatted;
-    } 
-
-    const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const { name, value } = event.target;
-        let error: string | null;
-        let formattedValue;
-
-        if(name === "beginDate" || name === "endDate") {
-            formattedValue = validateDate(value);
-        }
-        error = validateField(name, formattedValue !== undefined ? formattedValue : value);
-        // console.log(`value on input change: ${value}, if formatted: ${formattedValue}, techStack: ${newFormState.techStack?.value}`)
-        setNewFormState({ ...newFormState, [name]: { value: formattedValue ?? value, error } });
-    };
-
-    const validateField = (name: string, value: string): string | null => {
-        switch (name) {
-            case "name":
-                return (value.length > 2) ? null : "name must be at least 3 characters";
-            case "type":
-                return (value.length > 4) ? null : "type must be at least 3 characters";
-            case "synopsis":
-                return (value.length > 10) ? null : "synopsis is a sentance and must be at least 10 characters";
-            case "description":
-                return (value.length > 60) ? null : "description is too short, it must be at least 60 characters";
-            case "techStack":
-                return (value?.split(',').length > 2) ? null : "tech stack cannot consist of 0 technologies";
-            case "beginDate":
-                return (value.length >= 10) ? null : "that is not a valid date, please use the format mm/dd/yyyy";
-            case "endDate":
-                return (value.length >= 10) ? null : "that is not a valid date, please use the format mm/dd/yyyy";
-            case "fundingGoal":
-                return (Number(value) >= 1) ? null : "funding goal should at least be a dollar";
-            default:
-                return null;
-        }
-    }
-
-    const CreateFormFields = ({props}: any) => {
-        const formFieldSet = formFieldData[props.index];
-        // console.log(`formFieldSet: ${JSON.stringify(formFieldSet, null, 2)};; formfieldset type: ${typeof formFieldSet}`)
-        const fundingExtraProp = { InputProps: { inputComponent: NumericFormatCustom as any } };
-        const dateExtraProp = { inputProps: { maxLength: 10, minLength: 10 } };
-        const multilineExtraProp = { multiline: true, rows: 5 }
-
-        return (
-            <>
-                {
-                    Object.values(formFieldSet)?.map((formFieldEntry) => (
-                        (formFieldEntry.name === "techStack" || formFieldEntry.name === "team" || formFieldEntry.name === "active") 
-                        ?
-                            <Box sx={{my: 2}} key={`textfield-container-${formFieldEntry.name}`}>
-                                {
-                                    formFieldEntry.name === "techStack"
-                                    ? 
-                                        //  This is external techstack picker component - returns a string of techs
-                                        <MultiselectPicker props={{ newFormState, setNewFormState }} />
-                                    :
-                                    formFieldEntry.name === "team"
-                                    ?
-                                        //  This is external team picker component - returns a string of team members
-                                        <UsersTeamPicker props={{ newFormState, setNewFormState }} />
-                                    :
-                                    <>
-                                        <Divider sx={{ mt: 1, mb: 2 }}/>
-                                        <FormControl>
-                                            <FormLabel id="project-active-radio-choice">initialize this project in active development?</FormLabel>
-                                            <RadioGroup
-                                                row
-                                                aria-labelledby="project-active-radio-choice"
-                                                name="active"
-                                                value={ newFormState[formFieldEntry.name]?.value || false }
-                                                onChange={(event) => setNewFormState({ 
-                                                    ...newFormState, 
-                                                    [event?.target.name]: { 
-                                                        value: !newFormState.active?.value, 
-                                                        error: null
-                                                    } 
-                                                })}
-                                                >
-                                                <FormControlLabel value={true} label="yes" control={ <Radio /> } />
-                                                <FormControlLabel value={false} label="no" control={ <Radio /> } />
-                                            </RadioGroup>
-                                        </FormControl>
-                                    </>
-                                }
-                            </Box>
-                        :
-                            <Box sx={{my: 2}} key={`textfield-container-${formFieldEntry.name}`}>
-                                <TextField 
-                                    key={`key-for-${formFieldEntry.name}-input`}
-                                    id={`${formFieldEntry.name}-input`}
-                                    name={ formFieldEntry.name }
-                                    required={ formFieldEntry.required ?? false }
-                                    value={ newFormState[formFieldEntry.name]?.value || "" } 
-                                    variant="outlined" 
-                                    label={ formFieldEntry.label } 
-                                    type="text"
-                                    fullWidth={ true }
-                                    color="secondary"
-                                    onChange={ handleInputChange }
-                                    error={ Boolean(newFormState[formFieldEntry.name]?.error) }
-                                    helperText={ newFormState[formFieldEntry.name]?.error || "" }
-                                    { ...(formFieldEntry.name === "description" ? multilineExtraProp : null) }
-                                    { ...(formFieldEntry.name === "beginDate" || formFieldEntry.name === "endDate" ? dateExtraProp : null) }
-                                    { ...(formFieldEntry.name === "fundingGoal" ? fundingExtraProp : null) }
-                                    />
-                            </Box>
-                    ))
-                }
-            </>
-        )
+        // return validateForm();
+        // TODO: fix the final form validation - should be on the submit action's server check (accept/deny form in all)
+        return null;
     }
 
 
 	return (
         <Box sx={styles.container}>
-            {/* {
-                actionData ? 
-                <Alert severity="success" sx={{ mb: 2 }}>
-                    <p>{actionData?.message}</p>
-                </Alert>
-                : null
-            } */}
             <Typography variant="h4" component="h1" gutterBottom>
                 create a new project
             </Typography>
             <Typography variant="body1" gutterBottom>
-                already have a project going? go to {" "}
+                already have a project going? go to &nbsp;
                 <Link
                     to={{
                         pathname: "/dashboard/project",
                         search: searchParams.toString(),
                     }}
+                    style={{ textDecoration: 'none', color: 'purple'}}
                     >
                     your projects
                 </Link>
@@ -630,15 +377,15 @@ export default function CreateProject() {
                                 value={searchParams.get("redirectTo") ?? undefined}
                                 />
                             <Stepper activeStep={activeStep} orientation="vertical">
-{/* THIS IS REPLACEMENT FOR ALL FIELDS DYNAMIC - delete map to replace with orig code */}
+                                {/* THIS IS REPLACEMENT FOR ALL FIELDS DYNAMIC - delete map to replace with orig code */}
                                 {
                                     steps.map((step, index) => (
                                         <Step key={`step-created-for-${index}`}>
                                             <StepButton color="inherit" onClick={ handleStep(index) }>{ step.label }</StepButton>
                                             <StepContent>
                                                 <Typography>{ step.description }</Typography>
-                                                <CreateFormFields props={{ index }} />
-                                                <ForwardBack props={{ index }} />
+                                                { CreateFormFields({props: { index, newFormState, setNewFormState, loaderData }}) }
+                                                <ForwardBack props={{ index, setActiveStep, steps, newFormState }} />
                                             </StepContent>
                                         </Step>
                                     ))
@@ -649,7 +396,7 @@ export default function CreateProject() {
                                         sx={{ mt: 1}}
                                         onClick={(e) => {
                                             e.preventDefault();
-                                            handleReset();
+                                            handleAllFieldsReset();
                                         }}
                                         >
                                         cancel all

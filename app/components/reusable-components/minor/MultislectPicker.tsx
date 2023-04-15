@@ -14,7 +14,6 @@ interface TechOptionType {
 	name: string;
 }
 
-
 const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
 const checkedIcon = <CheckBoxIcon fontSize="small" />;
 const filter = createFilterOptions<TechOptionType>();

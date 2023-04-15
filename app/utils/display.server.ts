@@ -40,13 +40,15 @@ export async function getProject( params: { id: number }) {
 // GET TEAM DATA
 export async function getUsersTeamData(request: Request) {
     const userId = await getUserId(request);
-    console.log("userId: ", userId)
+    
+    // console.log("userId: ", userId)
     if(userId) {
         const userTeams = await db.user.findUnique({
-            // where: { teamLeadId: userId },
             where: { id: userId },
-            select: { teams: true }
+            select: { username: true, teams: true }
         });
+        console.log(`teams data: ${userTeams?.teams}`)
+        // userTeams?.teams
         
 
         return ({userTeams, userId});
