@@ -1,8 +1,14 @@
 // import { Skeleton } from "@mui/material";
 // import type { ActionArgs, LoaderArgs, MetaFunction } from "@ remix-run/node";
 // import { json, redirect } from "@remix-run/node";
-import { Typography, RadioGroup, Radio, FormControl, FormLabel, Box, FormControlLabel, Stack, Divider } from "@mui/material";
+import { 
+	Typography, RadioGroup, Radio, FormControl, FormLabel, Box, FormControlLabel, Stack, Divider, 
+	Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Checkbox, Paper
+ } from "@mui/material";
+// import { DataGrid } from "@mui/x-data-grid";
+import DeleteIcon from "@mui/icons-material/Delete";
 import Grid2 from "@mui/material/Unstable_Grid2";
+import { useState } from "react";
 import { Form, useCatch } from "@remix-run/react";
 // import DetailsCard from "~/components/reusable-components/minor/DetailsCard";
 
@@ -12,26 +18,103 @@ import { Form, useCatch } from "@remix-run/react";
 export default function UsersTeamPicker({ props }: any) {
 	const { newFormState, setNewFormState, loaderData }= props;
 	// const assign = teamAssignment;
+	const teamsUserIsLead = loaderData?.teamsUserIsLead;
+	const userId = loaderData?.userId;
+	console.log(`teams User Is Lead On: ${JSON.stringify(teamsUserIsLead)}}`)
 
-	const usersTeams = loaderData.userTeams.teams;
+	const usersTeams = loaderData.usersTeams.teams;
 
-	console.log(`teampicker Passed data: ${JSON.stringify(usersTeams)}}`)
+	console.log(`users associated Teams: ${JSON.stringify(usersTeams)}}`)
+
+	const [selected, setSelected] = useState<readonly string[]>([]);
+
+	const handleClick = (event: React.MouseEvent<unknown>, name: string) => {
+		const selectedIndex = selected.indexOf(name);
+		let newSelected: readonly string[] = [];
+	
+		if (selectedIndex === -1) {
+			newSelected = newSelected.concat(selected, name);
+		} else if (selectedIndex === 0) {
+			newSelected = newSelected.concat(selected.slice(1));
+		} else if (selectedIndex === selected.length - 1) {
+			newSelected = newSelected.concat(selected.slice(0, -1));
+		} else if (selectedIndex > 0) {
+			newSelected = newSelected.concat(
+				selected.slice(0, selectedIndex),
+				selected.slice(selectedIndex + 1),
+			);
+		}
+	
+		setSelected(newSelected);
+	};
+
+	const isSelected = (name: string) => selected.indexOf(name) !== -1;
+
     
 	return (
         <Box style={{ margin: 'auto 1rem'}}>
 			<Typography variant="h4" component="h1" gutterBottom>
                 {" "}
             </Typography>
-            <Typography variant="h5" gutterBottom>
-                select a team to assign to this project
+            <Typography variant="h6" gutterBottom>
+                select a team to assign to this new project
             </Typography>
+
+			<Box sx={{ width: '100%' }}>
+				<Paper sx={{ width: '100%', mb: 2 }}>
+					<TableContainer>
+						<Table aria-labelledby="users-teams-table" size="medium">
+							<TableBody>
+								{
+									usersTeams && userId 
+									?
+									usersTeams.map((team: any, index: number) => {
+										const isTeamSelected = isSelected(team.id);
+										const labelId = `table-checkbox-${index}`;
+
+										return (
+											<TableRow
+												hover
+												onClick={(event) => handleClick(event, team.id)}
+												role="checkbox"
+												aria-checked={isTeamSelected}
+												tabIndex={-1}
+												key={team.id}
+												selected={isTeamSelected}
+												sx={{ cursor: 'pointer' }}
+												>
+												<TableCell padding="checkbox">
+													<Checkbox
+														color="primary"
+														checked={isTeamSelected}
+														inputProps={{
+															'aria-labelledby': labelId,
+														}}
+													/>
+												</TableCell>
+												<TableCell component="th" id={labelId} scope="row" padding="none">
+													{team.name}
+												</TableCell>
+												<TableCell align="right">{team.teamLeadId === userId ? "lead" : " "}</TableCell>
+
+											</TableRow>
+										)
+									})
+									: null
+								}
+							</TableBody>
+						</Table>
+					</TableContainer>
+				</Paper>
+			</Box>
             
 			<Box sx={{ border: '1px solid lightgrey', width: '100%', borderRadius: 2, padding: 2, display: 'flex' }}>
 				<Box flexGrow={1} sx={{ display: 'flex', flexDirection: 'column' }}>
+					<Typography variant="body1" sx={{ display: 'flex' }}> 
+						select to assign your new project to a team: 
+					</Typography>
+					<Divider flexItem sx={{ mt: 1, mb: 2 }} />
 					<Stack spacing={2}>
-						<Typography variant="body1" sx={{ display: 'flex'}}> 
-							Looks like you are the lead on these team(s): 
-						</Typography>
 						<Typography variant="body1" gutterBottom>
 							{
 								usersTeams.map((team: any) => {
@@ -58,8 +141,8 @@ export default function UsersTeamPicker({ props }: any) {
 						</FormControl>
 					</Stack>
 				</Box>
-				<Divider orientation="vertical" flexItem sx={{ mx: 2 }} />
-				<Box flexGrow={1} sx={{ dispaly: 'flex', flexDirection: 'column' }}>
+				{/* <Divider orientation="vertical" flexItem sx={{ mx: 2 }} /> */}
+				{/* <Box flexGrow={1} sx={{ dispaly: 'flex', flexDirection: 'column' }}>
 					<Typography variant="body1" sx={{ display: 'flex'}}>
 						Here's all the teams you're a member of:
 					</Typography>
@@ -70,7 +153,7 @@ export default function UsersTeamPicker({ props }: any) {
 							})
 						}
 					</Box>
-				</Box>
+				</Box> */}
 			</Box>
         </Box>
     )

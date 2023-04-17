@@ -77,6 +77,16 @@ export async function getUserId(request: Request) {
 	return userId;
 }
 
+// get the current user id and username
+// export async function getUserIdAndUsername(request: Request) {
+// 	const session = await getUserSession(request);
+// 	const userId = session.get("userId");
+// 	const username = session.get("username");
+// 	if (!userId || typeof userId !== "string" || !username || typeof username !== "string") return null;
+
+// 	return { userId, username };
+// }
+
 // check the current user is logged in and admit them if session is valid
 export async function requireUserId(
 	request: Request,

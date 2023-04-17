@@ -40,19 +40,35 @@ export async function getProject( params: { id: number }) {
 // GET TEAM DATA
 export async function getUsersTeamData(request: Request) {
     const userId = await getUserId(request);
-    
+    let usersTeams;
+    let teamsUserIsLead;
     // console.log("userId: ", userId)
     if(userId) {
-        const userTeams = await db.user.findUnique({
+        usersTeams = await db.user.findUnique({
             where: { id: userId },
             select: { username: true, teams: true }
         });
-        console.log(`teams data: ${userTeams?.teams}`)
-        // userTeams?.teams
-        
-
-        return ({userTeams, userId});
     }
+    if (usersTeams) {
+        teamsUserIsLead = await getTeamLeadInfo(usersTeams);
+    }
+    return ({usersTeams, teamsUserIsLead, userId});
+}
+
+async function getTeamLeadInfo(usersTeams: any) {
+    let teamsAssociated: any[] = [];
+    let asLeadUsername;
+
+    for (let i = 0; i < usersTeams.teams.length; i++) {
+        const teamIdWhereUsernameIsTeamLead = usersTeams.teams[i].teamLeadId;
+        const asLeadTeamName = usersTeams.teams[i].name;
+        asLeadUsername = await db.user.findUnique({
+            where: { id: teamIdWhereUsernameIsTeamLead },
+            select: { username: true }
+        })
+        teamsAssociated.push({asLeadTeamName, asLeadUsername});
+    }
+    return {teamsAssociated};
 }
 
 // async function setProjectTeam( id: string ) {
