@@ -170,6 +170,9 @@ export const CreateFormFields = ({props}: any) => {
         if(name === "beginDate" || name === "endDate") {
             formattedValue = validateDate(value);
         }
+        // else if(name === "active") {
+            
+        // }
         error = validateField(name, formattedValue !== undefined ? formattedValue : value);
         // console.log(`value on input change: ${value}, if formatted: ${formattedValue}, techStack: ${newFormState.techStack?.value}`)
         setNewFormState({ ...newFormState, [name]: { value: formattedValue ?? value, error } });
@@ -202,17 +205,17 @@ export const CreateFormFields = ({props}: any) => {
                                             row
                                             aria-labelledby="project-active-radio-choice"
                                             name="active"
-                                            value={ newFormState[formFieldEntry.name]?.value || false }
+                                            value={ newFormState[formFieldEntry.name]?.value || "" }
                                             onChange={(event) => setNewFormState({ 
                                                 ...newFormState, 
                                                 [event?.target.name]: { 
-                                                    value: !newFormState.active?.value, 
+                                                    value: event.target.value, 
                                                     error: null
                                                 } 
                                             })}
                                             >
-                                            <FormControlLabel value={true} label="yes" control={ <Radio /> } />
-                                            <FormControlLabel value={false} label="no" control={ <Radio /> } />
+                                            <FormControlLabel value="true" label="yes" control={ <Radio /> } />
+                                            <FormControlLabel value="false" label="no" control={ <Radio /> } />
                                         </RadioGroup>
                                     </FormControl>
                                 </>

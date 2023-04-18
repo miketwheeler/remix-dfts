@@ -9,18 +9,18 @@ type CreateProjectForm = {
     techStack: string;
     beginDate: string;
     endDate: string;
-    active: boolean;
+    active: string;
     fundingGoal: number;
-    // category: any[];
-    // team: string;
+    teamId: string;
 }
 
 
 //  CREATE
 export async function createProject({ 
-    name, type, synopsis, description, techStack, beginDate, endDate, active, fundingGoal,
+    name, type, synopsis, description, techStack, beginDate, endDate, active, fundingGoal, teamId,
 }: CreateProjectForm) {
     const newFundingGoal = Number(fundingGoal) * 1.00; // convert json string value to decimal
+    const convertActive = ( active === "true" ? true : false )
 	const project = await db.project.create({
 		data: { 
             name, 
@@ -30,10 +30,10 @@ export async function createProject({
             techStack, 
             beginDate, 
             endDate, 
-            active, 
+            active: convertActive, 
             fundingGoal: newFundingGoal, 
             // category,
-            // team
+            teamId
         },
 	});
 

@@ -3,7 +3,7 @@ import type {
     MetaFunction,
     LoaderArgs,
 } from "@remix-run/node";
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { json, redirect } from "@remix-run/node"
 import { Link, useSearchParams, Form, useActionData, useLoaderData } from "@remix-run/react";
 import { 
@@ -28,7 +28,7 @@ import { getUsersTeamData } from "~/utils/display.server";
 
 interface FormState {
     [key: string]: {
-        value: string | boolean;
+        value: string;
         error: string | null;
     }
 }
@@ -55,9 +55,9 @@ export const action = async ({ request }: ActionArgs) => {
     const techStack = form.get("techStack");
     const beginDate = form.get("beginDate");
     const endDate = form.get("endDate");
-    const active = form.get("active") ?? true;
+    const active = form.get("active");
     const fundingGoal = form.get("fundingGoal");
-    // const team = form.get('team');
+    const team = form.get('team');
 
 	const redirectTo = createProjectValidators.validateUrl(form.get("redirectTo")?.toString() ?? "/dashboard/project");
 
@@ -69,9 +69,9 @@ export const action = async ({ request }: ActionArgs) => {
         typeof techStack !== "string" ||
         typeof beginDate !== "string" ||
         typeof endDate !== "string" ||
-        typeof active !== "boolean" ||
+        typeof active !== "string" ||
         typeof fundingGoal !== "number" ||
-        // typeof team !== "string" ||
+        typeof team !== "string" ||
 		typeof redirectTo !== "string" 
 	) {
 		return badRequest({
@@ -91,7 +91,7 @@ export const action = async ({ request }: ActionArgs) => {
         endDate: endDate, 
         active: active, 
         fundingGoal: fundingGoal, 
-        // team,
+        team: team,
     };
 	const fieldErrors = {
         name: createProjectValidators.validateProjectName(name),
@@ -132,7 +132,7 @@ export const action = async ({ request }: ActionArgs) => {
         endDate,
         active,
         fundingGoal,
-        // team,
+        team,
     });
     if(!project) {
         return badRequest({
@@ -198,35 +198,20 @@ export default function CreateProject() {
     const actionData = useActionData<typeof action>();
     const loaderData = useLoaderData<typeof loader>();
 	const [searchParams] = useSearchParams();
-    const [activeStep, setActiveStep] = useState(0);
+    const [activeStep, setActiveStep] = useState(0); // TODO: change back to 0 when compl testing
 
-    const [assignTeam, setAssignTeam] = useState({});
+    // const [assignTeam, setAssignTeam] = useState({});
     const [formErrors, setFormErrors] = useState<Record<string, string>>({});
     const [formIsValid, setFormIsValid] = useState(false);
 
     const [newFormState, setNewFormState] = useState<FormState>({});
-
-    // const defaultState = {
-    //     name: '',
-    //     type: '',
-    //     synopsis: '',
-    //     description: '',
-    //     techStack: '',
-    //     beginDate: '',
-    //     endDate: '',
-    //     active: false,
-    //     fundingGoal: 1,
-    //     // team: '',
-    // }
-    // const [formState, setFormState] = useState(defaultState);
 
     // Expandable Step Form Actions
     const handleStep = (step: number) => () => { setActiveStep(step) };
 
     const handleAllFieldsReset = () => { 
         setActiveStep(0);
-        // setFormState(defaultState);
-        setNewFormState({});
+        setNewFormState({}); // reset all field values' state
     };
 
     // const determineDisabled = (fieldValues: any[]) => {
@@ -279,6 +264,7 @@ export default function CreateProject() {
     // }
 
     // Form Field - specific actions
+
     // const handleFundingChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     //     setNewFormState((prevState) => ({
     //         ...prevState,
@@ -323,11 +309,11 @@ export default function CreateProject() {
     //     } else if (!(newFormState.endDate.length >= 1 && newFormState.endDate.length < 10)) {
     //         errors.endDate = "end date is incomplete";
     //     }
-    //     // if(!formState.team) {
-    //     //     errors.team = "team is required"
-    //     // } else if(!createProjectValidators.validateProjectTeam(formState.team)) {
-    //     //     errors.team = "team is invalid"
-    //     // };
+        // if(!formState.team) {
+        //     errors.team = "team is required"
+        // } else if(!createProjectValidators.validateProjectTeam(formState.team)) {
+        //     errors.team = "team is invalid"
+        // };
 
     //     setFormErrors(errors);
     //     setFormIsValid(Object.keys(errors).length === 0);
@@ -341,6 +327,10 @@ export default function CreateProject() {
         // TODO: fix the final form validation - should be on the submit action's server check (accept/deny form in all)
         return null;
     }
+
+    useMemo(() => {
+        console.log(`complete form state: ${JSON.stringify(newFormState, null, 2)}`)
+    }, [newFormState])
 
 
 	return (
@@ -377,7 +367,7 @@ export default function CreateProject() {
                                 value={searchParams.get("redirectTo") ?? undefined}
                                 />
                             <Stepper activeStep={activeStep} orientation="vertical">
-                                {/* THIS IS REPLACEMENT FOR ALL FIELDS DYNAMIC - delete map to replace with orig code */}
+                                {/* THIS IS REPLACEMENT FOR ALL FIELDS DYNAMICLY - delete map to replace with orig code */}
                                 {
                                     steps.map((step, index) => (
                                         <Step key={`step-created-for-${index}`}>
@@ -409,7 +399,6 @@ export default function CreateProject() {
                                         disabled={
                                             (activeStep !== steps.length && !Object.values(newFormState).some((field) => field.error))
                                         }
-                                        // disabled={ !formIsValid }
                                         >
                                         create new project
                                     </Button>

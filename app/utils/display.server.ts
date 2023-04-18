@@ -41,7 +41,7 @@ export async function getProject( params: { id: number }) {
 export async function getUsersTeamData(request: Request) {
     const userId = await getUserId(request);
     let usersTeams;
-    let teamsUserIsLead;
+    // let teamsUserIsLead;
     // console.log("userId: ", userId)
     if(userId) {
         usersTeams = await db.user.findUnique({
@@ -49,27 +49,31 @@ export async function getUsersTeamData(request: Request) {
             select: { username: true, teams: true }
         });
     }
-    if (usersTeams) {
-        teamsUserIsLead = await getTeamLeadInfo(usersTeams);
-    }
-    return ({usersTeams, teamsUserIsLead, userId});
+    // if (usersTeams) {
+    //     teamsUserIsLead = await getTeamLeadInfo(usersTeams);
+    // }
+    return ({
+        usersTeams, 
+        // teamsUserIsLead, 
+        userId
+    });
 }
 
-async function getTeamLeadInfo(usersTeams: any) {
-    let teamsAssociated: any[] = [];
-    let asLeadUsername;
+// async function getTeamLeadInfo(usersTeams: any) {
+//     let teamsAssociated: any[] = [];
+//     let asLeadUsername;
 
-    for (let i = 0; i < usersTeams.teams.length; i++) {
-        const teamIdWhereUsernameIsTeamLead = usersTeams.teams[i].teamLeadId;
-        const asLeadTeamName = usersTeams.teams[i].name;
-        asLeadUsername = await db.user.findUnique({
-            where: { id: teamIdWhereUsernameIsTeamLead },
-            select: { username: true }
-        })
-        teamsAssociated.push({asLeadTeamName, asLeadUsername});
-    }
-    return {teamsAssociated};
-}
+//     for (let i = 0; i < usersTeams.teams.length; i++) {
+//         const teamIdWhereUsernameIsTeamLead = usersTeams.teams[i].teamLeadId;
+//         const asLeadTeamName = usersTeams.teams[i].name;
+//         asLeadUsername = await db.user.findUnique({
+//             where: { id: teamIdWhereUsernameIsTeamLead },
+//             select: { username: true }
+//         })
+//         teamsAssociated.push({asLeadTeamName, asLeadUsername});
+//     }
+//     return {teamsAssociated};
+// }
 
 // async function setProjectTeam( id: string ) {
 //     const project = await db.project.findUnique({
