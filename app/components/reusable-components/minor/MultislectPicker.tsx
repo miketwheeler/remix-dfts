@@ -239,7 +239,7 @@ export default function MultiselectPicker({props}: any) {
         for(let i = 0; i < techNameList.length; i++) {
             newArray.push(Object.values(techNameList[i]));
         }
-        setNewFormState({ ...newFormState, techStack: { value: newArray.join(",") } });
+        setNewFormState({ ...newFormState, techStack: { value: newArray.join(","), error: null } });
     }
 
     // React.useEffect(() => {

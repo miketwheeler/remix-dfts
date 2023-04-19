@@ -7,7 +7,7 @@ import {
 } from "@mui/material";
 import { 
 	useState, 
-	// useMemo 
+	useMemo 
 } from "react";
 import { useCatch } from "@remix-run/react";
 
@@ -95,9 +95,9 @@ export default function UsersTeamPicker({ props }: any) {
 
 	const isSelected = (name: string) => selected.indexOf(name) !== -1;
 
-	// useMemo(() => {
-	// 	console.log(`selected: ${selected}`)
-	// }, [selected])
+	useMemo(() => {
+		console.log(`selected: ${selected}`)
+	}, [selected])
 
 	return (
         <Box style={{border: '1px solid grey', borderRadius: 4, padding: '1rem' }}>

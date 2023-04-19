@@ -174,7 +174,6 @@ export const CreateFormFields = ({props}: any) => {
             
         // }
         error = validateField(name, formattedValue !== undefined ? formattedValue : value);
-        // console.log(`value on input change: ${value}, if formatted: ${formattedValue}, techStack: ${newFormState.techStack?.value}`)
         setNewFormState({ ...newFormState, [name]: { value: formattedValue ?? value, error } });
     };
 
@@ -205,14 +204,8 @@ export const CreateFormFields = ({props}: any) => {
                                             row
                                             aria-labelledby="project-active-radio-choice"
                                             name="active"
-                                            value={ newFormState[formFieldEntry.name]?.value || "" }
-                                            onChange={(event) => setNewFormState({ 
-                                                ...newFormState, 
-                                                [event?.target.name]: { 
-                                                    value: event.target.value, 
-                                                    error: null
-                                                } 
-                                            })}
+                                            value={ newFormState[formFieldEntry.name]?.value }
+                                            onChange={ handleInputChange }
                                             >
                                             <FormControlLabel value="true" label="yes" control={ <Radio /> } />
                                             <FormControlLabel value="false" label="no" control={ <Radio /> } />
@@ -221,11 +214,11 @@ export const CreateFormFields = ({props}: any) => {
                                 </>
                             :
                                 <TextField 
-                                    // key={`key-for-${formFieldEntry.name}-input`}
+                                    key={`key-for-${formFieldEntry.name}-input`}
                                     id={`${formFieldEntry.name}-input`}
                                     name={ formFieldEntry.name }
                                     required={ formFieldEntry.required ?? false }
-                                    value={ newFormState[formFieldEntry.name]?.value || "" } 
+                                    value={ newFormState[formFieldEntry.name]?.value } 
                                     variant="outlined" 
                                     label={ formFieldEntry.label } 
                                     type="text"

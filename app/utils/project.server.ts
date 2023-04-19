@@ -32,7 +32,6 @@ export async function createProject({
             endDate, 
             active: convertActive, 
             fundingGoal: newFundingGoal, 
-            // category,
             teamId
         },
 	});

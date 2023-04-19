@@ -5,7 +5,7 @@ import type {
 } from "@remix-run/node";
 import React, { useState, useMemo } from "react";
 import { json, redirect } from "@remix-run/node"
-import { Link, useSearchParams, Form, useActionData, useLoaderData } from "@remix-run/react";
+import { Link, useSearchParams, Form, useActionData, useLoaderData, useSubmit } from "@remix-run/react";
 import { 
     Box, 
     Typography, 
@@ -48,6 +48,11 @@ export const meta: MetaFunction = () => ({
 
 export const action = async ({ request }: ActionArgs) => {
     const form = await request.formData();
+    // const form = await request.json();
+
+    console.log(JSON.stringify(form, null, 2));
+
+    // cons
     const name = form.get("name");
     const type = form.get("type");
     const synopsis = form.get("synopsis");
@@ -58,6 +63,7 @@ export const action = async ({ request }: ActionArgs) => {
     const active = form.get("active");
     const fundingGoal = form.get("fundingGoal");
     const team = form.get('team');
+    // const name = newFormState.name.value;
 
 	const redirectTo = createProjectValidators.validateUrl(form.get("redirectTo")?.toString() ?? "/dashboard/project");
 
@@ -91,7 +97,7 @@ export const action = async ({ request }: ActionArgs) => {
         endDate: endDate, 
         active: active, 
         fundingGoal: fundingGoal, 
-        team: team,
+        teamId: team,
     };
 	const fieldErrors = {
         name: createProjectValidators.validateProjectName(name),
@@ -132,7 +138,7 @@ export const action = async ({ request }: ActionArgs) => {
         endDate,
         active,
         fundingGoal,
-        team,
+        teamId: team,
     });
     if(!project) {
         return badRequest({
@@ -200,11 +206,13 @@ export default function CreateProject() {
 	const [searchParams] = useSearchParams();
     const [activeStep, setActiveStep] = useState(0); // TODO: change back to 0 when compl testing
 
+    const submit = useSubmit();
+
     // const [assignTeam, setAssignTeam] = useState({});
     const [formErrors, setFormErrors] = useState<Record<string, string>>({});
     const [formIsValid, setFormIsValid] = useState(false);
 
-    const [newFormState, setNewFormState] = useState<FormState>({});
+    var [newFormState, setNewFormState] = useState<FormState>({});
 
     // Expandable Step Form Actions
     const handleStep = (step: number) => () => { setActiveStep(step) };
@@ -214,119 +222,43 @@ export default function CreateProject() {
         setNewFormState({}); // reset all field values' state
     };
 
-    // const determineDisabled = (fieldValues: any[]) => {
-    //     let returnValue = true;
-    //     fieldValues.forEach((fieldName) => returnValue = !newFormState[fieldName] )
-
-    //     return returnValue;
-    // }
-
-    // const ForwardBack = ({props}: any) => {
-    //     const stepNames = steps[props.index].fieldNames;
-
-    //     return (
-    //         <Box sx={{ mb: 2 }}>
-    //             <div>
-    //                 {
-    //                     props.index !== steps.length -1
-    //                     ?
-    //                     <Button 
-    //                         variant="contained" 
-    //                         disabled={ 
-    //                             // Needs to be disabled by default (true), then checked for bool or error state of field to enable
-    //                             determineDisabled(stepNames) ||
-    //                             Object.values(newFormState)?.some((item) => 
-    //                                 item.value === "active" 
-    //                                 ? false 
-    //                                 : item.value === "techStack"
-    //                                 ? Boolean(item.value.split(',').length < 2)
-    //                                 : item.error
-    //                             ) 
-    //                         } 
-    //                         onClick={ handleNext } 
-    //                         sx={{ mt: 1, mr: 1 }}
-    //                         >
-    //                         continue
-    //                     </Button>
-    //                     : null
-    //                 }
-    //                 {
-    //                     props.index !== 0
-    //                     ?
-    //                     <Button onClick={ handleBack } sx={{ mt: 1, mr: 1 }}>
-    //                         back
-    //                     </Button>
-    //                     : null
-    //                 }
-    //             </div>
-    //         </Box>
-    //     )
-    // }
-
-    // Form Field - specific actions
-
-    // const handleFundingChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    //     setNewFormState((prevState) => ({
-    //         ...prevState,
-    //         [event.target.name]: { value: event.target.value, error: null },
-    //     }));
-    // };
-
-    // const validateForm = () => {
-    //     let errors: Record<string, string> = {};
-    //     if(!newFormState.name) { 
-    //         errors.name = "name is required";
-    //     } else if(!createProjectValidators.validateProjectName(newFormState[name]?.value)) { 
-    //         errors.name = "name is invalid";
-    //     };
-    //     if(!newFormState.type) {
-    //         errors.type = "type is required";
-    //     } else if(!createProjectValidators.validateProjectType(newFormState[type]?.value.length)) {
-    //         errors.type = "type is invalid";
-    //     };
-    //     if(!newFormState.synopsis) {
-    //         errors.synopsis = "synopsis is required";
-    //     } else if(!createProjectValidators.validateProjectSynopsis(newFormState.synopsis)) {
-    //         errors.synopsis = "synopsis is invalid";
-    //     };
-    //     if(!newFormState.description) {
-    //         errors.description = "description is required";
-    //     } else if(!createProjectValidators.validateProjectDescription(newFormState.description)) {
-    //         errors.description = "description is invalid";
-    //     };
-    //     if(!newFormState.techStack) {
-    //         errors.techStack = "tech stack is required";
-    //     } else if(!createProjectValidators.validateProjectTechStack(newFormState.techStack)) {
-    //         errors.techStack = "tech stack is invalid";
-    //     };
-    //     if(!newFormState.beginDate) {
-    //         errors.beginDate = "begin date is required";
-    //     } else if (!(newFormState.endDate.length >= 1 && newFormState.endDate.length < 10)) {
-    //         errors.beginDate = "begin date is incomplete";
-    //     }
-    //     if(!newFormState.endDate) {
-    //         errors.endDate = "end date is required";
-    //     } else if (!(newFormState.endDate.length >= 1 && newFormState.endDate.length < 10)) {
-    //         errors.endDate = "end date is incomplete";
-    //     }
-        // if(!formState.team) {
-        //     errors.team = "team is required"
-        // } else if(!createProjectValidators.validateProjectTeam(formState.team)) {
-        //     errors.team = "team is invalid"
-        // };
-
-    //     setFormErrors(errors);
-    //     setFormIsValid(Object.keys(errors).length === 0);
-
-    //     return Object.keys(errors).length === 0;
-    // }
-
-    const handleFormSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-        event.preventDefault();
-        // return validateForm();
-        // TODO: fix the final form validation - should be on the submit action's server check (accept/deny form in all)
-        return null;
+    const checkFormIsDisabled = () => {
+        return !((Object.keys(newFormState).includes("team") && newFormState["team"].value !== "")
+                && Object.values(newFormState).some((field) => field.error === null))
     }
+
+    // const handleFormSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    //     event.preventDefault();
+    //     setFormIsValid(checkFormIsDisabled)
+    //     let formData = new FormData();
+    //     if(formIsValid) {
+    //         formData.name = newFormState["name"].value;
+    //         const type = newFormState["type"].value;
+    //         const synopsis = newFormState["synopsis"].value;
+    //         const description = newFormState["description"].value;
+    //         const techStack = newFormState["techStack"].value;
+    //         const beginDate = newFormState["beginDate"].value;
+    //         const endDate = newFormState["endDate"].value;
+    //         const active = newFormState["active"].value;
+    //         const fundingGoal = newFormState["fundingGoal"].value;
+    //         const team = newFormState["team"].value;
+    //         Object.values(newFormState).forEach((field) => {
+    //             formData.append(field);
+    //         const formData = {
+    //             name,
+    //             type,
+    //             synopsis,
+    //             description,
+    //             techStack,
+    //             beginDate,
+    //             endDate,
+    //             active,
+    //             fundingGoal,
+    //             team,
+    //         };
+    //         submit(formData);
+    //     // return null;
+    // }
 
     useMemo(() => {
         console.log(`complete form state: ${JSON.stringify(newFormState, null, 2)}`)
@@ -334,6 +266,7 @@ export default function CreateProject() {
 
 
 	return (
+        
         <Box sx={styles.container}>
             <Typography variant="h4" component="h1" gutterBottom>
                 create a new project
@@ -351,61 +284,63 @@ export default function CreateProject() {
                 </Link>
                 &nbsp; -- else, let's get started
             </Typography>
-                <Paper sx={styles.paper}>
-                    <div className="content" data-light="">
-                        <Typography
-                            variant="h5" 
-                            sx={{my: .5, display: 'inline-flex', wrap: 'nowrap'}}
-                            >
-                                project
-                                { newFormState.name?.value ? <div style={{opacity: .5}}>&nbsp; - {newFormState.name?.value}</div> : null }
-                        </Typography>
-                        <Form method="post" id="create-project-form" onSubmit={ handleFormSubmit }>
-                            <input
-                                type="hidden"
-                                name="redirectTo"
-                                value={searchParams.get("redirectTo") ?? undefined}
-                                />
-                            <Stepper activeStep={activeStep} orientation="vertical">
-                                {/* THIS IS REPLACEMENT FOR ALL FIELDS DYNAMICLY - delete map to replace with orig code */}
-                                {
-                                    steps.map((step, index) => (
-                                        <Step key={`step-created-for-${index}`}>
-                                            <StepButton color="inherit" onClick={ handleStep(index) }>{ step.label }</StepButton>
-                                            <StepContent>
-                                                <Typography>{ step.description }</Typography>
-                                                { CreateFormFields({props: { index, newFormState, setNewFormState, loaderData }}) }
-                                                <ForwardBack props={{ index, setActiveStep, steps, newFormState }} />
-                                            </StepContent>
-                                        </Step>
-                                    ))
-                                }
-                                <Box flexGrow={1} sx={{ display: 'flex-row', py: 2 }}>
-                                    <Button 
-                                        className="button" 
-                                        sx={{ mt: 1}}
-                                        onClick={(e) => {
-                                            e.preventDefault();
-                                            handleAllFieldsReset();
-                                        }}
-                                        >
-                                        cancel all
-                                    </Button>
-                                    <Button 
-                                        variant="contained" 
-                                        type="submit" 
-                                        className="button" 
-                                        sx={{ mt: 1, ml: 2  }}
-                                        disabled={
-                                            (activeStep !== steps.length && !Object.values(newFormState).some((field) => field.error))
-                                        }
-                                        >
-                                        create new project
-                                    </Button>
-                                    
-                                </Box>
+            <Paper sx={styles.paper}>
+                <div className="content" data-light="">
+                    <Typography
+                        variant="h5" 
+                        sx={{my: .5, display: 'inline-flex', wrap: 'nowrap'}}
+                        >
+                            project
+                            { newFormState.name?.value ? <div style={{opacity: .5}}>&nbsp; - {newFormState.name?.value}</div> : null }
+                    </Typography>
+                    <Form 
+                        method="post" 
+                        id="create-project-form" 
+                        // onSubmit={ handleFormSubmit }
+                        >
+                        <input
+                            type="hidden"
+                            name="redirectTo"
+                            value={searchParams.get("redirectTo") ?? undefined}
+                            />
+                        <Stepper activeStep={activeStep} orientation="vertical">
+                            {/* THIS IS REPLACEMENT FOR ALL FIELDS DYNAMICLY - delete map to replace with orig code */}
+                            {
+                                steps.map((step, index) => (
+                                    <Step key={`step-created-for-${index}`}>
+                                        <StepButton color="inherit" onClick={ handleStep(index) }>{ step.label }</StepButton>
+                                        <StepContent TransitionProps={{ unmountOnExit: false }} >
+                                            <Typography>{ step.description }</Typography>
+                                            { CreateFormFields({props: { index, newFormState, setNewFormState, loaderData }}) }
+                                            <ForwardBack props={{ index, setActiveStep, steps, newFormState }} />
+                                        </StepContent>
+                                    </Step>
+                                ))
+                            }
+                            <Box flexGrow={1} sx={{ display: 'flex-row', py: 2 }}>
+                                <Button 
+                                    className="button" 
+                                    sx={{ mt: 1}}
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        handleAllFieldsReset();
+                                    }}
+                                    >
+                                    cancel all
+                                </Button>
+                                <Button 
+                                    variant="contained" 
+                                    type="submit" 
+                                    className="button" 
+                                    sx={{ mt: 1, ml: 2 }}
+                                    disabled={ activeStep !== (steps.length -1) ? true : checkFormIsDisabled() }
+                                    >
+                                    create new project
+                                </Button>
+                                
+                            </Box>
                         </Stepper>
-                    </Form>
+                    </Form> 
                 </div>
             </Paper>
         </Box>
