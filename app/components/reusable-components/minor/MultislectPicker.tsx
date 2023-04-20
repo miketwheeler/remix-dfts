@@ -225,9 +225,6 @@ export default function MultiselectPicker({props}: any) {
         setTechNameList(newValue);
     }
 
-    // const handleCancelled = (event: React.SyntheticEvent<Element, Event>) => {
-    //     event.preventDefault();
-    // }
 
     const handleChangeCurrentStack = (event: React.SyntheticEvent<Element, Event>) => {
         event.preventDefault();
@@ -286,7 +283,6 @@ export default function MultiselectPicker({props}: any) {
                                     name: `add "${inputValue}"`,
                                 });
                             }
-
                             return filtered;
                         }}
                         disableCloseOnSelect

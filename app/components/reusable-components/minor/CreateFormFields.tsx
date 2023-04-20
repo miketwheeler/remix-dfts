@@ -25,13 +25,11 @@ const formFieldData = [
         name: {
             name: "name",
             label: "project name",
-            // fieldType: "text",
             required: true,
         },
         type: {
             name: "type",
             label: "project type (e.g. web app, mobile app, etc.)",
-            // fieldType: "text",
             required: true,
         },
     },
@@ -39,13 +37,11 @@ const formFieldData = [
         synopsis: {
             name: "synopsis",
             label: "synopsis (shortened description)",
-            // fieldType: "text",
             required: true,
         },
         description: {
             name: "description",
             label: "description (full description)",
-            // fieldType: "text",
             required: true,
         },
     },
@@ -58,13 +54,11 @@ const formFieldData = [
         beginDate: {
             name: "beginDate",
             label: "begin date (mm/dd/yyyy)",
-            // type: "text",
             required: true,
         },
         endDate: {
             name: "endDate",
             label: "end date (mm/dd/yyyy)",
-            // type: "text",
             required: true,
         },
         active: {
@@ -75,7 +69,6 @@ const formFieldData = [
         fundingGoal: {
             name: "fundingGoal",
             label: "funding goal",
-            // type: "text",
         },
     },
     {
@@ -170,9 +163,6 @@ export const CreateFormFields = ({props}: any) => {
         if(name === "beginDate" || name === "endDate") {
             formattedValue = validateDate(value);
         }
-        // else if(name === "active") {
-            
-        // }
         error = validateField(name, formattedValue !== undefined ? formattedValue : value);
         setNewFormState({ ...newFormState, [name]: { value: formattedValue ?? value, error } });
     };

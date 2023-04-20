@@ -3,7 +3,7 @@ import type {
     MetaFunction,
     LoaderArgs,
 } from "@remix-run/node";
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, FieldsetHTMLAttributes } from "react";
 import { json, redirect } from "@remix-run/node"
 import { Link, useSearchParams, Form, useActionData, useLoaderData, useSubmit } from "@remix-run/react";
 import { 
@@ -33,6 +33,10 @@ interface FormState {
     }
 }
 
+// interface SubmitProps {
+//     onSubmit: (formData: FormData) => Promise<void>;
+// }
+
 // requires the user to be logged in - on load, so is hack but works because of the order necessary within the login process
 export async function loader({ request }: LoaderArgs) {
 	// const userId = await requireUserId(request);
@@ -46,13 +50,11 @@ export const meta: MetaFunction = () => ({
 	title: "dev foyer | create project",
 });
 
+
 export const action = async ({ request }: ActionArgs) => {
     const form = await request.formData();
-    // const form = await request.json();
+    // const formStateVar = form.get("formState");
 
-    console.log(JSON.stringify(form, null, 2));
-
-    // cons
     const name = form.get("name");
     const type = form.get("type");
     const synopsis = form.get("synopsis");
@@ -97,7 +99,7 @@ export const action = async ({ request }: ActionArgs) => {
         endDate: endDate, 
         active: active, 
         fundingGoal: fundingGoal, 
-        teamId: team,
+        team: team,
     };
 	const fieldErrors = {
         name: createProjectValidators.validateProjectName(name),
@@ -227,37 +229,17 @@ export default function CreateProject() {
                 && Object.values(newFormState).some((field) => field.error === null))
     }
 
-    // const handleFormSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    //     event.preventDefault();
+    // const handleFormSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    //     // event.preventDefault();
     //     setFormIsValid(checkFormIsDisabled)
-    //     let formData = new FormData();
-    //     if(formIsValid) {
-    //         formData.name = newFormState["name"].value;
-    //         const type = newFormState["type"].value;
-    //         const synopsis = newFormState["synopsis"].value;
-    //         const description = newFormState["description"].value;
-    //         const techStack = newFormState["techStack"].value;
-    //         const beginDate = newFormState["beginDate"].value;
-    //         const endDate = newFormState["endDate"].value;
-    //         const active = newFormState["active"].value;
-    //         const fundingGoal = newFormState["fundingGoal"].value;
-    //         const team = newFormState["team"].value;
-    //         Object.values(newFormState).forEach((field) => {
-    //             formData.append(field);
-    //         const formData = {
-    //             name,
-    //             type,
-    //             synopsis,
-    //             description,
-    //             techStack,
-    //             beginDate,
-    //             endDate,
-    //             active,
-    //             fundingGoal,
-    //             team,
-    //         };
-    //         submit(formData);
-    //     // return null;
+
+    //     const formData = new FormData();
+
+    //     Object.entries(newFormState).forEach(([key, value]) => {
+    //         formData.append(key, value.value)
+    //     });
+
+    //     submit(formData);
     // }
 
     useMemo(() => {
@@ -298,6 +280,7 @@ export default function CreateProject() {
                         id="create-project-form" 
                         // onSubmit={ handleFormSubmit }
                         >
+                        {/* <input type="hidden" name="allFormValues" value={ Object(newFormState) } /> */}
                         <input
                             type="hidden"
                             name="redirectTo"
@@ -317,32 +300,32 @@ export default function CreateProject() {
                                     </Step>
                                 ))
                             }
-                            <Box flexGrow={1} sx={{ display: 'flex-row', py: 2 }}>
-                                <Button 
-                                    className="button" 
-                                    sx={{ mt: 1}}
-                                    onClick={(e) => {
-                                        e.preventDefault();
-                                        handleAllFieldsReset();
-                                    }}
-                                    >
-                                    cancel all
-                                </Button>
-                                <Button 
-                                    variant="contained" 
-                                    type="submit" 
-                                    className="button" 
-                                    sx={{ mt: 1, ml: 2 }}
-                                    disabled={ activeStep !== (steps.length -1) ? true : checkFormIsDisabled() }
-                                    >
-                                    create new project
-                                </Button>
-                                
-                            </Box>
                         </Stepper>
+                        <Box flexGrow={1} sx={{ display: 'flex-row', py: 2 }}>
+                            <Button 
+                                className="button" 
+                                sx={{ mt: 1}}
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    handleAllFieldsReset();
+                                }}
+                                >
+                                cancel all
+                            </Button>
+                            <Button 
+                                variant="contained" 
+                                type="submit" 
+                                className="button" 
+                                sx={{ mt: 1, ml: 2 }}
+                                disabled={ activeStep !== (steps.length -1) ? true : checkFormIsDisabled() }
+                                >
+                                create new project
+                            </Button>
+                        </Box>
                     </Form> 
                 </div>
             </Paper>
         </Box>
 	);
 }
+

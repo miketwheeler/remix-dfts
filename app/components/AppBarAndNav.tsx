@@ -82,7 +82,7 @@ const nav = {
 		{
 			index: 7,
 			name: "new project",
-			path: "/create-project",
+			path: "/create-project-redo", // TODO: change this back to /create-project
 			icon: <AddBoxIcon />,
 			enabled: true,
 		},
