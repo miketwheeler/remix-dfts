@@ -3,7 +3,8 @@ import type {
     MetaFunction,
     LoaderArgs,
 } from "@remix-run/node";
-import React, { useState, useMemo, FieldsetHTMLAttributes } from "react";
+import type { FC } from 'react';
+import React, { useState, useMemo } from "react";
 import { json, redirect } from "@remix-run/node"
 import { Link, useSearchParams, Form, useActionData, useLoaderData, useSubmit } from "@remix-run/react";
 import { 
@@ -33,9 +34,9 @@ interface FormState {
     }
 }
 
-// interface SubmitProps {
-//     onSubmit: (formData: FormData) => Promise<void>;
-// }
+interface FormSubmissionProps {
+    onSubmit: (formData: FormData) => Promise<void>;
+}
 
 // requires the user to be logged in - on load, so is hack but works because of the order necessary within the login process
 export async function loader({ request }: LoaderArgs) {
@@ -50,26 +51,24 @@ export const meta: MetaFunction = () => ({
 	title: "dev foyer | create project",
 });
 
-
 export const action = async ({ request }: ActionArgs) => {
     const form = await request.formData();
-    // const formStateVar = form.get("formState");
+    const formState = JSON.parse(form.get("formState") as string);
 
-    const name = form.get("name");
-    const type = form.get("type");
-    const synopsis = form.get("synopsis");
-    const description = form.get("description");
-    const techStack = form.get("techStack");
-    const beginDate = form.get("beginDate");
-    const endDate = form.get("endDate");
-    const active = form.get("active");
-    const fundingGoal = form.get("fundingGoal");
-    const team = form.get('team');
-    // const name = newFormState.name.value;
+    const name = formState.name.value;
+    const type = formState.type.value;
+    const synopsis = formState.synopsis.value;
+    const description = formState.description.value;
+    const techStack = formState.techStack.value;
+    const beginDate = formState.beginDate.value;
+    const endDate = formState.endDate.value;
+    const active = formState.active.value;
+    const fundingGoal = formState.fundingGoal.value;
+    const team = formState.team.value;
 
 	const redirectTo = createProjectValidators.validateUrl(form.get("redirectTo")?.toString() ?? "/dashboard/project");
 
-	if (
+    if (
 		typeof name !== "string" ||
         typeof type !== "string" ||
         typeof synopsis !== "string" ||
@@ -89,7 +88,7 @@ export const action = async ({ request }: ActionArgs) => {
 		});
 	}
 
-	const fields = { 
+    const fields = { 
         name: name, 
         type: type, 
         synopsis: synopsis, 
@@ -110,8 +109,8 @@ export const action = async ({ request }: ActionArgs) => {
         beginDate: createProjectValidators.validateDate(beginDate),
         endDate: createProjectValidators.validateDate(endDate),
         fundingGoal: createProjectValidators.validateProjectFundingGoal(fundingGoal),
-        // projectTeam: validateProjectTeam(projectTeam),
 	};
+
 	if(Object.values(fieldErrors).some(Boolean)) {
 		return badRequest({
 			fieldErrors,
@@ -119,6 +118,7 @@ export const action = async ({ request }: ActionArgs) => {
 			formError: null,
 		});
 	}
+
     const projectExists = await db.project.findFirst({
         where: { name },
     });
@@ -142,6 +142,7 @@ export const action = async ({ request }: ActionArgs) => {
         fundingGoal,
         teamId: team,
     });
+
     if(!project) {
         return badRequest({
             fieldErrors: null,
@@ -152,6 +153,108 @@ export const action = async ({ request }: ActionArgs) => {
 
     return redirect("/dashboard/project");
 };
+
+// export const action = async ({ request }: ActionArgs) => {
+//     const form = await request.formData();
+//     // const formStateVar = form.get("formState");
+
+//     const name = form.get("name");
+//     const type = form.get("type");
+//     const synopsis = form.get("synopsis");
+//     const description = form.get("description");
+//     const techStack = form.get("techStack");
+//     const beginDate = form.get("beginDate");
+//     const endDate = form.get("endDate");
+//     const active = form.get("active");
+//     const fundingGoal = form.get("fundingGoal");
+//     const team = form.get('team');
+//     // const name = newFormState.name.value;
+
+// 	const redirectTo = createProjectValidators.validateUrl(form.get("redirectTo")?.toString() ?? "/dashboard/project");
+
+// 	if (
+// 		typeof name !== "string" ||
+//         typeof type !== "string" ||
+//         typeof synopsis !== "string" ||
+// 		typeof description !== "string" ||
+//         typeof techStack !== "string" ||
+//         typeof beginDate !== "string" ||
+//         typeof endDate !== "string" ||
+//         typeof active !== "string" ||
+//         typeof fundingGoal !== "number" ||
+//         typeof team !== "string" ||
+// 		typeof redirectTo !== "string" 
+// 	) {
+// 		return badRequest({
+// 			fieldErrors: null,
+// 			fields: null,
+// 			formError: "Something went wrong when submitting the form. Please try again.",
+// 		});
+// 	}
+
+// 	const fields = { 
+//         name: name, 
+//         type: type, 
+//         synopsis: synopsis, 
+//         description: description,
+//         techStack: techStack, 
+//         beginDate: beginDate, 
+//         endDate: endDate, 
+//         active: active, 
+//         fundingGoal: fundingGoal, 
+//         team: team,
+//     };
+// 	const fieldErrors = {
+//         name: createProjectValidators.validateProjectName(name),
+//         type: createProjectValidators.validateProjectType(type),
+//         synopsis: createProjectValidators.validateProjectSynopsis(synopsis),
+//         description: createProjectValidators.validateProjectDescription(description),
+//         techStack: createProjectValidators.validateProjectTechStack(techStack),
+//         beginDate: createProjectValidators.validateDate(beginDate),
+//         endDate: createProjectValidators.validateDate(endDate),
+//         fundingGoal: createProjectValidators.validateProjectFundingGoal(fundingGoal),
+//         // projectTeam: validateProjectTeam(projectTeam),
+// 	};
+// 	if(Object.values(fieldErrors).some(Boolean)) {
+// 		return badRequest({
+// 			fieldErrors,
+// 			fields,
+// 			formError: null,
+// 		});
+// 	}
+//     const projectExists = await db.project.findFirst({
+//         where: { name },
+//     });
+//     if(projectExists) {
+//         return badRequest({
+//             fieldErrors: null,
+//             fields,
+//             formError: `Project with the name ${name} already exists`,
+//         });
+//     }
+//     // create the project && create their session and redirect to /dashboard
+//     const project = await createProject({ 
+//         name,
+//         type,
+//         synopsis,
+//         description,
+//         techStack,
+//         beginDate,
+//         endDate,
+//         active,
+//         fundingGoal,
+//         teamId: team,
+//     });
+//     if(!project) {
+//         return badRequest({
+//             fieldErrors: null,
+//             fields,
+//             formError: `Something went wrong creating your new project.`,
+//         });
+//     }
+
+//     return redirect("/dashboard/project");
+// };
 
 const styles = {
 	container: {
@@ -202,13 +305,13 @@ const steps = [
 
 
 
-export default function CreateProject() {
+const CreateProject: FC<FormSubmissionProps> = () => {
     const actionData = useActionData<typeof action>();
     const loaderData = useLoaderData<typeof loader>();
 	const [searchParams] = useSearchParams();
     const [activeStep, setActiveStep] = useState(0); // TODO: change back to 0 when compl testing
 
-    const submit = useSubmit();
+    // const submit = useSubmit();
 
     // const [assignTeam, setAssignTeam] = useState({});
     const [formErrors, setFormErrors] = useState<Record<string, string>>({});
@@ -233,17 +336,23 @@ export default function CreateProject() {
     //     // event.preventDefault();
     //     setFormIsValid(checkFormIsDisabled)
 
-    //     const formData = new FormData();
+    //     let formData = new FormData();
 
-    //     Object.entries(newFormState).forEach(([key, value]) => {
+    //     for (const [key, value] of Object.entries(newFormState)) {
     //         formData.append(key, value.value)
-    //     });
+    //     }
 
-    //     submit(formData);
+    //     // Object.entries(newFormState).forEach(([key, value]) => {
+    //     //     formData.append(key, value.value)
+    //     // });
+    //     console.log(`form data: ${JSON.stringify(Object.fromEntries(formData), null, 2)}`)
+
+    //     onSubmit(formData);
     // }
 
     useMemo(() => {
         console.log(`complete form state: ${JSON.stringify(newFormState, null, 2)}`)
+        // console.dir(`hidden form state var: ${document.getElementById("hidden-form-state")}`)
     }, [newFormState])
 
 
@@ -280,11 +389,16 @@ export default function CreateProject() {
                         id="create-project-form" 
                         // onSubmit={ handleFormSubmit }
                         >
-                        {/* <input type="hidden" name="allFormValues" value={ Object(newFormState) } /> */}
                         <input
                             type="hidden"
                             name="redirectTo"
                             value={searchParams.get("redirectTo") ?? undefined}
+                            />
+                        <input 
+                            // id="hidden-form-state"
+                            type="hidden" 
+                            name="formState" 
+                            value={ JSON.stringify(newFormState) } 
                             />
                         <Stepper activeStep={activeStep} orientation="vertical">
                             {/* THIS IS REPLACEMENT FOR ALL FIELDS DYNAMICLY - delete map to replace with orig code */}
@@ -329,3 +443,4 @@ export default function CreateProject() {
 	);
 }
 
+export default CreateProject;

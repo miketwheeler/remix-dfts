@@ -29,17 +29,17 @@ export const ForwardBack = ({props}: any) => {
                     ?
                     <Button 
                         variant="contained" 
-                        disabled={ 
-                            // Needs to be disabled by default (true), then checked for bool or error state of field to enable
-                            determineDisabled(stepNames) ||
-                            Object.values(newFormState)?.some((item: any) => 
-                                item.value === "active" 
-                                ? false 
-                                : item.value === "techStack"
-                                ? Boolean(item.value.split(',').length < 2)
-                                : item.error
-                            ) 
-                        } 
+                        // disabled={ 
+                        //     // Needs to be disabled by default (true), then checked for bool or error state of field to enable
+                        //     determineDisabled(stepNames) ||
+                        //     Object.values(newFormState)?.some((item: any) => 
+                        //         item.value === "active" 
+                        //         ? false 
+                        //         : item.value === "techStack"
+                        //         ? Boolean(item.value.split(',').length < 2)
+                        //         : item.error
+                        //     ) 
+                        // } 
                         onClick={ handleNext } 
                         sx={{ mt: 1, mr: 1 }}
                         >

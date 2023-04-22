@@ -21,6 +21,13 @@ export async function createProject({
 }: CreateProjectForm) {
     const newFundingGoal = Number(fundingGoal) * 1.00; // convert json string value to decimal
     const convertActive = ( active === "true" ? true : false )
+    const convertDate = ( date: string ) => {
+        const dateArr = date.split("/");
+        // const newDate = new Date(parseInt(dateArr[2]), parseInt(dateArr[1]), parseInt(dateArr[0]));
+        const newDate = new Date(`${dateArr[2]}-${(dateArr[1])}-${dateArr[0]}00:00:00`);
+        const returnDate = (newDate.toISOString());
+        return returnDate;
+    }
 	const project = await db.project.create({
 		data: { 
             name, 
@@ -28,15 +35,27 @@ export async function createProject({
             synopsis, 
             description, 
             techStack, 
-            beginDate, 
-            endDate, 
+            beginDate: convertDate(beginDate), 
+            endDate: convertDate(endDate), 
             active: convertActive, 
             fundingGoal: newFundingGoal, 
-            teamId
+            team: {
+                connect: { id: teamId }
+            }
         },
 	});
+    const updatedTeamProjects = await db.team.update({
+        where: {
+            id: teamId
+        },
+        data: {
+            projects: {
+                connect: { id: project.id }
+            }
+        }
+    })
 
-	return { id: project.id, name, message: `successfully created your new project ${name}!` };
+	return { id: project.id, teamUpdatedProjectId: updatedTeamProjects.id, name, message: `successfully created your new project ${name}!` };
 }
 
 // READ

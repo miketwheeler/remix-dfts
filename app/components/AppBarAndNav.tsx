@@ -82,7 +82,8 @@ const nav = {
 		{
 			index: 7,
 			name: "new project",
-			path: "/create-project-redo", // TODO: change this back to /create-project
+			// path: "/create-project-redo", // TODO: change this back to /create-project
+			path: "/create-project",
 			icon: <AddBoxIcon />,
 			enabled: true,
 		},
@@ -108,6 +109,7 @@ const tabStyles = {
 		mr: 3,
 	},
 }
+
 const navHeaderStyle = { 
 	ml: 2, 
 	mt: 2, 

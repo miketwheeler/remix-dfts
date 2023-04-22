@@ -98,18 +98,18 @@ export const meta: MetaFunction = () => ({
 
 export const action = async ({ request }: ActionArgs) => {
     const form = await request.formData();
-    // const formStateVar = form.get("formState");
 
-    const name = form.get("name");
-    const type = form.get("type");
-    const synopsis = form.get("synopsis");
-    const description = form.get("description");
+    const name = form.getAll("name");
+    const type = form.getAll("type");
+    const synopsis = form.getAll("synopsis");
+    const description = form.getAll("description");
     const techStack = form.get("techStack");
     const beginDate = form.get("beginDate");
     const endDate = form.get("endDate");
     const active = form.get("active");
     const fundingGoal = form.get("fundingGoal");
     const team = form.get('team');
+    const json = form.get("json");
     // const name = newFormState.name.value;
 
 	const redirectTo = createProjectValidators.validateUrl(form.get("redirectTo")?.toString() ?? "/dashboard/project");
@@ -730,7 +730,7 @@ export default function CreateProject() {
                     </Typography>
                     <Form 
                         method="post" 
-                        id="create-project-form" 
+                        // id="create-project-form" 
                         // onSubmit={ handleFormSubmit }
                         >
                         {/* <input type="hidden" name="allFormValues" value={ Object(newFormState) } /> */}
@@ -738,6 +738,11 @@ export default function CreateProject() {
                             type="hidden"
                             name="redirectTo"
                             value={searchParams.get("redirectTo") ?? undefined}
+                            />
+                        <input 
+                            type="hidden"
+                            name="json"
+                            value={JSON.stringify(newFormState)}
                             />
                         <Stepper activeStep={activeStep} orientation="vertical">
                             <Step>
@@ -749,31 +754,36 @@ export default function CreateProject() {
                                             id="name-input"
                                             name="name"
                                             required
-                                            value={ newFormState.name?.value } 
+                                            // value={ newFormState.name?.value } 
                                             variant="outlined" 
                                             label="project name"
                                             type="text"
                                             fullWidth={ true }
                                             color="secondary"
-                                            onChange={ handleInputChange }
-                                            error={ Boolean(newFormState.name?.error) }
-                                            helperText={ newFormState.name?.error || "" }
+                                            // defaultValue={ actionData?.fields.name}
+                                            // onChange={ handleInputChange }
+                                            aria-invalid={ Boolean(actionData?.fieldErrors?.name) }
+                                            // error={ Boolean(newFormState.name?.error) }
+                                            // helperText={ newFormState.name?.error || "" }
                                         />
                                     </Box>
                                     <Box sx={{my: 2}} key={`textfield-container-type`}>
                                         <TextField 
-                                            id={`type-input`}
+                                            id="type-input"
                                             name="type"
                                             required
-                                            value={ newFormState.type?.value } 
+                                            // value={ newFormState.type?.value } 
                                             variant="outlined" 
                                             label="project type" 
                                             type="text"
                                             fullWidth={ true }
                                             color="secondary"
-                                            onChange={ handleInputChange }
-                                            error={ Boolean(newFormState.type?.error) }
-                                            helperText={ newFormState.type?.error || "" }
+                                            // defaultValue={ actionData?.fields?.type}
+                                            // onChange={ handleInputChange }
+                                            // error={ Boolean(newFormState.type?.error) }
+                                            aria-invalid={ Boolean(actionData?.fieldErrors?.type) }
+                                            // aria-errormessage={ actionData?.fieldErrors?.type ? 'type-error' : null }
+                                            // helperText={ newFormState.type?.error || "" }
                                         />
                                     </Box>
                                     <ForwardBack props={{ index: 0, setActiveStep, steps, newFormState }} />
@@ -829,6 +839,9 @@ export default function CreateProject() {
                                             ?
                                             <>
                                                 <Box sx={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', gap: 1 }}>
+
+                                                    <input type="hidden" value={newFormState.techStack?.value} name="techStack" />
+
                                                     {
                                                         newFormState.techStack?.value.split(',').map((tech: string) => {
                                                             return <Chip key={`current-stack-chip-${tech}`} label={tech.toLowerCase()} />
@@ -1006,6 +1019,7 @@ export default function CreateProject() {
                                                     <Table aria-labelledby="users-teams-table" size="medium">
 
                                                         {/* TODO: if no team availble to assign - need to display that string & no rows or table */}
+                                                        {/* <input type="hidden" name="teamId" value={ newFormState.teamId?.value } /> */}
                                                         <EnhancedTableHead
                                                             numSelected={selected.length}
                                                             rowCount={usersTeams?.length || 1}
@@ -1033,9 +1047,7 @@ export default function CreateProject() {
                                                                                 <Checkbox
                                                                                     color="primary"
                                                                                     checked={isTeamSelected}
-                                                                                    inputProps={{
-                                                                                        'aria-labelledby': labelId,
-                                                                                    }}
+                                                                                    inputProps={{ 'aria-labelledby': labelId }}
                                                                                 />
                                                                             </TableCell>
                                                                             <TableCell component="th" id={labelId} scope="row" padding="none">
@@ -1053,6 +1065,9 @@ export default function CreateProject() {
                                                                 : null
                                                             }
                                                         </TableBody>
+
+                                                        <input type="hidden" name="teamId" value={ newFormState.teamId?.value } />
+
                                                     </Table>
                                                 </TableContainer>
                                             </Paper>
