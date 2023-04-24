@@ -94,6 +94,13 @@ const nav = {
 			icon: <AddCircleIcon />,
 			enabled: true,
 		},
+		{
+			index: 9,
+			name: "new project 2",
+			path: "/create-project-two",
+			icon: <AddBoxIcon />,
+			enabled: true,
+		},
 	],
 }
 
@@ -357,44 +364,3 @@ export default function AppBarAndNav(props: any) {
 		</Box>
 	);
 }
-
-
-
-// {/* ORIGINAL DRAWER CODE 
-// <Tabs
-// 	orientation="vertical"
-// 	value={navTabValue}
-// 	onChange={handleChange}
-// 	aria-label="Primary Navigation Tabs"
-// 	>
-// 	{
-// 		navLinks.map((link, index) => (
-// 			<Tab
-// 				key={ `tab-${index}` }
-// 				id={ link.name }
-// 				label={ link.name }
-// 				icon={ link.icon }
-// 				iconPosition="start"
-// 				component={ Link }
-// 				to={ link.path }
-// 				disabled={ !link.enabled }
-// 				sx={ tabStyles }
-// 			/>
-// 			)
-// 		)
-// 	}
-// 	{
-// 		(!navLinks) ?
-// 			<Tab
-// 				key={ 'tab-empty' }
-// 				id={ 'empty-tab' }
-// 				label={ 'blank tap' }
-// 				icon={ <ErrorIcon /> }
-// 				iconPosition="start"
-// 				component={ Link }
-// 				to={ '/' }
-// 				sx={ tabStyles }
-// 			/>
-// 		: null
-// 	}
-// </Tabs> */}

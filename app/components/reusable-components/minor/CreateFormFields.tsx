@@ -163,6 +163,9 @@ export const CreateFormFields = ({props}: any) => {
         if(name === "beginDate" || name === "endDate") {
             formattedValue = validateDate(value);
         }
+        // if(name === "fundingGoal") {
+        //     formattedValue = value.replace(/\D/g, '');
+        // }
         error = validateField(name, formattedValue !== undefined ? formattedValue : value);
         setNewFormState({ ...newFormState, [name]: { value: formattedValue ?? value, error } });
     };
@@ -206,7 +209,7 @@ export const CreateFormFields = ({props}: any) => {
                                 <TextField 
                                     key={`key-for-${formFieldEntry.name}-input`}
                                     id={`${formFieldEntry.name}-input`}
-                                    name={ formFieldEntry.name }
+                                    name={ formFieldEntry.name as string }
                                     required={ formFieldEntry.required ?? false }
                                     value={ newFormState[formFieldEntry.name]?.value } 
                                     variant="outlined" 

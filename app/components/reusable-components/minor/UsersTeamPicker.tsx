@@ -109,6 +109,7 @@ export default function UsersTeamPicker({ props }: any) {
             </Typography>
 			<Box sx={{ width: '100%' }}>
 				<Paper sx={{ width: '100%', mb: 2 }}>
+					<input type="hidden" name="team" value={newFormState.team?.value} />
 					<TableContainer>
 						<Table aria-labelledby="users-teams-table" size="medium">
 							<EnhancedTableHead

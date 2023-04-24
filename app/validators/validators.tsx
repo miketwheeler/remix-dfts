@@ -14,40 +14,34 @@ export const createProjectValidators = {
         return "/dashboard";
     },
     validateProjectName: function validateProjectName(projectName: string) {
-        return (typeof projectName !== "string" || projectName.length < 3) 
-        // if (typeof projectName !== "string" || projectName.length < 3) {
-        //     return "The projectName must be at least 3 characters long";
-        // }
+        if (projectName.length < 3) {
+            return "the projectName must be at least 3 characters long";
+        }
     },
     validateProjectType: function validateProjectType(projectType: string) {
-        return (typeof projectType !== "string" || projectType.length < 2) 
-        // if (typeof projectType !== "string" || projectType.length < 2) {
-        //     return "a project name is required, and there isn't a name in business that's only 1 character long";
-        // }
+        if (projectType.length < 2) {
+            return "a project name is required, and there isn't a name in business that's only 1 character long";
+        }
     },
     validateProjectSynopsis: function validateProjectSynopsis(projectSynopsis: string) {
-        return (typeof projectSynopsis !== "string" || projectSynopsis.length < 10)
-        // if (typeof projectSynopsis !== "string" || projectSynopsis.length < 10) {
-        //     return "your synopsis is important, it should be at least 10 characters long";
-        // }
+        if (projectSynopsis.length < 10) {
+            return "your synopsis is important, it should be at least 10 characters long";
+        }
     },
     validateProjectDescription: function validateProjectDescription(projectDescription: string) {
-        return (typeof projectDescription !== "string" || projectDescription.length < 60)
-        // if (typeof projectDescription !== "string" || projectDescription.length < 60) {
-        //     return "your description should be 10 characters long at a minimum, but you can do better than that";
-        // }
+        if (projectDescription.length < 60) {
+            return "your description should be 10 characters long at a minimum, but you can do better than that";
+        }
     },
     validateProjectTechStack: function validateProjectTechStack(projectTechStack: string) {
-        return (typeof projectTechStack !== "string" || projectTechStack.split(',').length < 2)
-        // if (typeof projectTechStack !== "string" || projectTechStack.split(',').length < 2) {
-        //     return "your tech stack is lacking, you need at least 2 to make a stack";
-        // }
+        if (projectTechStack.split(',').length < 1) {
+            return "your tech stack is lacking, you need at least 2 to make a stack";
+        }
     },
     validateProjectFundingGoal: function validateProjectFundingGoal(projectFundingGoal: number) {
-        return (typeof projectFundingGoal !== "number" || projectFundingGoal < 0) 
-        //if(typeof projectFundingGoal !== "number" || projectFundingGoal < 0) {
-        //     return "the funding goal for any project must be a positive, even if a dollar";
-        // } 
+        if(projectFundingGoal < 0) {
+            return "the funding goal for any project must be a positive, even if a dollar";
+        } 
     },
     validateDate: function validateDate(date: string) {
         const regex = /^([0-9]{1,2})\/?([0-9]{1,2})?\/?([0-9]{0,4})?$/;

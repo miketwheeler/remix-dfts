@@ -24,7 +24,7 @@ import { badRequest } from "~/utils/request.server";
 import { requireUserId } from "~/utils/session.server";
 import { createProject } from "~/utils/project.server";
 import { getUsersTeamData } from "~/utils/display.server";
-import qs from "qs";
+
 
 
 interface FormState {
@@ -52,21 +52,19 @@ export const meta: MetaFunction = () => ({
 });
 
 export const action = async ({ request }: ActionArgs) => {
-    // const form = await request.formData();
+    const form = await request.formData();
     // const formState = JSON.parse(form.get("formState") as string);
-    const body = await request.text();
-    const formState = qs.parse(body);
 
-    // const name = form.get("name");
-    // const type = form.get("type");
-    // const synopsis = form.get("synopsis");
-    // const description = form.get("description");
-    // const techStack = form.get("techStack");
-    // const beginDate = form.get("beginDate");
-    // const endDate = form.get("endDate");
-    // const active = form.get("active");
-    // const fundingGoal = form.get("fundingGoal");
-    // const team = form.get('team');
+    const name = form.get("name");
+    const type = form.get("type");
+    const synopsis = form.get("synopsis");
+    const description = form.get("description");
+    const techStack = form.get("techStack");
+    const beginDate = form.get("beginDate");
+    const endDate = form.get("endDate");
+    const active = form.get("active");
+    const fundingGoal = form.get("fundingGoal");
+    const team = form.get('team');
 
     // const name = formState.name.value.toString();
     // const type = formState.type.value.toString();
@@ -78,17 +76,6 @@ export const action = async ({ request }: ActionArgs) => {
     // const active = formState.active.value.toString();
     // const fundingGoal = formState.fundingGoal.value;
     // const team = formState.team.value.toString();
-
-    const name = formState?.name;
-    const type = formState?.type;
-    const synopsis = formState?.synopsis;
-    const description = formState?.description;
-    const techStack = formState?.techStack;
-    const beginDate = formState?.beginDate;
-    const endDate = formState?.endDate;
-    const active = formState?.active;
-    const fundingGoal = formState?.fundingGoal;
-    const team = formState?.team;
 
 	// const redirectTo = createProjectValidators.validateUrl(form.get("redirectTo")?.toString() ?? "/dashboard");
 
@@ -173,7 +160,7 @@ export const action = async ({ request }: ActionArgs) => {
         });
     }
 
-    return redirect("/dashboard/projects");
+    return redirect("/dashboard/project");
 };
 
 // export const action = async ({ request }: ActionArgs) => {
@@ -388,7 +375,7 @@ const CreateProject: FC<FormSubmissionProps> = () => {
                 already have a project going? go to &nbsp;
                 <Link
                     to={{
-                        pathname: "/dashboard/projects",
+                        pathname: "/dashboard/project",
                         search: searchParams.toString(),
                     }}
                     style={{ textDecoration: 'none', color: 'purple'}}
@@ -416,6 +403,7 @@ const CreateProject: FC<FormSubmissionProps> = () => {
                             value={ searchParams.get("redirectTo") ?? undefined }
                             />
                         {/* <input 
+                            // id="hidden-form-state"
                             type="hidden" 
                             name="formState" 
                             value={ JSON.stringify(newFormState) } 

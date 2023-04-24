@@ -1,4 +1,7 @@
 import { db } from './db.server';
+import { getUserId } from './session.server';
+import { json } from '@remix-run/node';
+
 
 
 type CreateProjectForm = {
@@ -10,7 +13,7 @@ type CreateProjectForm = {
     beginDate: string;
     endDate: string;
     active: string;
-    fundingGoal: number;
+    fundingGoal: string;
     teamId: string;
 }
 
@@ -19,12 +22,11 @@ type CreateProjectForm = {
 export async function createProject({ 
     name, type, synopsis, description, techStack, beginDate, endDate, active, fundingGoal, teamId,
 }: CreateProjectForm) {
-    const newFundingGoal = Number(fundingGoal) * 1.00; // convert json string value to decimal
+    const newFundingGoal = Number(fundingGoal.slice(1)) * 1.00; // remove $ from string, cast to number
     const convertActive = ( active === "true" ? true : false )
     const convertDate = ( date: string ) => {
         const dateArr = date.split("/");
-        // const newDate = new Date(parseInt(dateArr[2]), parseInt(dateArr[1]), parseInt(dateArr[0]));
-        const newDate = new Date(`${dateArr[2]}-${(dateArr[1])}-${dateArr[0]}00:00:00`);
+        const newDate = new Date(parseInt(dateArr[2]), parseInt(dateArr[1]), parseInt(dateArr[0]));
         const returnDate = (newDate.toISOString());
         return returnDate;
     }
@@ -44,18 +46,50 @@ export async function createProject({
             }
         },
 	});
-    const updatedTeamProjects = await db.team.update({
-        where: {
-            id: teamId
-        },
-        data: {
-            projects: {
-                connect: { id: project.id }
+    if(teamId) {
+        await db.team.update({
+            where: {
+                id: teamId
+            },
+            data: {
+                projects: {
+                    connect: { id: project.id }
+                }
             }
-        }
-    })
+        })
+    }
 
-	return { id: project.id, teamUpdatedProjectId: updatedTeamProjects.id, name, message: `successfully created your new project ${name}!` };
+	return { 
+        id: project.id, 
+        // teamUpdatedProjectId: updatedTeamProjects.id, 
+        name, message: `successfully created your new project ${name}!` 
+    };
+}
+
+export async function getProjectListWhereTeamLead( request: Request ) {
+    const userId = await getUserId(request);
+    const associatedProjects = [] as any;
+    const teams = await db.team.findMany({
+        where: { 
+            teamLeadId: userId
+        },
+    });
+    if(teams) {
+        for(const team of teams) {
+            associatedProjects.push(await db.project.findMany({
+                where: { 
+                    teamId: team.id
+                },
+                select: {
+                    id: true, name: true, type: true, synopsis: true, description: true, techStack: true, beginDate: true, endDate: true, active: true, fundingGoal: true, teamId: true
+                }
+            }))
+            // return associatedProjects;
+        }
+    }
+
+    return associatedProjects;
+    // return { message: "no projects found" };
 }
 
 // READ

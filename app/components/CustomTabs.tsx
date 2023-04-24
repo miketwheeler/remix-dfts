@@ -6,9 +6,9 @@ import Box from "@mui/material/Box";
 import { Link, useLocation } from "@remix-run/react";
 
 
-const drawerWidth = 240;
+// const drawerWidth = 240;
 
-const dashRoutes = ["dashboard", "team", "project", "messages", "schedule"]
+const dashRoutes = ["dashboard", "teams", "projects", "messages", "schedule"]
 
 const links = [
 	{
@@ -16,12 +16,12 @@ const links = [
 		path: "/dashboard",
 	},
 	{
-		name: "team",
-		path: "/dashboard/team",
+		name: "teams",
+		path: "/dashboard/teams",
 	},
 	{
-		name: 'project',
-		path: '/dashboard/project',
+		name: 'projects',
+		path: '/dashboard/projects',
 	},
 	{
 		name: "messages",
@@ -55,19 +55,19 @@ export default function CustomTabs() {
 	return (
 		<Box sx={{ width: "100%", bgcolor: "background.paper", top: '100px'}}>
 			<Tabs
-				value={dashTabValue}
-				onChange={handleChange}
+				value={ dashTabValue }
+				onChange={ handleChange }
 				aria-label="nested tabs"
 				centered
 				>
 				{
 					links.map((link, index) => (
 						<Tab 
-							key={ `dash-tab-${index}` } 
+							key={ `${link.name}-dash-tab-${index}` } 
 							id={ link.name }
 							label={ link.name } 
-							component={Link}
-							to={link.path}
+							component={ Link }
+							to={ link.path }
 							sx={{ textTransform: 'none' }}
 						/>
 					))

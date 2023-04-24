@@ -225,7 +225,6 @@ export default function MultiselectPicker({props}: any) {
         setTechNameList(newValue);
     }
 
-
     const handleChangeCurrentStack = (event: React.SyntheticEvent<Element, Event>) => {
         event.preventDefault();
         setNewFormState({ ...newFormState, techStack: { value: "" }})
@@ -247,6 +246,7 @@ export default function MultiselectPicker({props}: any) {
 
 	return (
         <Box sx={{ display: 'flex', flexDirection: 'row' }}>
+            <input type="hidden" name="techStack" value={newFormState.techStack?.value} />
             {
                 newFormState.techStack?.value.length
                 ?
@@ -317,18 +317,6 @@ export default function MultiselectPicker({props}: any) {
                         )}
                         onChange={(event, currentValsObj) => { handleInputObjChange(event, currentValsObj) }}
                     />
-                    {/* {
-                        techNameList.length
-                        ?
-                        <Button 
-                            startIcon={<Clear />}
-                            variant="outlined" 
-                            onClick={handleCancelled} 
-                            sx={{ml: 2, minWidth: '168px'}}
-                            >
-                            cancel edits
-                        </Button>
-                        : */}
                         <Button 
                             startIcon={ <Check /> } 
                             variant="outlined" 
@@ -338,7 +326,6 @@ export default function MultiselectPicker({props}: any) {
                             >
                             finished
                         </Button>
-                    {/* } */}
                 </>
             }
         </Box>
