@@ -68,7 +68,7 @@ export default function CustomTabs() {
 							label={ link.name } 
 							component={ Link }
 							to={ link.path }
-							sx={{ textTransform: 'none' }}
+							sx={{ textTransform: 'none', width: 70 }}
 						/>
 					))
 				}

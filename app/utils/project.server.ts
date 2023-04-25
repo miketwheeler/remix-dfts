@@ -89,15 +89,16 @@ export async function getProjectListWhereTeamLead( request: Request ) {
     }
 
     return associatedProjects;
-    // return { message: "no projects found" };
 }
 
 // READ
-export async function getProject(request: Request) {
-    const { id } = await request.json();
-    const project = await db.project.findUnique({
+export async function getProject(id: string) {
+    const project = db.project.findUnique({
         where: { id: Number(id) },
-    });
+    })
+    if(!project) { 
+        throw new Response("no id provided", { status: 404 })
+    }
 
     return project;
 }
