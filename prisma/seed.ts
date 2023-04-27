@@ -1,80 +1,10 @@
 import { PrismaClient } from '@prisma/client';
+
 const prismadb = new PrismaClient();
 
 
-// async function seed() {
-//     const alice = await prismadb.user.upsert({
-//         where: { email: 'awonder@gmail.com' },
-//         update: {},
-//         create: {
-//             firstName: 'Alice',
-//             lastName: 'Wonder',
-//             email: 'awonder@gmail.com',
-//             username: "awonder",
-//             // this is a hashed version of "twixrox"
-//             passwordHash: "$2b$10$K7L1OJ45/4Y2nIvhRVpCe.FSmhDdWoXehVzJptJ/op0lSsvqNu/1u",
-//             devType: "Full Stack Developer",
-//             available: true,
-//             bio: "Ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae duis faucibus accumsan odio curabitur convallis duis",
-//             skills: {
-//                 create: { name: "JavaScript" }
-//             },
-//             teams: {
-//                 create: { 
-//                     name: "Zoolab",
-//                     projects: {
-//                         create: {
-//                             name: "Solarbreeze",
-//                             type: "iOS App",
-//                             synopsis: "Lacus curabitur at ipsum ac tellus semper interdum mauris ullamcorper purus sit amet",
-//                             description: "Ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae duis faucibus accumsan odio curabitur convallis duis consequat duis nec nisi volutpat eleifend donec ut dolor morbi vel lectus in quam fringilla rhoncus mauris enim leo rhoncus sed vestibulum sit amet cursus id turpis integer aliquet massa id lobortis convallis tortor risus dapibus augue vel accumsan tellus nisi eu orci mauris lacinia sapien quis libero nullam sit amet turpis elementum ligula vehicula consequat morbi a ipsum integer a nibh in quis justo maecenas rhoncus aliquam",
-//                             techStack: "C, Swift, html, css, Python",
-//                             beginDate: new Date("2023-08-27 12:00:00"),
-//                             endDate: new Date("2024-01-01 12:00:00"),
-//                             active: true,
-//                             milestone: 1,
-//                             deployed: false,
-//                             funded: false,
-//                             fundingGoal: 1048234.00,
-//                             fundingCurrent: 0.00,
-//                             category: {
-//                                 create: [
-//                                     { name: "Mobile App" },
-//                                     { name: "iOS" },
-//                                 ]
-//                             }
-//                         }
-//                     },
-//                 }
-//             },
-//             posts: {
-//                 create: [
-//                     { 
-//                         title: "Prisma Day 2020", 
-//                         body: "This is a post body for prisma day post!" 
-//                     },
-//                     {
-//                         title: "How to write a Prisma schema",
-//                         body: "This is a post body for prisma schema 'how to write' post!"
-//                     }
-//                 ]
-//             }
-//         },
-//     })
-//     console.log({ alice })
-// }
 
-// seed()
-//     .then(async () => {
-//         await prismadb.$disconnect();
-//     })
-//     .catch(async (e) => {
-//         console.error(e);
-//         await prismadb.$disconnect();
-//         process.exit(1);
-//     });
-
-async function seedUsers() {
+async function seed() {
     const roselle = await prismadb.user.upsert({
         where: { email: 'rantoniazzi0@comcast.net' },
         update: {},
@@ -347,10 +277,184 @@ async function seedUsers() {
             // skills: ASSSIGN
         },
     })
-    console.log({ haily, scheffield, ezra, osgood, audrey, adele, kasey, hi, dulcie, sofie, odele, kizzie, luelle, claybourne, oliver, roselle })
+
+    const role1 = await prismadb.category.create({ 
+        data: { name: 'Web Application' }
+    })
+    const role2 = await prismadb.category.create({ 
+        data: { name: 'OS' }
+    })
+    const role3 = await prismadb.category.create({ 
+        data: { name: 'Mobile Application' }
+    })
+    const role4 = await prismadb.category.create({ 
+        data: { name: 'Database' }
+    })
+    const role5 = await prismadb.category.create({ 
+        data: { name: 'Other' }
+    })
+    const role6 = await prismadb.category.create({ 
+        data: { name: 'Website' }
+    })
+    const role7 = await prismadb.category.create({ 
+        data: { name: 'Game' }
+    })
+    const role8 = await prismadb.category.create({ 
+        data: { name: 'Desktop Application' }
+    })
+    const role9 = await prismadb.category.create({ 
+        data: { name: 'API' }
+    })
+    const role10 = await prismadb.category.create({ 
+        data: { name: 'Data Software' }
+    })
+    const role11 = await prismadb.category.create({ 
+        data: { name: 'Security' }
+    })
+    const role12 = await prismadb.category.create({ 
+        data: { name: 'Cloud' }
+    })
+    const role13 = await prismadb.category.create({ 
+        data: { name: 'DevOps' }
+    })
+    const role14 = await prismadb.category.create({ 
+        data: { name: 'Testing' }
+    })
+    const role15 = await prismadb.category.create({ 
+        data: { name: 'Dashboard' }
+    })
+    const role17 = await prismadb.category.create({ 
+        data: { name: 'Machine Learning' }
+    })
+    const role18 = await prismadb.category.create({ 
+        data: { name: 'AI' }
+    })
+    const role19 = await prismadb.category.create({ 
+        data: { name: 'AR' }
+    })
+    const role20 = await prismadb.category.create({ 
+        data: { name: 'VR' }
+    })
+    const role21 = await prismadb.category.create({ 
+        data: { name: 'IoT' }
+    })
+    const role22 = await prismadb.category.create({ 
+        data: { name: 'Blockchain' }
+    })
+    const role23 = await prismadb.category.create({ 
+        data: { name: 'Robotics' }
+    })
+    const role24 = await prismadb.category.create({ 
+        data: { name: 'Hardware' }
+    })
+    const role25 = await prismadb.category.create({ 
+        data: { name: 'Firmware' }
+    })
+    const role26 = await prismadb.category.create({ 
+        data: { name: 'Embedded' }
+    })
+    const role27 = await prismadb.category.create({ 
+        data: { name: 'SaaS' }
+    })
+    const role28 = await prismadb.category.create({ 
+        data: { name: 'PaaS' }
+    })
+    const role29 = await prismadb.category.create({ 
+        data: { name: 'CMS' }
+    })
+    const role30 = await prismadb.category.create({ 
+        data: { name: 'LLM plugin' }
+    })
+    const role31 = await prismadb.category.create({ 
+        data: { name: 'LLM' }
+    })
+
+
+    const skill1 = await prismadb.skill.create({ 
+        data: { name: 'React' }
+    })
+    const skill2 = await prismadb.skill.create({ 
+        data: { name: 'javascript' }
+    })
+    const skill3 = await prismadb.skill.create({ 
+        data: { name: 'python' }
+    })
+    const skill4 = await prismadb.skill.create({ 
+        data: { name: 'frontend' }
+    })
+    const skill5 = await prismadb.skill.create({ 
+        data: { name: 'backend' }
+    })
+    const skill6 = await prismadb.skill.create({ 
+        data: { name: 'full stack' }
+    })
+    const skill7 = await prismadb.skill.create({ 
+        data: { name: 'SQL' }
+    })
+    const skill8 = await prismadb.skill.create({ 
+        data: { name: 'C#' }
+    })
+    const skill9 = await prismadb.skill.create({ 
+        data: { name: 'typescript' }
+    })
+    const skill10 = await prismadb.skill.create({ 
+        data: { name: 'Rust' }
+    })
+    const skill11 = await prismadb.skill.create({ 
+        data: { name: 'golang' }
+    })
+    const skill12 = await prismadb.skill.create({ 
+        data: { name: 'game dev' }
+    })
+    const sklll13 = await prismadb.skill.create({ 
+        data: { name: 'remix' }
+    })
+    const sklll14 = await prismadb.skill.create({ 
+        data: { name: 'project management' }
+    })
+    const sklll15 = await prismadb.skill.create({ 
+        data: { name: 'UI' }
+    })
+    const sklll16 = await prismadb.skill.create({ 
+        data: { name: 'UX/EX' }
+    })
+    const sklll17 = await prismadb.skill.create({ 
+        data: { name: 'HTML' }
+    })
+    const sklll18 = await prismadb.skill.create({ 
+        data: { name: 'CSS' }
+    })
+    const sklll19 = await prismadb.skill.create({ 
+        data: { name: 'SASS/Preprocessors' }
+    })
+    const sklll20 = await prismadb.skill.create({ 
+        data: { name: 'Material UI' }
+    })
+    const sklll21 = await prismadb.skill.create({ 
+        data: { name: 'Bootstrap' }
+    })
+    const sklll22 = await prismadb.skill.create({ 
+        data: { name: 'React Native' }
+    })
+    const sklll23 = await prismadb.skill.create({ 
+        data: { name: 'Flutter' }
+    })
+    const sklll24 = await prismadb.skill.create({ 
+        data: { name: 'Swift' }
+    })
+    const sklll25 = await prismadb.skill.create({ 
+        data: { name: 'Android' }
+    })
+
+
+    console.log({ 
+        haily, scheffield, ezra, osgood, audrey, adele, kasey, hi, dulcie, sofie, odele, kizzie, luelle, claybourne, oliver, roselle,
+        role1, role2, role3, role4, role5, role6, role7, role8, role9, role10, role11, role12, role13, role14, role15, role17, role18, role19, role20, role21, role22, role23, role24, role25, role26, role27, role28, role29, role30, role31,
+        skill1, skill2, skill3, skill4, skill5, skill6, skill7, skill8, skill9, skill10, skill11, skill12, sklll13, sklll14, sklll15, sklll16, sklll17, sklll18, sklll19, sklll20, sklll21, sklll22, sklll23, sklll24, sklll25
+    })
 }
 
-seedUsers()
+seed()
     .then(async () => {
         await prismadb.$disconnect();
     })

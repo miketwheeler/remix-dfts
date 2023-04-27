@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { 
     Box, 
     Divider, 
@@ -146,7 +146,6 @@ const validateField = (name: string, value: string): string | null => {
 
 
 
-
 export const CreateFormFields = ({props}: any) => {
     const { newFormState, setNewFormState, loaderData } = props;
     const formFieldSet = formFieldData[props.index];
@@ -169,6 +168,10 @@ export const CreateFormFields = ({props}: any) => {
         error = validateField(name, formattedValue !== undefined ? formattedValue : value);
         setNewFormState({ ...newFormState, [name]: { value: formattedValue ?? value, error } });
     };
+
+    // useMemo(() => {
+    //     console.log(`all form state from create formFields: ${JSON.stringify(newFormState, null,2 )}`)
+    // }, [newFormState])
 
 
     return (
@@ -197,7 +200,7 @@ export const CreateFormFields = ({props}: any) => {
                                             row
                                             aria-labelledby="project-active-radio-choice"
                                             name="active"
-                                            value={ newFormState[formFieldEntry.name]?.value }
+                                            value={ newFormState[formFieldEntry.name]?.value || false}
                                             onChange={ handleInputChange }
                                             >
                                             <FormControlLabel value="true" label="yes" control={ <Radio /> } />

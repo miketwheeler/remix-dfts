@@ -27,7 +27,7 @@ model User {
   bio             String?
   createdAt       DateTime    @default(now())
   updatedAt       DateTime    @updatedAt
-  skills          Skills[]
+  skills          Skill[]
   rating          Float       @default(5.0)
   teamLead        Team?       @relation(name: "TeamLead")
   teams           Team[]
@@ -51,7 +51,7 @@ model Team {
 // category - A project can have many categories
 // team & teamId - A project can only belong to 1 team
 model Project {
-  id              Int             @id @default(autoincrement())
+  id              String          @id @default(uuid())
   name            String
   type            String
   createdAt       DateTime        @default(now())
@@ -87,7 +87,7 @@ model Post {
 }
 
 // users - many skills can have many users
-model Skills {
+model Skill {
   id          Int         @id @default(autoincrement())
   name        String
   users       User[]

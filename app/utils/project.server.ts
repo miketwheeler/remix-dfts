@@ -94,7 +94,7 @@ export async function getProjectListWhereTeamLead( request: Request ) {
 // READ
 export async function getProject(id: string) {
     const project = db.project.findUnique({
-        where: { id: Number(id) },
+        where: { id },
     })
     if(!project) { 
         throw new Response("no id provided", { status: 404 })
@@ -107,7 +107,7 @@ export async function getProject(id: string) {
 export async function updateProject(request: Request) {
     const { id, name, type, synopsis, description, techStack, beginDate, endDate, active, fundingGoal } = await request.json();
     const project = await db.project.update({
-        where: { id: Number(id) },
+        where: { id },
         data: { name, type, synopsis, description, techStack, beginDate, endDate, active, fundingGoal },
     });
 
@@ -119,7 +119,7 @@ export async function updateProject(request: Request) {
 export async function deleteProject(request: Request) {
     const { id } = await request.json();
     const project = await db.project.delete({
-        where: { id: Number(id) },
+        where: { id },
     });
 
     return project.id;

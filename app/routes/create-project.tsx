@@ -4,9 +4,9 @@ import type {
     LoaderArgs,
 } from "@remix-run/node";
 import type { FC } from 'react';
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { json, redirect } from "@remix-run/node"
-import { Link, useSearchParams, Form, useActionData, useLoaderData, useSubmit } from "@remix-run/react";
+import { Link, useSearchParams, Form, useActionData, useLoaderData, useSubmit} from "@remix-run/react";
 import { 
     Box, 
     Typography, 
@@ -52,8 +52,10 @@ export const meta: MetaFunction = () => ({
 });
 
 export const action = async ({ request }: ActionArgs) => {
-    // const form = await request.formData();
+    // const form = await request.json();
     // const formState = JSON.parse(form.get("formState") as string);
+
+    // TODO: was last set - testing above
     const body = await request.text();
     const formState = qs.parse(body);
 
@@ -339,14 +341,14 @@ const CreateProject: FC<FormSubmissionProps> = () => {
     const [formErrors, setFormErrors] = useState<Record<string, string>>({});
     const [formIsValid, setFormIsValid] = useState(false);
 
-    var [newFormState, setNewFormState] = useState<FormState>({});
+    const [newFormState, setNewFormState] = useState<FormState>({});
 
     // Expandable Step Form Actions
     const handleStep = (step: number) => () => { setActiveStep(step) };
 
     const handleAllFieldsReset = () => { 
         setActiveStep(0);
-        setNewFormState({}); // reset all field values' state
+        setNewFormState(Object.assign({})); // reset all field values' state
     };
 
     const checkFormIsDisabled = () => {
@@ -377,6 +379,9 @@ const CreateProject: FC<FormSubmissionProps> = () => {
     //     // console.dir(`hidden form state var: ${document.getElementById("hidden-form-state")}`)
     // }, [newFormState])
 
+    useEffect(() => {
+        console.log(`complete form state: ${JSON.stringify(newFormState, null, 2)}`)
+    }, [newFormState])
 
 	return (
         
@@ -415,20 +420,26 @@ const CreateProject: FC<FormSubmissionProps> = () => {
                             name="redirectTo"
                             value={ searchParams.get("redirectTo") ?? undefined }
                             />
-                        {/* <input 
+                        <input 
                             type="hidden" 
                             name="formState" 
                             value={ JSON.stringify(newFormState) } 
-                            /> */}
+                            />
                         <Stepper activeStep={activeStep} orientation="vertical">
                             {/* THIS IS REPLACEMENT FOR ALL FIELDS DYNAMICLY - delete map to replace with orig code */}
                             {
                                 steps.map((step, index) => (
-                                    <Step key={`step-created-for-${index}`}>
+                                    <Step key={`form-section-step-${index}`}>
                                         <StepButton color="inherit" onClick={ handleStep(index) }>{ step.label }</StepButton>
                                         <StepContent TransitionProps={{ unmountOnExit: false }} >
                                             <Typography>{ step.description }</Typography>
-                                            { CreateFormFields({ props: { index, newFormState, setNewFormState, loaderData }}) }
+                                            { 
+                                                CreateFormFields({ 
+                                                    props: { 
+                                                        index, newFormState, setNewFormState, loaderData 
+                                                        }
+                                                }) 
+                                            }
                                             <ForwardBack props={{ index, setActiveStep, steps, newFormState }} />
                                         </StepContent>
                                     </Step>
@@ -438,9 +449,9 @@ const CreateProject: FC<FormSubmissionProps> = () => {
                         <Box flexGrow={1} sx={{ display: 'flex-row', py: 2 }}>
                             <Button 
                                 className="button" 
-                                sx={{ mt: 1}}
+                                sx={{ mt: 1 }}
                                 onClick={(e) => {
-                                    e.preventDefault();
+                                    // e.preventDefault();
                                     handleAllFieldsReset();
                                 }}
                                 >

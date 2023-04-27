@@ -254,7 +254,7 @@ export default function MultiselectPicker({props}: any) {
                     <Box sx={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', gap: 1 }}>
                         {
                             newFormState.techStack?.value.split(',').map((tech: string) => {
-                                return <Chip key={`current-stack-chip-${tech}`} label={tech.toLowerCase()} />
+                                return <Chip key={`stack-chip-${tech}`} label={tech.toLowerCase()} />
                             })
                         }
                     </Box>
