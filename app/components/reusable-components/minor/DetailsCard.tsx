@@ -38,8 +38,15 @@ const styles = {
 }
 
 
-const DetailsCard = (props: any) => {            
-    const simpleDate = (`${props.activeSince?.toString().slice(5,2).concat(props.activeSince.toString().slice(0,4))}`)
+const DetailsCard = ({props}: any) => {    
+    // const { specProps, allData } = props;
+    // const { deliverProps, detailsCardType, data } = props;
+    
+    const simpleDate = (date: any) => {
+        const mo = date.slice(5, 7);
+        const yr = date.slice(0, 4);
+        return (`${mo}/${yr}`)
+    }
 
     const skillsList = props.skills?.map((obj: any, i: any) => {
         return obj.name;
@@ -48,90 +55,39 @@ const DetailsCard = (props: any) => {
     const availabilityStyles = {
         my: 'auto', 
         ml: 1, 
-        opacity: props.availability === 'available' || props.availability === true ? '100%' : '50%',
+        opacity: props.availability === true ? '100%' : '50%',
         display: 'flex',
     }
+    
+    // console.log('props details card: ', props)
 
 
     return (
         <Paper id="small-card" elevation={4} sx={styles.cardContainer}>
             <Box flexGrow={1}>
+                {
+                    props.type === "member"   // member type card
+                    ?
                     <>
-                        <Box sx={styles.flexRowStyle}>
+                    <Box sx={styles.flexRowStyle}>
                             <Typography variant="h6">
                                 {props.heading}
                             </Typography>
                             <Typography 
                                 variant="body2"
                                 sx={availabilityStyles}>
-                                {
-                                    props.detailsCardType === 1   // is member type card
-                                    ? 
-                                    (
-                                        props.availability !== null 
-                                        ?
-                                            <>
-                                                {
-                                                    props.availability === 'available' 
-                                                    ? 'available' 
-                                                    : 'unavailable'
-                                                }
-                                                {
-                                                    props.availability === 'available' 
-                                                    ? <PersonAddIcon fontSize="small" sx={styles.iconStyles} /> 
-                                                    : <PersonAddDisabledIcon fontSize="small" sx={styles.iconStyles} />
-                                                }
-                                            </>
-                                        : null
-                                    )
-                                    :
-                                    props.active !== null 
-                                    ?
-                                    <>
-                                        {
-                                            props.active === true 
-                                            ? 'active' 
-                                            : 'inactive'
-                                        }
-                                        {
-                                            props.active === true
-                                            ? <WorkspacesIcon fontSize="small" sx={styles.iconStyles} /> 
-                                            : <WorkspacesIcon fontSize="small" sx={styles.iconStyles} />
-                                        }
-                                    </>
-                                    : null
-                                }
-                                {/* {
-                                    props.availability !== null 
-                                    ?
-                                        <>
-                                            {
-                                                props.availability === 'available' 
-                                                ? 'available' 
-                                                : 'unavailable'
-                                            }
-                                            {
-                                                props.availability === 'available' 
-                                                ? <PersonAddIcon fontSize="small" sx={styles.iconStyles} /> 
-                                                : <PersonAddDisabledIcon fontSize="small" sx={styles.iconStyles} />
-                                            }
-                                        </>
-                                    :
-                                    props.active !== null ?
-                                    <>
-                                        {
-                                            props.active === true 
-                                            ? 'active' 
-                                            : 'inactive'
-                                        }
-                                        {
-                                            props.active === true
-                                            ? <PersonAddIcon fontSize="small" sx={styles.iconStyles} /> 
-                                            : <PersonAddDisabledIcon fontSize="small" sx={styles.iconStyles} />
-                                        }
-                                    </>
-                                    : null
-                                } */}
+                                <>
+                                    {
+                                        props.availability
+                                        ? 'available' 
+                                        : 'unavailable'
+                                    }
+                                    {
+                                        props.availability
+                                        ? <PersonAddIcon fontSize="small" sx={styles.iconStyles} /> 
+                                        : <PersonAddDisabledIcon fontSize="small" sx={styles.iconStyles} />
+                                    }
+                                </>
                             </Typography>
                         </Box>
                         <Divider />
@@ -145,49 +101,36 @@ const DetailsCard = (props: any) => {
                                             <>
                                                 <Typography variant="body2">dev:</Typography>
                                                 <Typography variant="body2">{props.devType.toLowerCase()}</Typography>
-                                            </>
-                                            : props.projectType
-                                            ? 
-                                            <>
-                                                <Typography variant="body2">type:</Typography>
-                                                <Typography variant="body2">{props.projectType.toLowerCase()}</Typography>
-                                            </>
-                                            : null
+                                            </> 
+                                            : <Typography variant="body2">nothing to display</Typography>
                                         }
                                     </Box>
                                     <Box sx={styles.flexRowStyle}>
                                         <Typography variant="body2">active since:</Typography>
-                                        <Typography variant="body2">{simpleDate}</Typography>
+                                        <Typography variant="body2">{simpleDate(props.activeSince)}</Typography>
                                     </Box>
-                                    {
-                                        props.detailsCardType === 1  // is member type card
-                                        ?
-                                        <>  
-                                            <Box sx={styles.flexRowStyle}>
-                                                <Typography variant="body2">total teams:</Typography>
-                                                <Typography variant="body2">{props.teamsOn}</Typography>
-                                            </Box>
-                                            <Box sx={styles.flexRowStyle}>
-                                                <Typography variant="body2">total projects:</Typography>
-                                                <Typography variant="body2">{props.projectsOn}</Typography>
-                                            </Box>
-                                            <Box sx={styles.flexRowStyle}>
-                                                <Typography variant="body2">rating:</Typography>
-                                                <Typography variant="body2">
-                                                    <Rating
-                                                        precision={0.25}
-                                                        readOnly
-                                                        value={props.rating}
-                                                        size="small"
-                                                        sx={{ color: 'secondary.main'}}
-                                                        />
-                                                </Typography>
-                                            </Box>
-                                        </>
-                                        :
-                                        null
-                                    }
-                                    
+                                    <>  
+                                        <Box sx={styles.flexRowStyle}>
+                                            <Typography variant="body2">total teams:</Typography>
+                                            <Typography variant="body2">{props.teamsOn}</Typography>
+                                        </Box>
+                                        <Box sx={styles.flexRowStyle}>
+                                            <Typography variant="body2">total projects:</Typography>
+                                            <Typography variant="body2">{props.projectsOn}</Typography>
+                                        </Box>
+                                        <Box sx={styles.flexRowStyle}>
+                                            <Typography variant="body2">rating:</Typography>
+                                            <Typography variant="body2">
+                                                <Rating
+                                                    precision={0.25}
+                                                    readOnly
+                                                    value={props.rating}
+                                                    size="small"
+                                                    sx={{ color: 'secondary.main'}}
+                                                    />
+                                            </Typography>
+                                        </Box>
+                                    </>
                                 </Stack>
                             </Grid>
                             <Grid md={5} sx={styles.detailsImageContainerStyles}>
@@ -199,33 +142,14 @@ const DetailsCard = (props: any) => {
                         <Stack direction="column" spacing={1.5} sx={styles.detailsSkillsBioContainerStyles}>
                             <Divider />
                             <Box sx={styles.flexRowStyle}>
-                                {
-                                    props.detailsCardType === 1  // is member type card
-                                    ?
-                                    <>
-                                        <Box sx={styles.flexColumnStyle}>
-                                            <Typography variant="body2" sx={styles.detailsSkillsBioHeaderStyles}>skills:</Typography>
-                                        </Box>
-                                        <Box sx={styles.flexColumnStyle}>
-                                            <Typography variant="body2">{skillsList.join(', ').toLowerCase()}</Typography>
-                                        </Box>
-                                    </>
-                                    :
-                                    <>
-                                        <Box sx={styles.flexColumnStyle}>
-                                            <Typography variant="body2" sx={styles.detailsSkillsBioHeaderStyles}>stack:</Typography>
-                                        </Box>
-                                        <Box sx={styles.flexColumnStyle}>
-                                            <Typography variant="body2">{props.stack}</Typography>
-                                        </Box>
-                                    </>
-                                }
-                                {/* <Box sx={styles.flexColumnStyle}>
-                                    <Typography variant="body2" sx={styles.detailsSkillsBioHeaderStyles}>skills:</Typography>
-                                </Box>
-                                <Box sx={styles.flexColumnStyle}>
-                                    <Typography variant="body2">{skillsList.join(', ').toLowerCase()}</Typography>
-                                </Box> */}
+                                <>
+                                    <Box sx={styles.flexColumnStyle}>
+                                        <Typography variant="body2" sx={styles.detailsSkillsBioHeaderStyles}>skills:</Typography>
+                                    </Box>
+                                    <Box sx={styles.flexColumnStyle}>
+                                        <Typography variant="body2">{skillsList.join(', ').toLowerCase()}</Typography>
+                                    </Box>
+                                </>
                             </Box>
                             <Divider />
                             <Box sx={styles.flexRowStyle}>
@@ -238,6 +162,97 @@ const DetailsCard = (props: any) => {
                             </Box>
                         </Stack>
                     </>
+                    :
+                    <>
+                        <Box sx={styles.flexRowStyle}>
+                            <Typography variant="h6">
+                                {props.heading}
+                            </Typography>
+                            <Typography 
+                                variant="body2"
+                                sx={availabilityStyles}>
+                                <>
+                                    {
+                                        props.availability
+                                        ? 'active' 
+                                        : 'inactive'
+                                    }
+                                    {
+                                        props.availability
+                                        ? <WorkspacesIcon fontSize="small" sx={styles.iconStyles} /> 
+                                        : <WorkspacesIcon fontSize="small" sx={styles.iconStyles} />
+                                    }
+                                </>
+                            </Typography>
+                        </Box>
+                        <Divider />
+                        <Grid container spacing={1} sx={styles.detailsContentContainerStyles}>
+                            <Grid xs={12} md={7}>
+                                <Stack direction="column" spacing={1} sx={styles.detailsMainInfoContainerStyles}>
+                                    <Box sx={styles.flexRowStyle}>
+                                        {
+                                            props.projectType
+                                            ? 
+                                            <>
+                                                <Typography variant="body2">type:</Typography>
+                                                <Typography variant="body2">{props.projectType.toLowerCase()}</Typography>
+                                            </>
+                                            : <Typography variant="body2">nothing to display</Typography>
+                                        }
+                                    </Box>
+                                    <Box sx={styles.flexRowStyle}>
+                                        <Typography variant="body2">begins:</Typography>
+                                        <Typography variant="body2">{simpleDate(props.beginDate)}</Typography>
+                                    </Box>
+                                    <Box sx={styles.flexRowStyle}>
+                                        <Typography variant="body2">ends:</Typography>
+                                        <Typography variant="body2">{simpleDate(props.beginDate)}</Typography>
+                                    </Box>
+                                    {
+                                        props.type === "project"  // is project type card
+                                        ? 
+                                        <>
+                                        
+                                        </>
+                                        : <Typography variant="body2">nothing to display</Typography>
+                                    }
+                                </Stack>
+                            </Grid>
+                            <Grid md={5} sx={styles.detailsImageContainerStyles}>
+                                <Box sx={styles.detailsImageAlignmentStyles}>
+                                    <div style={styles.detailsTempImagePlaceholderStyles} />
+                                </Box>
+                            </Grid>
+                        </Grid>
+                        <Stack direction="column" spacing={1.5} sx={styles.detailsSkillsBioContainerStyles}>
+                            <Divider />
+                            <Box sx={styles.flexRowStyle}>
+                                {
+                                    props.type === "project"  // is project type card
+                                    ?
+                                    <>
+                                        <Box sx={styles.flexColumnStyle}>
+                                            <Typography variant="body2" sx={styles.detailsSkillsBioHeaderStyles}>stack:</Typography>
+                                        </Box>
+                                        <Box sx={styles.flexColumnStyle}>
+                                            <Typography variant="body2">{props.stack}</Typography>
+                                        </Box>
+                                    </>
+                                    : <Typography variant="body2">nothing to display</Typography>
+                                }
+                            </Box>
+                            <Divider />
+                            <Box sx={styles.flexRowStyle}>
+                                <Box sx={styles.flexColumnStyle}>
+                                    <Typography variant="body2" sx={styles.detailsSkillsBioHeaderStyles}>dscr:</Typography>
+                                </Box>
+                                <Box sx={styles.flexColumnStyle}>
+                                    <Typography variant="body2">{props.description}</Typography>
+                                </Box>
+                            </Box>
+                        </Stack>
+                    </>
+                }
             </Box>
         </Paper>
     )

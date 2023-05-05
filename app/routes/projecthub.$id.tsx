@@ -4,7 +4,7 @@ import { json, redirect } from "@remix-run/node";
 import { useCatch, useLoaderData, useOutletContext, useParams } from "@remix-run/react";
 import DetailsCard from "~/components/reusable-components/minor/DetailsCard";
 
-import { getProject } from "~/utils/display.server";
+import { getProjectDetail } from "~/utils/display.server";
 
 import { db } from "~/utils/db.server";
 
@@ -23,63 +23,34 @@ import { db } from "~/utils/db.server";
 // };
 
 export const loader = async ({ params }: LoaderArgs) => {
-    // all project data
-    const project = await getProject({ id: Number(params.id) });
-	
-    // var teamMembersList;
-    
+    const project = await getProjectDetail({ id: params.id ?? ""});
+
     // if the project does not exist, throw a 404 error
 	if (!project) {
-		throw new Response("What a joke! User not found.", { status: 404 });
+		throw new Response("No projects found! Create one!", { status: 404 });
 	}
-    // else: try to get the rest of this project's info for display
-    // else {
-    //     try {
-    //         // project's team members: retrieve the members of this project's team
-    //         const getTeamMembersList = await db.project.findUnique({
-    //             where: { id: Number(params.id) },
-    //             select: { 
-    //                 team: {
-    //                     select: {
-    //                         members: {
-    //                             select: {
-    //                                 username: true,
-    //                             }
-    //                         },
-    //                     }
-    //                 }
-    //             },
-    //         });
-    //         teamMembersList = getTeamMembersList
-    //         // teamMembersList = (getTeamMembersList !== null) ? getTeamMembersList : ["No team members found"];
-    //     }
-    //     catch (error) {
-    //         console.log(error);
-    //     }        
-    // }
     
-	return json({ 
-        project, 
-        // teamMembersList, 
-    });
+	return json({ project });
 };
 
 export default function ProjectIdRoute({ props }: any) {
 	const data = useLoaderData<typeof loader>();
-    const { detailsCardType } = useOutletContext<{ detailsCardType: number }>();
+    const { detailsCardType } = useOutletContext<{ detailsCardType: string }>();
+	const deliverProps = props;
 
 	return ( 
         <DetailsCard 
-            type={detailsCardType}
-            heading={data.project.name}
-            active={data.project.active}
-            projectType={data.project.type}
-            activeSince={data.project.beginDate}
-            // teamsOn={data.teamList.length}
-            // projectsOn={data.teamList.map(team => team.projects.length).reduce((a, b) => a + b, 0)}
-            // rating={data.user.rating}
-            stack={data.project.techStack}
-            bio={data.project.synopsis}
+			props={{ 
+				type: detailsCardType,
+				heading: data.project.name,
+				availability: data.project.active,
+				projectType: data.project.type,
+				beginDate: data.project.beginDate,
+				endDate: data.project.endDate,
+				stack: data.project.techStack,
+				description: data.project.description,
+				milestone: data.project.milestone,
+			}}
         />
     )
 }
@@ -98,7 +69,7 @@ export function CatchBoundary() {
 		case 404: {
 			return (
 				<div className="error-container">
-					Seems that user does not exist.
+					Seems that project does not exist.
 				</div>
 			);
 		}

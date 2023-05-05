@@ -30,10 +30,10 @@ const membersSpecificProps = {
         messageBoxType: 1,
         primaryHeader: "send a message to connect",
         secondaryHeader: "select members to message",
-        redirectToValue: "/dashboard", // TODO: change to dispatch to current project(s)' owner
+        redirectToValue: "dashboard", // TODO: change to dispatch to current project(s)' owner
     },
     detailsCardProps: {
-        detailsCardType: 1,
+        detailsCardType: "member",
     }
 }
 

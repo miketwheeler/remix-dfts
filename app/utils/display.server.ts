@@ -20,6 +20,64 @@ export async function getMember( params: { id: string }) {
     return member;
 }
 
+export async function getMemberDetail( params: { id: string } ) {
+    const user = await db.user.findUnique({
+		where: { id: params.id },
+        select: { 
+            username: true, 
+            available: true, 
+            devType: true, 
+            createdAt: true, 
+            rating: true, 
+            bio: true,
+        }
+	});
+
+    var skillList: any[] = [];
+    var teamList: any[] = [];
+    
+    // if the user does not exist, throw a 404 error
+	if (!user) {
+		throw new Response("What a joke! User not found.", { status: 404 });
+	}
+    // else: get the rest of this users info for display
+    else {
+        try {
+            // skills: retrieve the skills this user's id is associated with
+            const getSkillList = await db.skill.findMany({
+                where: { 
+                    users : { 
+                        some: { id: params.id  }    
+                    } 
+                },
+                select: { name: true },
+            })
+            // projects: get the projects that this user has been/is a member of on a given team:: 
+            //           later <projects> is mapped out then reduced to ALSO include the total 
+            //           quantity of projects this user has been/is a member of.
+            const getTeamList = await db.team.findMany({
+                where: { 
+                    members : { 
+                        some: { id: params.id } 
+                    },
+                },
+                select: { name: true, id: true, projects: true },
+            }) 
+
+            skillList = getSkillList;
+            teamList = getTeamList;
+        }
+        catch (error) {
+            console.log(error);
+        }
+    }
+    return ({ 
+        user, 
+        skillList, 
+        teamList, 
+    });
+}
+
 // GET PROJECT DATA
 export async function getProjectList(request: Request) {
     const projectList = await db.project.findMany({
@@ -29,10 +87,22 @@ export async function getProjectList(request: Request) {
     return projectList;
 }
 
-export async function getProject( params: { id: number }) {
+export async function getProject( params : { id: string }) {
     const project = await db.project.findUnique({
-        where: { id: Number(params.id) },
-        select: { id: true, name: true, type: true, synopsis: true, techStack: true, active: true, beginDate: true, endDate: true },
+        where: { id: params.id },
+        select: { id: true, name: true, type: true, synopsis: true, techStack: true, active: true, beginDate: true, endDate: true  },
+    }); 
+    return project;
+}
+
+export async function getProjectDetail( params : { id: string }) {
+    const project = await db.project.findUnique({
+        where: { id: params.id },
+        select: { 
+            id: true, name: true, type: true, synopsis: true, 
+            techStack: true, active: true, beginDate: true, 
+            endDate: true, description: true, milestone: true
+        },
     }); 
     return project;
 }

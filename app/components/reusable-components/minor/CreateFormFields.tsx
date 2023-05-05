@@ -200,7 +200,7 @@ export const CreateFormFields = ({props}: any) => {
                                             row
                                             aria-labelledby="project-active-radio-choice"
                                             name="active"
-                                            value={ newFormState[formFieldEntry.name]?.value || false}
+                                            value={ newFormState[formFieldEntry.name]?.value || "false"}
                                             onChange={ handleInputChange }
                                             >
                                             <FormControlLabel value="true" label="yes" control={ <Radio /> } />

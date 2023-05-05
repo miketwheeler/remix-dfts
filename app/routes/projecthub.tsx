@@ -33,7 +33,7 @@ const projectSpecificProps = {
         redirectToValue: "dashboard", // TODO: change to dispatch to current project(s)' owner
     },
     detailsCardProps: {
-        detailsCardType: 0,
+        detailsCardType: "project",
     }
 }
 

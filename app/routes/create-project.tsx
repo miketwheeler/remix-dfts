@@ -338,8 +338,8 @@ const CreateProject: FC<FormSubmissionProps> = () => {
     // const submit = useSubmit();
 
     // const [assignTeam, setAssignTeam] = useState({});
-    const [formErrors, setFormErrors] = useState<Record<string, string>>({});
-    const [formIsValid, setFormIsValid] = useState(false);
+    // const [formErrors, setFormErrors] = useState<Record<string, string>>({});
+    // const [formIsValid, setFormIsValid] = useState(false);
 
     const [newFormState, setNewFormState] = useState<FormState>({});
 
@@ -348,7 +348,7 @@ const CreateProject: FC<FormSubmissionProps> = () => {
 
     const handleAllFieldsReset = () => { 
         setActiveStep(0);
-        setNewFormState(Object.assign({})); // reset all field values' state
+        setNewFormState({}); // reset all field values' state
     };
 
     const checkFormIsDisabled = () => {
@@ -420,11 +420,11 @@ const CreateProject: FC<FormSubmissionProps> = () => {
                             name="redirectTo"
                             value={ searchParams.get("redirectTo") ?? undefined }
                             />
-                        <input 
+                        {/* <input 
                             type="hidden" 
                             name="formState" 
                             value={ JSON.stringify(newFormState) } 
-                            />
+                            /> */}
                         <Stepper activeStep={activeStep} orientation="vertical">
                             {/* THIS IS REPLACEMENT FOR ALL FIELDS DYNAMICLY - delete map to replace with orig code */}
                             {
@@ -437,7 +437,7 @@ const CreateProject: FC<FormSubmissionProps> = () => {
                                                 CreateFormFields({ 
                                                     props: { 
                                                         index, newFormState, setNewFormState, loaderData 
-                                                        }
+                                                    }
                                                 }) 
                                             }
                                             <ForwardBack props={{ index, setActiveStep, steps, newFormState }} />
