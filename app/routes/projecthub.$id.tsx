@@ -36,7 +36,7 @@ export const loader = async ({ params }: LoaderArgs) => {
 export default function ProjectIdRoute({ props }: any) {
 	const data = useLoaderData<typeof loader>();
     const { detailsCardType } = useOutletContext<{ detailsCardType: string }>();
-	const deliverProps = props;
+	// const deliverProps = props;
 
 	return ( 
         <DetailsCard 

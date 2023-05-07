@@ -48,7 +48,7 @@ const DetailsCard = ({props}: any) => {
         return (`${mo}/${yr}`)
     }
 
-    const skillsList = props.skills?.map((obj: any, i: any) => {
+    const skillsList = props.skills?.map((obj: any) => {
         return obj.name;
     })
 
@@ -124,7 +124,7 @@ const DetailsCard = ({props}: any) => {
                                                 <Rating
                                                     precision={0.25}
                                                     readOnly
-                                                    value={props.rating}
+                                                    value={Number(props.rating)}
                                                     size="small"
                                                     sx={{ color: 'secondary.main'}}
                                                     />
@@ -147,7 +147,14 @@ const DetailsCard = ({props}: any) => {
                                         <Typography variant="body2" sx={styles.detailsSkillsBioHeaderStyles}>skills:</Typography>
                                     </Box>
                                     <Box sx={styles.flexColumnStyle}>
-                                        <Typography variant="body2">{skillsList.join(', ').toLowerCase()}</Typography>
+                                        <Typography variant="body2">
+                                            {
+                                                props.skills.length
+                                                ?
+                                                skillsList.join(', ').toLowerCase()
+                                                : 'n/a: no skills listed'
+                                            }
+                                        </Typography>
                                     </Box>
                                 </>
                             </Box>
@@ -162,7 +169,8 @@ const DetailsCard = ({props}: any) => {
                             </Box>
                         </Stack>
                     </>
-                    :
+
+                    : // else is project type card
                     <>
                         <Box sx={styles.flexRowStyle}>
                             <Typography variant="h6">
@@ -207,6 +215,10 @@ const DetailsCard = ({props}: any) => {
                                     <Box sx={styles.flexRowStyle}>
                                         <Typography variant="body2">ends:</Typography>
                                         <Typography variant="body2">{simpleDate(props.beginDate)}</Typography>
+                                    </Box>
+                                    <Box sx={styles.flexRowStyle}>
+                                        <Typography variant="body2">milestone:</Typography>
+                                        <Typography variant="body2">{props.milestone}</Typography>
                                     </Box>
                                     {
                                         props.type === "project"  // is project type card

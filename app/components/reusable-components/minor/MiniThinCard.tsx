@@ -1,9 +1,10 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Paper, Typography, Box, Divider } from "@mui/material";
 import { PillSwitch } from "./PillSwitch";
 import { useMultiselectContext } from "~/components/client-context/MultiselectContext";
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import PersonAddDisabledIcon from '@mui/icons-material/PersonAddDisabled';
+import WorkspacesIcon from '@mui/icons-material/Workspaces';
 import { Link } from "@remix-run/react";
 
 
@@ -17,7 +18,7 @@ const flexRowStyle = {
 const flexColumnHeaderStyle = { 
     display: 'flex',  
     textAlign: 'center', 
-    minWidth: '60px',
+    minWidth: '70px',
     overflow: 'hidden',
     maxWidth: '100px',
 }
@@ -59,9 +60,9 @@ const MiniThinCard = ({props}: any) => {
                 document.getElementById(`card-${cardId}`)?.classList.remove('Mui-active');
             }
             document.getElementById(`card-${thisCardId}`)?.classList.add('Mui-active');
-        }
 
-        setCardId(thisCardId);
+            setCardId(thisCardId);
+        }
     }
 
     // keeps track of and invokes fn to add/remove card id to/from the context list
@@ -71,7 +72,7 @@ const MiniThinCard = ({props}: any) => {
         handleCardSwitched(props.id, props.header);
     }
 
-    // SET A CARD ID TO THE CONTEXT LIST ///////////////////////////////////////////////////
+    // SETs A CARD ID TO THE CONTEXT LIST ///////////////////////////////////////////////////
     // **remove an entry from the context list
     const handleRemoveSwitchId = async (idToDelete: string) => {
         const newCardIdList = [...cardIdList];                                          // copy the state array
@@ -93,20 +94,24 @@ const MiniThinCard = ({props}: any) => {
         if(cardIdList.length) {                                                         // if are entries in the state array  
             for(const n of cardIdList) {                                                // loop through entries
                 n.id === switchId                                                       // if the entry.id matches the switch.id
-                    ? handleRemoveSwitchId(switchId)                                    // remove the entry from state array
-                    : handleAddSwitchId(switchId, userName);                            // else, add the entry to state array
+                ? handleRemoveSwitchId(switchId)                                        // remove the entry from state array
+                : handleAddSwitchId(switchId, userName);                                // else, add the entry to state array
             }
         }
         else
             handleAddSwitchId(switchId, userName);                                      // if no entries in state array, add it to state array
     }
-    ////////////////////////////////////////////////////////////////////////////////////////
 
+    ////////////////////////////////////////////////////////////////////////////////////////
     // if the member is deleted from the message box, also set it's switch to false again
     useMemo(() => {
         cardIdList.findIndex(n => n.id === props.id) !== -1 ? setChecked(true) : setChecked(false);
     }, [cardIdList, props.id])
 
+
+    // useEffect(() => {
+    //     console.log('minithincardProps: ', props)
+    // })
 
     return (
         <Box sx={{ flexGrow: 1, m: 0, minWidth: '200px'}}>
@@ -167,22 +172,22 @@ const MiniThinCard = ({props}: any) => {
                         <Divider orientation="vertical" variant="middle" flexItem sx={{ mx: 2 }} />
                         <Box sx={{ display: 'flex', flexBasis: "row", flexWrap: 'nowrap', textAlign: 'center', verticalAlign: 'middle' }}>
                             {
-                                props.availability !== null || props.availability !== undefined ?
-                                <Typography 
-                                    variant="body2" 
-                                    sx={{
-                                        my: 'auto', 
-                                        mr: .5, 
-                                        opacity: props.availability === true ? 1 : .2
-                                        }}
-                                    >
-                                    {
-                                        props.availability === true 
-                                        ? <PersonAddIcon fontSize="small" /> 
-                                        : <PersonAddDisabledIcon fontSize="small" />
-                                    }
-                                </Typography>
-                                : null
+                                    props.availability !== null || props.availability !== undefined ?
+                                    <Typography 
+                                        variant="body2" 
+                                        sx={{
+                                            my: 'auto', 
+                                            mr: .5, 
+                                            opacity: props.availability === true ? 1 : .2
+                                            }}
+                                        >
+                                        {
+                                            props.availability === true 
+                                            ? props.miniThinCardProps.miniThinCardType === 1 ? <PersonAddIcon fontSize="small" /> : <WorkspacesIcon fontSize="small" /> 
+                                            : props.miniThinCardProps.miniThinCardType === 1 ? <PersonAddDisabledIcon fontSize="small" /> : <WorkspacesIcon fontSize="small" /> 
+                                        }
+                                    </Typography>
+                                    : null
                             }
                             <Box style={{ fontSize: '12px', margin: 'auto 0' }}>
                                 <PillSwitch 
