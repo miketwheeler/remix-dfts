@@ -1,7 +1,7 @@
 import type {
     LoaderArgs, 
 } from "@remix-run/node";
-import { Paper, Typography, Box, Divider, Stack, Rating } from "@mui/material";
+import { Paper, Typography, Box, Divider, Stack, Rating, Fade } from "@mui/material";
 import Grid from "@mui/material/Unstable_Grid2";
 // import { useMultiselectContext } from "~/components/client-context/MultiselectContext";
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
@@ -9,9 +9,10 @@ import PersonAddDisabledIcon from '@mui/icons-material/PersonAddDisabled';
 import WorkspacesIcon from '@mui/icons-material/Workspaces';
 
 
+
 const styles = {
     flexRowStyle: { 
-        display: 'flex', 
+        display: 'flex',
         flexBasis: "row", 
         flexWrap: 'nowrap', 
         justifyContent: 'space-between',
@@ -27,6 +28,7 @@ const styles = {
         pr: 1.5,
         borderRadius: 2,
     },
+    
     iconStyles: { mt: 'auto', pb: 0.2, ml: 1, justifySelf: 'flex-end' },
     detailsContentContainerStyles: { m: 0, p: 0 },
     detailsMainInfoContainerStyles: { my: 1.5 },

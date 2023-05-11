@@ -117,7 +117,8 @@ export default function ListAndDetailMain({props}: any) {
                                         data2: item.skills || null,
                                         data3: item.synopsis || null,
                                         availability: (item.available || item.active) ?? false,
-                                        miniThinCardProps: miniThinCardProps
+                                        miniThinCardProps: miniThinCardProps,
+                                        passContext: { detailsCardType: detailsCardProps.detailsCardType, data: allData }
                                     }}
                                 />
                             ))
