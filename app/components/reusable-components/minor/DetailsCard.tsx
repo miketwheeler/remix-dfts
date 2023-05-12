@@ -66,6 +66,7 @@ const DetailsCard = ({props}: any) => {
 
     return (
         <Paper id="small-card" elevation={4} sx={styles.cardContainer}>
+            <Fade in={true} timeout={800}>
             <Box flexGrow={1}>
                 {
                     props.type === "member"   // member type card
@@ -268,6 +269,7 @@ const DetailsCard = ({props}: any) => {
                     </>
                 }
             </Box>
+            </Fade>
         </Paper>
     )
 }

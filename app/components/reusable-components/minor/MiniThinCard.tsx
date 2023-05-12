@@ -70,7 +70,6 @@ const MiniThinCard = ({props}: any) => {
                 mdAndDown && 
                 setIsOpen(false);
             }
-            // console.log("clicked stg1 w/ initial check")
             document.getElementById(`card-${thisCardId}`)?.classList.add('Mui-active');
             setCardId(thisCardId);
             setIsOpen(true);
@@ -78,7 +77,7 @@ const MiniThinCard = ({props}: any) => {
             // handleCardCollapse();
         }
         else {
-            document.getElementById(`card-${thisCardId}`)?.classList.remove('Mui-active');
+            document.getElementById(`card-${cardId}`)?.classList.remove('Mui-active');
             setCardId("")
             setIsOpen(false)
             // mdAndDown && 
@@ -131,17 +130,13 @@ const MiniThinCard = ({props}: any) => {
     //     location.pathname === '/memberhall' ?? handleCardClicked(props.id)
     // }, [props.id, handleCardClicked, location.pathname])
 
-    // useEffect(()=> {
-    //     // console.log("cardIdList: ", cardIdList)
-    //     console.log('cardId: ', cardId)
-    // })
-
 
 
     return (
         <Box sx={{ flexGrow: 1, m: 0, minWidth: '200px'}}>
             <Link 
-                to={props.id === cardId ? '/memberhall' : `/memberhall/${props.id}`} 
+                // to={props.id === cardId ? '/memberhall' : `/memberhall/${props.id}`} 
+                to={ props.id } 
                 id={`minicardlink-${props.id}`}
                 key={`link-${props.id}`}
                 style={{ textDecoration: 'none', color: 'inherit' }}
