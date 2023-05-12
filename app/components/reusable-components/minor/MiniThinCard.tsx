@@ -1,11 +1,11 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Paper, Typography, Box, Divider, useMediaQuery, Collapse } from "@mui/material";
 import { PillSwitch } from "./PillSwitch";
 import { useMultiselectContext } from "~/components/client-context/MultiselectContext";
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import PersonAddDisabledIcon from '@mui/icons-material/PersonAddDisabled';
 import WorkspacesIcon from '@mui/icons-material/Workspaces';
-import { Link, Outlet } from "@remix-run/react";
+import { Link, Outlet, useNavigate, useLocation } from "@remix-run/react";
 
 
 
@@ -53,27 +53,36 @@ const MiniThinCard = ({props}: any) => {
     const [checked, setChecked] = useState<boolean>(false);
     const [isOpen, setIsOpen] = useState<boolean>(false);
 
+    // const navigate = useNavigate();
+    const location = useLocation();
+
     const mdAndDown = useMediaQuery('(max-width: 900px)');
     
-    const handleCardCollapse = () => {
-        setIsOpen((prev) => !prev);
-    }
+    // const handleCardCollapse = () => {
+    //     setIsOpen((prev) => !prev);
+    // }
 
     // keeps track of the current hightlighted/selected card
     const handleCardClicked = (thisCardId: string) => {
         if(cardId !== thisCardId) {
             if(cardId !== "") {
                 document.getElementById(`card-${cardId}`)?.classList.remove('Mui-active');
-                mdAndDown && setIsOpen(false);
+                mdAndDown && 
+                setIsOpen(false);
             }
             // console.log("clicked stg1 w/ initial check")
             document.getElementById(`card-${thisCardId}`)?.classList.add('Mui-active');
             setCardId(thisCardId);
-            mdAndDown && handleCardCollapse();
+            setIsOpen(true);
+            // mdAndDown && 
+            // handleCardCollapse();
         }
         else {
             document.getElementById(`card-${thisCardId}`)?.classList.remove('Mui-active');
-            mdAndDown && handleCardCollapse();
+            setCardId("")
+            setIsOpen(false)
+            // mdAndDown && 
+            // handleCardCollapse();
         }
     }
 
@@ -118,15 +127,27 @@ const MiniThinCard = ({props}: any) => {
         cardIdList.findIndex(n => n.id === props.id) !== -1 ? setChecked(true) : setChecked(false);
     }, [cardIdList, props.id])
 
+    // useMemo(() => {
+    //     location.pathname === '/memberhall' ?? handleCardClicked(props.id)
+    // }, [props.id, handleCardClicked, location.pathname])
+
+    // useEffect(()=> {
+    //     // console.log("cardIdList: ", cardIdList)
+    //     console.log('cardId: ', cardId)
+    // })
+
+
 
     return (
         <Box sx={{ flexGrow: 1, m: 0, minWidth: '200px'}}>
             <Link 
-                to={props.id} 
+                to={props.id === cardId ? '/memberhall' : `/memberhall/${props.id}`} 
                 id={`minicardlink-${props.id}`}
                 key={`link-${props.id}`}
                 style={{ textDecoration: 'none', color: 'inherit' }}
                 preventScrollReset={true}
+                replace={true}
+                prefetch="render"
                 onClick={() => handleCardClicked(props.id)}
                 >
                 <Paper elevation={4} sx={cardContainer} id={`card-${props.id}`}>

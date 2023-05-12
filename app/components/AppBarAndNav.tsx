@@ -140,6 +140,7 @@ const BuiltTab = ({props}: any) => {
 			iconPosition="start"
 			icon={ props.link.icon }
 			to={ props.link.path }
+			// replace
 			disabled={ !props.link.enabled }
 			sx={ tabStyles }
 		/>
