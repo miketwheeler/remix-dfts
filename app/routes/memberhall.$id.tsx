@@ -1,11 +1,11 @@
 // import { Skeleton } from "@mui/material";
 import type { ActionArgs, LoaderArgs, MetaFunction } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
-import { useCatch, useLoaderData, useOutletContext, useParams } from "@remix-run/react";
+import { useCatch, useLoaderData, useOutletContext } from "@remix-run/react";
 
 import DetailsCard from "~/components/reusable-components/minor/DetailsCard";
 
-import { db } from "~/utils/db.server";
+// import { db } from "~/utils/db.server";
 import { getMemberDetail } from "~/utils/display.server";
 // import { getUserId, requireUserId } from "~/utils/session.server";
 

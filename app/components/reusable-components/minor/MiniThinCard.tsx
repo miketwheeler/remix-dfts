@@ -5,7 +5,7 @@ import { useMultiselectContext } from "~/components/client-context/MultiselectCo
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import PersonAddDisabledIcon from '@mui/icons-material/PersonAddDisabled';
 import WorkspacesIcon from '@mui/icons-material/Workspaces';
-import { Link, Outlet, useNavigate, useLocation } from "@remix-run/react";
+import { Link, Outlet, useLocation } from "@remix-run/react";
 
 
 
@@ -53,37 +53,29 @@ const MiniThinCard = ({props}: any) => {
     const [checked, setChecked] = useState<boolean>(false);
     const [isOpen, setIsOpen] = useState<boolean>(false);
 
-    // const navigate = useNavigate();
     const location = useLocation();
 
     const mdAndDown = useMediaQuery('(max-width: 900px)');
-    
-    // const handleCardCollapse = () => {
-    //     setIsOpen((prev) => !prev);
-    // }
 
     // keeps track of the current hightlighted/selected card
     const handleCardClicked = (thisCardId: string) => {
         if(cardId !== thisCardId) {
             if(cardId !== "") {
                 document.getElementById(`card-${cardId}`)?.classList.remove('Mui-active');
-                mdAndDown && 
+                // mdAndDown && 
                 setIsOpen(false);
             }
             document.getElementById(`card-${thisCardId}`)?.classList.add('Mui-active');
             setCardId(thisCardId);
             setIsOpen(true);
-            // mdAndDown && 
-            // handleCardCollapse();
         }
         else {
             document.getElementById(`card-${cardId}`)?.classList.remove('Mui-active');
             setCardId("")
             setIsOpen(false)
-            // mdAndDown && 
-            // handleCardCollapse();
         }
     }
+    
 
     // SWITCH -> ADDs/REMOVES A CARD'S ID ONTO THE CONTEXT LIST ////////////////////////////
     // **calls add/remove card id to/from the context list
@@ -124,11 +116,18 @@ const MiniThinCard = ({props}: any) => {
     // if the member is deleted from the message box, also set it's switch to false again
     useMemo(() => {
         cardIdList.findIndex(n => n.id === props.id) !== -1 ? setChecked(true) : setChecked(false);
-    }, [cardIdList, props.id])
+        console.log('loaction:', location.pathname.split('/').pop())
+        if(location.pathname.split('/').pop() === 'memberhall' || location.pathname.split('/').pop() === 'projecthub') {
+            document.getElementById(`card-${props.id}`)?.classList.remove('Mui-active');
+            setCardId("");
+            setIsOpen(false);
+        }
+    }, [cardIdList, props.id, location, setCardId])
 
-    // useMemo(() => {
-    //     location.pathname === '/memberhall' ?? handleCardClicked(props.id)
-    // }, [props.id, handleCardClicked, location.pathname])
+    // logging for testing
+    // useEffect(() => {
+    //     console.log('update - isOpen:', isOpen.toString())
+    // }, [isOpen])
 
 
 

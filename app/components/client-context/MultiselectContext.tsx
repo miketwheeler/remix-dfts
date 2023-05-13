@@ -5,7 +5,6 @@ type SelectedObject = {
     name: string,
 }
 
-
 interface MultiselectContextProps {
     cardId: string;
     cardIdList: SelectedObject[];
