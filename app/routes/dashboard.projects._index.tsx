@@ -1,3 +1,5 @@
+
+
 import type {
     LoaderArgs
 } from '@remix-run/node';
@@ -50,9 +52,9 @@ export default function DashboardProjectsIndexRoute() {
 	return (
         <Box sx={styles.container}>
             <Typography variant="h5" component="h1" gutterBottom>
-                Dashboard - Projects
+                my projects
             </Typography>
-            <br />
+            {/* <br /> */}
             {
                 !data.length
                 ?
@@ -89,27 +91,27 @@ export default function DashboardProjectsIndexRoute() {
                                                                 !smAndDown
                                                                 ?
                                                                 <>
-                                                                    <Button variant="contained" size="small" color="success" component={ Link } to={ `${indivProj.id}` }>
+                                                                    <Button variant="contained" size="small" color="success" component={ Link } to={ `view/${indivProj.id}` }>
                                                                         view
                                                                     </Button>
-                                                                    {/* <Button variant="contained" size="small" color="warning" component={ Link } to={ `${indivProj.id}` }>
+                                                                    <Button variant="contained" size="small" color="warning" component={ Link } to={ `update/${indivProj.id}` }>
                                                                         update
                                                                     </Button>
-                                                                    <Button variant="contained" size="small" color="error" component={ Link } to={ `${indivProj.id}` }>
+                                                                    <Button variant="contained" size="small" color="error" component={ Link } to={ `delete/${indivProj.id}` }>
                                                                         delete
-                                                                    </Button> */}
+                                                                    </Button>
                                                                 </>
                                                                 :
                                                                 <>
                                                                     <Link to={ `${indivProj.id}` }>
                                                                         <VisibilityIcon color="success" />
                                                                     </Link>
-                                                                    {/* <Link to={ `${indivProj.id}` }>
+                                                                    <Link to={ `${indivProj.id}` }>
                                                                         <EditIcon color="warning" />
                                                                     </Link>
                                                                     <Link to={ `${indivProj.id}` }>
                                                                         <DeleteForeverIcon color="error" />
-                                                                    </Link> */}
+                                                                    </Link>
                                                                 </>
                                                             }
                                                         </Box>

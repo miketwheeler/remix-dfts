@@ -17,7 +17,7 @@ import {
     Breadcrumbs,
     Link as MuiLink
 } from '@mui/material';
-// import VisibilityIcon from '@mui/icons-material/Visibility';
+import VisibilityIcon from '@mui/icons-material/Visibility';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
@@ -59,15 +59,16 @@ export default function DashboardViewProjectIdRoute() {
     return (
         <Box sx={styles.container}>
             <Typography variant="h5" component="h1" gutterBottom>
-                viewing project
+                deleting project
             </Typography>
-            
             <Breadcrumbs aria-label="projects breadcrumbs"sx={{ pl: 1}}>
                 <MuiLink underline="hover" color="inherit" component={Link} to={'..'} sx={{'&:hover': {color: 'primary.main'}}}>projects</MuiLink>
-                <Typography color="text.primary">view</Typography>
+                <Typography color="text.primary">delete</Typography>
             </Breadcrumbs>
-            {/* <br />
-            <Button 
+            {/* <Typography variant="h5" component="h1" gutterBottom>
+                viewing project: {project.name}
+            </Typography> */}
+            {/* <Button 
                 component={Link} 
                 to={'..'} 
                 variant="text" 
@@ -77,7 +78,7 @@ export default function DashboardViewProjectIdRoute() {
                     back to projects
             </Button>
             <Typography variant="h5" component="h1" gutterBottom>
-                viewing project: {project.name}
+                DELETE project: {project.name}
             </Typography> */}
             
             <br />
@@ -113,26 +114,20 @@ export default function DashboardViewProjectIdRoute() {
                                                 !smAndDown
                                                 ?
                                                 <>
-                                                    {/* <Button variant="contained" size="small" color="success" component={ Link } to={ `${project.id}` }>
+                                                    <Button variant="contained" size="small" color="success" component={ Link } to={ `../view/${project.id}` }>
                                                         view
-                                                    </Button> */}
+                                                    </Button>
                                                     <Button variant="contained" size="small" color="warning" component={ Link } to={ `../update/${project.id}` }>
                                                         update
-                                                    </Button>
-                                                    <Button variant="contained" size="small" color="error" component={ Link } to={ `../delete/${project.id}` }>
-                                                        delete
                                                     </Button>
                                                 </>
                                                 :
                                                 <>
-                                                    {/* <Link to={ `${project.id}` }>
+                                                    <Link to={ `../view/${project.id}` }>
                                                         <VisibilityIcon color="success" />
-                                                    </Link> */}
+                                                    </Link>
                                                     <Link to={ `../update/${project.id}` }>
                                                         <EditIcon color="warning" />
-                                                    </Link>
-                                                    <Link to={ `../delete/${project.id}` }>
-                                                        <DeleteForeverIcon color="error" />
                                                     </Link>
                                                 </>
                                             }
