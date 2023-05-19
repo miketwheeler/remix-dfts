@@ -113,9 +113,6 @@ export default function DashboardViewProjectIdRoute() {
                                                 !smAndDown
                                                 ?
                                                 <>
-                                                    {/* <Button variant="contained" size="small" color="success" component={ Link } to={ `${project.id}` }>
-                                                        view
-                                                    </Button> */}
                                                     <Button variant="contained" size="small" color="warning" component={ Link } to={ `../update/${project.id}` }>
                                                         update
                                                     </Button>
@@ -125,9 +122,6 @@ export default function DashboardViewProjectIdRoute() {
                                                 </>
                                                 :
                                                 <>
-                                                    {/* <Link to={ `${project.id}` }>
-                                                        <VisibilityIcon color="success" />
-                                                    </Link> */}
                                                     <Link to={ `../update/${project.id}` }>
                                                         <EditIcon color="warning" />
                                                     </Link>

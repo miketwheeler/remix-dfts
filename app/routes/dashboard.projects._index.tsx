@@ -54,7 +54,6 @@ export default function DashboardProjectsIndexRoute() {
             <Typography variant="h5" component="h1" gutterBottom>
                 my projects
             </Typography>
-            {/* <br /> */}
             {
                 !data.length
                 ?
