@@ -20,10 +20,9 @@ import {
 // import VisibilityIcon from '@mui/icons-material/Visibility';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
 // import { db } from "~/utils/db.server";
-import { getProject } from "~/utils/project.server";
+import { getProject, deleteProject } from "~/utils/project.server";
 import invariant from "tiny-invariant";
 
 
@@ -37,7 +36,6 @@ export const loader = async ({ params }: LoaderArgs) => {
 
     return json({ project });
 }
-
 
 const styles = {
 	container: {
@@ -56,6 +54,28 @@ export default function DashboardViewProjectIdRoute() {
     const { project } = useLoaderData<typeof loader>();
     const smAndDown = useMediaQuery('(max-width: 800px)');
 
+    const deployModal = () => {
+        return (
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, alignItems: 'center' }}>
+                <Typography variant="h6" component="h1" gutterBottom>
+                    are you sure you want to delete this project?
+                </Typography>
+                <Stack direction="row" spacing={1}>
+                    <Button variant="outlined" onClick={() => {}}>cancel</Button>
+                    <Button variant="contained" onClick={() => {}}>delete</Button>
+                </Stack>
+            </Box>
+        )
+    }
+
+    async function deleteProject(projectId: string) {
+        const reassure = deployModal();
+        if(!reassure) return;
+        else {
+            await deleteProject(projectId);
+        }
+    }
+
     return (
         <Box sx={styles.container}>
             <Typography variant="h5" component="h1" gutterBottom>
@@ -66,21 +86,8 @@ export default function DashboardViewProjectIdRoute() {
                 <MuiLink underline="hover" color="inherit" component={Link} to={'..'} sx={{'&:hover': {color: 'primary.main'}}}>projects</MuiLink>
                 <Typography color="text.primary">view</Typography>
             </Breadcrumbs>
-            {/* <br />
-            <Button 
-                component={Link} 
-                to={'..'} 
-                variant="text" 
-                sx={{ marginBottom: '1rem'}}
-                startIcon={<ArrowBackIcon />}
-                >
-                    back to projects
-            </Button>
-            <Typography variant="h5" component="h1" gutterBottom>
-                viewing project: {project.name}
-            </Typography> */}
-            
             <br />
+
             {
                 !project
                 ?
@@ -116,7 +123,8 @@ export default function DashboardViewProjectIdRoute() {
                                                     <Button variant="contained" size="small" color="warning" component={ Link } to={ `../update/${project.id}` }>
                                                         update
                                                     </Button>
-                                                    <Button variant="contained" size="small" color="error" component={ Link } to={ `../delete/${project.id}` }>
+                                                    {/* <Button variant="contained" size="small" color="error" onClick={async () => await deleteProject(project.id)}> */}
+                                                    <Button variant="contained" size="small" color="error" >
                                                         delete
                                                     </Button>
                                                 </>

@@ -93,23 +93,11 @@ export default function DashboardProjectsIndexRoute() {
                                                                     <Button variant="contained" size="small" color="success" component={ Link } to={ `view/${indivProj.id}` }>
                                                                         view
                                                                     </Button>
-                                                                    <Button variant="contained" size="small" color="warning" component={ Link } to={ `update/${indivProj.id}` }>
-                                                                        update
-                                                                    </Button>
-                                                                    <Button variant="contained" size="small" color="error" component={ Link } to={ `delete/${indivProj.id}` }>
-                                                                        delete
-                                                                    </Button>
                                                                 </>
                                                                 :
                                                                 <>
                                                                     <Link to={ `${indivProj.id}` }>
                                                                         <VisibilityIcon color="success" />
-                                                                    </Link>
-                                                                    <Link to={ `${indivProj.id}` }>
-                                                                        <EditIcon color="warning" />
-                                                                    </Link>
-                                                                    <Link to={ `${indivProj.id}` }>
-                                                                        <DeleteForeverIcon color="error" />
                                                                     </Link>
                                                                 </>
                                                             }

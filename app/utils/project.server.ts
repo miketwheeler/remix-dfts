@@ -1,6 +1,6 @@
 import { db } from './db.server';
 import { getUserId } from './session.server';
-import { json } from '@remix-run/node';
+import { json, redirect } from '@remix-run/node';
 
 
 
@@ -116,12 +116,14 @@ export async function updateProject(request: Request) {
 }
 
 // DELETE
-export async function deleteProject(request: Request) {
-    const { id } = await request.json();
+export async function deleteProject(request: Request, id: string) {
+    // const { id } = await request.json();
     const project = await db.project.delete({
         where: { id },
     });
 
-    return project.id;
+    console.log(`deleted project ${project.id}`);
+
+    return redirect("/dashboard/projects");
 }
 

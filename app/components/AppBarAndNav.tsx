@@ -164,6 +164,7 @@ export default function AppBarAndNav(props: any) {
 	};
 
 	const handleChange = (event: React.SyntheticEvent, newValue: number) => {
+		event.preventDefault();
 		setNavTabValue(newValue);
 		if(mobileOpen)
 			handleDrawerToggle();
@@ -173,6 +174,7 @@ export default function AppBarAndNav(props: any) {
         setPathValue(location.split('/')[1]);
         let pathToValue = navRoutes.indexOf(pathValue);
         setNavTabValue(pathToValue !== navTabValue ? pathToValue : navTabValue);
+		setTimeout(() => setMobileOpen(false), 400); // close the drawer after a short delay for animation
     }, [location, navTabValue, pathValue]);
 
 
