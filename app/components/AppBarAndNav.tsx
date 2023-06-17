@@ -82,7 +82,6 @@ const nav = {
 		{
 			index: 7,
 			name: "new project",
-			// path: "/create-project-redo", // TODO: change this back to /create-project
 			path: "/create-project",
 			icon: <AddBoxIcon />,
 			enabled: true,
@@ -196,7 +195,7 @@ export default function AppBarAndNav(props: any) {
 				}
 				<Divider />
 				<Typography variant="h6" sx={navHeaderStyle}>
-					personal
+					communications
 				</Typography>
 				{
 					nav.secondaryLinks.map((link, index = nav.primaryLinks.length) => (
@@ -206,7 +205,7 @@ export default function AppBarAndNav(props: any) {
 				}
 				<Divider />
 				<Typography variant="h6" sx={navHeaderStyle}>
-						create
+					create
 				</Typography>
 				{
 					nav.tertiaryLinks.map((link, index = nav.primaryLinks.length + nav.secondaryLinks.length) => (

@@ -116,7 +116,7 @@ export async function updateProject(request: Request) {
 }
 
 // DELETE
-export async function deleteProject(request: Request, id: string) {
+export async function deleteProject(id: string) {
     // const { id } = await request.json();
     const project = await db.project.delete({
         where: { id },

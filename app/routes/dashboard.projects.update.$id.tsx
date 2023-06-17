@@ -43,7 +43,6 @@ const styles = {
 	container: {
 		flexGrow: 1,
 		padding: "1.5rem",
-		// borderRadius: "4px",
 		boxShadow: "0 0 10px 0 rgba(0,0,0,.1)",
 	},
     paper: {
@@ -59,28 +58,13 @@ export default function DashboardViewProjectIdRoute() {
     return (
         <Box sx={styles.container}>
             <Typography variant="h5" component="h1" gutterBottom>
-                updating project
+                updating project - {project.name}
             </Typography>
             <Breadcrumbs aria-label="projects breadcrumbs"sx={{ pl: 1}}>
-                <MuiLink underline="hover" color="inherit" component={Link} to={'..'} sx={{'&:hover': {color: 'primary.main'}}}>projects</MuiLink>
+                <MuiLink underline="hover" color="inherit" component={Link} to={'dashboard/projects'} sx={{'&:hover': {color: 'primary.main'}}}>projects</MuiLink>
+                <MuiLink underline="hover" color="inherit" component={Link} to={`../view/${project.id}`} sx={{'&:hover': {color: 'primary.main'}}}>view</MuiLink>
                 <Typography color="text.primary">update</Typography>
-            </Breadcrumbs>
-            {/* <Typography variant="h5" component="h1" gutterBottom>
-                viewing project: {project.name}
-            </Typography>
-            <Button 
-                component={Link} 
-                to={'..'} 
-                variant="text" 
-                sx={{ marginBottom: '1rem'}}
-                startIcon={<ArrowBackIcon />}
-                >
-                    back to projects
-            </Button>
-            <Typography variant="h5" component="h1" gutterBottom>
-                UPDATE project: {project.name}
-            </Typography> */}
-            
+            </Breadcrumbs>            
             <br />
             {
                 !project
@@ -114,18 +98,12 @@ export default function DashboardViewProjectIdRoute() {
                                                 !smAndDown
                                                 ?
                                                 <>
-                                                    <Button variant="contained" size="small" color="success" component={ Link } to={ `../view/${project.id}` }>
-                                                        view
-                                                    </Button>
                                                     <Button variant="contained" size="small" color="error" component={ Link } to={ `../delete/${project.id}` }>
                                                         delete
                                                     </Button>
                                                 </>
                                                 :
                                                 <>
-                                                    <Link to={ `../view/${project.id}` }>
-                                                        <VisibilityIcon color="success" />
-                                                    </Link>
                                                     <Link to={ `../delete/${project.id}` }>
                                                         <DeleteForeverIcon color="error" />
                                                     </Link>

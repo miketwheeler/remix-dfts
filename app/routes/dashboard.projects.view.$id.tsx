@@ -1,47 +1,62 @@
-import type {
-    LoaderArgs
-} from '@remix-run/node';
-import { useState } from 'react';
+import type { LoaderArgs, ActionArgs } from '@remix-run/node';
+import { useEffect, useState } from 'react';
 import {
     Link,
-    // Link,
     useLoaderData,
+    useActionData,
+    Form,
+    Outlet
     // useParams,
 } from '@remix-run/react';
 import { json } from '@remix-run/node';
 import { 
-    Box, Typography, Paper,  
-    Button, Stack, Chip, Divider, Grid,
-    useMediaQuery,
-    Collapse,
-    Breadcrumbs,
-    Link as MuiLink
+    Box, Typography, Paper, Button, Chip, Divider, Grid,
+    useMediaQuery, Breadcrumbs, Link as MuiLink, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle
 } from '@mui/material';
-// import VisibilityIcon from '@mui/icons-material/Visibility';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
+import EditProjectDialog from '~/components/dialogs/EditProjectDialog';
 
-// import { db } from "~/utils/db.server";
-import { getProject, deleteProject } from "~/utils/project.server";
+import { getProject, deleteProject, updateProject, getProjectListWhereTeamLead } from "~/utils/project.server";
+// import { getUserId } from "~/utils/session.server";
 import invariant from "tiny-invariant";
 
 
-export const loader = async ({ params }: LoaderArgs) => {
+
+// LOADER
+export const loader = async ({ params, request }: LoaderArgs) => {
     invariant(params.id, "no id provided yet");
     
+    const associatedProjects = await getProjectListWhereTeamLead(request)
+    const isProjectOwner = associatedProjects.filter((project: any) => project.id === params.id) !== null;
     const project = await getProject(params.id);
-    if(!project) { 
-        throw new Response(`no id provided for ${params.id}`, {status: 404})
-    }
 
-    return json({ project });
+    if(!project) throw new Response(`no id provided for ${params.id}`, { status: 404 })
+
+    return json({ isOwner: isProjectOwner, project });
+}
+
+// ACTION
+export const action = async ({ request, params }: ActionArgs) => {
+    invariant(params.id, "no id provided yet");
+    const form = await request.formData();
+
+    if(form.get("intent") === "delete") {
+        return await deleteProject(params.id.toString());
+    }
+    else if(form.get("intent") === "update") {
+        const project = await updateProject(request);
+        return json({ project });
+    }
+    else {
+        throw new Response(`no action provided for ${params.id}`, {status: 404})
+    }
 }
 
 const styles = {
 	container: {
 		flexGrow: 1,
 		padding: "1.5rem",
-		// borderRadius: "4px",
 		boxShadow: "0 0 10px 0 rgba(0,0,0,.1)",
 	},
     paper: {
@@ -51,43 +66,35 @@ const styles = {
 
 
 export default function DashboardViewProjectIdRoute() {
-    const { project } = useLoaderData<typeof loader>();
+    const { project, isOwner } = useLoaderData<typeof loader>();
+    // const actionData = useActionData<typeof action>();
     const smAndDown = useMediaQuery('(max-width: 800px)');
+    const [modalOpen, setModalOpen] = useState(false);
 
-    const deployModal = () => {
-        return (
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, alignItems: 'center' }}>
-                <Typography variant="h6" component="h1" gutterBottom>
-                    are you sure you want to delete this project?
-                </Typography>
-                <Stack direction="row" spacing={1}>
-                    <Button variant="outlined" onClick={() => {}}>cancel</Button>
-                    <Button variant="contained" onClick={() => {}}>delete</Button>
-                </Stack>
-            </Box>
-        )
-    }
+    // modal ops
+    // const handleClose = () => setModalOpen(false);
+    const handleClickOpen = async () => {
+        setModalOpen(true)
+        // return (<EditProjectDialog props={{ modalOpen, setModalOpen, project}} />)
+    };
 
-    async function deleteProject(projectId: string) {
-        const reassure = deployModal();
-        if(!reassure) return;
-        else {
-            await deleteProject(projectId);
-        }
-    }
+
+    useEffect(() => {
+        console.log(isOwner.toString());
+    }, [isOwner])
 
     return (
         <Box sx={styles.container}>
             <Typography variant="h5" component="h1" gutterBottom>
-                viewing project
+                viewing project - {project.name}
             </Typography>
             
             <Breadcrumbs aria-label="projects breadcrumbs"sx={{ pl: 1}}>
-                <MuiLink underline="hover" color="inherit" component={Link} to={'..'} sx={{'&:hover': {color: 'primary.main'}}}>projects</MuiLink>
+                <MuiLink underline="hover" color="inherit" component={Link} to={'..'} sx={ {'&:hover': { color: 'primary.main' }} }>projects</MuiLink>
                 <Typography color="text.primary">view</Typography>
             </Breadcrumbs>
             <br />
-
+            
             {
                 !project
                 ?
@@ -96,6 +103,9 @@ export default function DashboardViewProjectIdRoute() {
                 </Typography>
                 :
                 <Paper key={`project-${project.name}`} sx={{ minWidth: 334 }}>
+                    {
+                        modalOpen && <Outlet context={{ modalOpen, setModalOpen, project }} />
+                    }
                     <Box>
                         <Grid container spacing={1}>
                             <Grid item xs={12}>
@@ -120,13 +130,22 @@ export default function DashboardViewProjectIdRoute() {
                                                 !smAndDown
                                                 ?
                                                 <>
+                                                    <Form method="post">
                                                     <Button variant="contained" size="small" color="warning" component={ Link } to={ `../update/${project.id}` }>
-                                                        update
-                                                    </Button>
-                                                    {/* <Button variant="contained" size="small" color="error" onClick={async () => await deleteProject(project.id)}> */}
-                                                    <Button variant="contained" size="small" color="error" >
-                                                        delete
-                                                    </Button>
+                                                            update
+                                                        </Button>
+                                                    </Form>
+                                                    <Form method="post">
+                                                        <Button 
+                                                            variant="contained" size="small" color="error" 
+                                                            type="submit" 
+                                                            name="intent" 
+                                                            value="delete" 
+                                                            disabled={!isOwner}
+                                                            >
+                                                            delete
+                                                        </Button>
+                                                    </Form>
                                                 </>
                                                 :
                                                 <>
