@@ -3,6 +3,7 @@ import type {
 } from '@remix-run/node';
 import { useState } from 'react';
 import {
+    Form,
     Link,
     // Link,
     useLoaderData,
@@ -26,6 +27,24 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { getProject } from "~/utils/project.server";
 import invariant from "tiny-invariant";
 
+
+type FormFields = {
+    name: string,
+    type: string,
+    description: string,
+    synopsis: string,
+    techStack: string[] | null,
+    beginDate: string,
+    endDate: string,
+    active: boolean,
+    milestone: number,
+    deployed: boolean,
+    funded: boolean,
+    fundingGoal: number,
+    fundingCurrent: number,
+    // category: string[],  ** this is assigned into the category table by project id (I think) -- so ref to the table can be made/searched for filter **
+    // team -> this is assigned from the proj owner to the team table & is lead member -> should display static as only logged in lead can update
+}
 
 export const loader = async ({ params }: LoaderArgs) => {
     invariant(params.id, "no id provided yet");
@@ -54,6 +73,21 @@ const styles = {
 export default function DashboardViewProjectIdRoute() {
     const { project } = useLoaderData<typeof loader>();
     const smAndDown = useMediaQuery('(max-width: 800px)');
+    const formFieldsToUpdate = useState<FormFields>({
+        name: project.name,
+        type: project.type,
+        description: project.description,
+        synopsis: project.synopsis,
+        techStack: project.techStack?.split(",") || [],
+        beginDate: project.beginDate || "",
+        endDate: project.endDate || "",
+        active: project.active,
+        milestone: project.milestone,
+        deployed: project.deployed,
+        funded: project.funded,
+        fundingGoal: Number(project.fundingGoal),
+        fundingCurrent: Number(project.fundingCurrent),
+    });
 
     return (
         <Box sx={styles.container}>
@@ -84,42 +118,25 @@ export default function DashboardViewProjectIdRoute() {
                                                 project - {project.name}
                                             </Typography>
                                         </Box>
-                                        <Box sx={{ 
-                                                display: 'flex', 
-                                                flexDirection: 'row', 
-                                                gap: 1, 
-                                                justifyContent: 'flex-end',
-                                                alignItems: 'center',
-                                                maxWidth: 'fit-content',
-                                                maxHeight: 'fit-content',
-                                            }}
-                                            >
-                                            {
-                                                !smAndDown
-                                                ?
-                                                <>
-                                                    <Button variant="contained" size="small" color="error" component={ Link } to={ `../delete/${project.id}` }>
-                                                        delete
-                                                    </Button>
-                                                </>
-                                                :
-                                                <>
-                                                    <Link to={ `../delete/${project.id}` }>
-                                                        <DeleteForeverIcon color="error" />
-                                                    </Link>
-                                                </>
-                                            }
-                                        </Box>
                                     </Box>
                                     <Divider sx={{my: 1}} />
 
-                                    <Typography variant="body1">
-                                        type: &nbsp; {project.type} 
-                                        <br /> 
-                                        synopsis: &nbsp; {project.synopsis} 
-                                        <br/> 
-                                        dates: &nbsp; {project.beginDate} to {project.endDate}
-                                    </Typography>
+                                    {/* TODO: UPDATE FORM - on form submit (check updatedAt is updated) */}
+                                    <Form method="post">
+                                        <Stack spacing={1}>
+                                            <input type="text" name={`field-${project.name}`} value={project.name} />
+                                            <input type="text" name={`field-${project.type}`} value={project.type} />
+                                            <input type="text" name={`field-${project.synopsis}`} value={project.synopsis} />
+                                            <input type="text" name={`field-${project.description}`} value={project.description} />
+                                            <input type="text" name={`field-${project.beginDate}`} value={`${project.beginDate}`} />
+                                            <input type="text" name={`field-${project.endDate}`} value={`${project.endDate}`} />
+                                            <input type="text" name={`field-${project.milestone}`} value={project.milestone} />
+                                            <input type="text" name={`field-${project.name}`} value={project.name} />
+                                            <input type="text" name={`field-${project.name}`} value={project.name} />
+
+                                        </Stack>
+                                        
+                                    </Form>
 
                                     <Divider sx={{my: 1}} />
                                     <Typography variant="body1">tech stack:&nbsp;</Typography>
@@ -137,7 +154,20 @@ export default function DashboardViewProjectIdRoute() {
                                             </Typography>
                                         }
                                     </Box>
-
+                                    <Box 
+                                        sx={{ 
+                                            display: 'flex', 
+                                            justifyContent: 'flex-end' 
+                                        }}
+                                        >
+                                        <Button 
+                                            type="submit" 
+                                            variant="contained" 
+                                            color="primary" 
+                                            >
+                                                save
+                                        </Button>
+                                    </Box>
                                 </Box>
                             </Grid>
                         </Grid>

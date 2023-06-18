@@ -5,7 +5,8 @@ import {
     useLoaderData,
     useActionData,
     Form,
-    Outlet
+    Outlet,
+    useTransition
     // useParams,
 } from '@remix-run/react';
 import { json } from '@remix-run/node';
@@ -41,10 +42,10 @@ export const action = async ({ request, params }: ActionArgs) => {
     invariant(params.id, "no id provided yet");
     const form = await request.formData();
 
-    if(form.get("intent") === "delete") {
+    if(form.get("_action") === "delete") {
         return await deleteProject(params.id.toString());
     }
-    else if(form.get("intent") === "update") {
+    else if(form.get("_action") === "update") {
         const project = await updateProject(request);
         return json({ project });
     }
@@ -67,9 +68,14 @@ const styles = {
 
 export default function DashboardViewProjectIdRoute() {
     const { project, isOwner } = useLoaderData<typeof loader>();
-    // const actionData = useActionData<typeof action>();
+    const actionData = useActionData<typeof action>();
     const smAndDown = useMediaQuery('(max-width: 800px)');
     const [modalOpen, setModalOpen] = useState(false);
+    const [isDeleting, setIsDeleting] = useState(false);
+    const [formData, setFormData] = useState({} as any);
+    // let transition = useTransition();
+
+    // let actionIsDeleting = transition.state === "submitting" && transition.submission.method === "DELETE";
 
     // modal ops
     // const handleClose = () => setModalOpen(false);
@@ -78,8 +84,21 @@ export default function DashboardViewProjectIdRoute() {
         // return (<EditProjectDialog props={{ modalOpen, setModalOpen, project}} />)
     };
 
+    const handleSubmit = async (e: any) => {
+        e.preventDefault();
+        const areYouSure = await window.confirm("Are you sure you want to permanently delete this record?");
+
+        if(areYouSure) {
+            setIsDeleting(true);
+            
+            if(actionData) setIsDeleting(false);
+        }
+    }
 
     useEffect(() => {
+        // if(actionIsDeleting) {
+        //     setIsDeleting(true);
+        // }
         console.log(isOwner.toString());
     }, [isOwner])
 
@@ -94,6 +113,9 @@ export default function DashboardViewProjectIdRoute() {
                 <Typography color="text.primary">view</Typography>
             </Breadcrumbs>
             <br />
+            {
+                isDeleting && <EditProjectDialog props={{ modalOpen, setModalOpen, project}} />
+            }
             
             {
                 !project
@@ -130,16 +152,17 @@ export default function DashboardViewProjectIdRoute() {
                                                 !smAndDown
                                                 ?
                                                 <>
-                                                    <Form method="post">
-                                                    <Button variant="contained" size="small" color="warning" component={ Link } to={ `../update/${project.id}` }>
+                                                    {/* <Form method="post"> */}
+                                                        <Button variant="contained" size="small" color="warning" component={ Link } to={ `../update/${project.id}` }>
                                                             update
                                                         </Button>
-                                                    </Form>
+                                                    {/* </Form> */}
                                                     <Form method="post">
+                                                        {/* <input type="hidden" name="id" value={project.id} /> */}
                                                         <Button 
                                                             variant="contained" size="small" color="error" 
-                                                            type="submit" 
-                                                            name="intent" 
+                                                            // onSubmit={handleSubmit}
+                                                            name="_action" 
                                                             value="delete" 
                                                             disabled={!isOwner}
                                                             >
