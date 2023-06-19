@@ -400,7 +400,7 @@ const CreateProject: FC<FormSubmissionProps> = () => {
                     >
                     your projects
                 </Link>
-                &nbsp; -- else, let's get started
+                &nbsp; -- let's get started
             </Typography>
             <Paper sx={styles.paper}>
                 <div className="content" data-light="">

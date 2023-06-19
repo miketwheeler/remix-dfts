@@ -58,7 +58,7 @@ export default function DashboardProjectsIndexRoute() {
                 !data.length
                 ?
                 <Typography variant="body1" component="p" gutterBottom sx={{ m: 2 }}>
-                    Oops, there's nothing here yet. Try assembling a new team an creating a project!
+                    Oops, there's nothing here yet. Try assembling a new team and creating a project!
                 </Typography>
                 :
                 <Stack spacing={2}>
@@ -73,7 +73,7 @@ export default function DashboardProjectsIndexRoute() {
                                                     <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
                                                         <Box sx={{ display: 'flex', flexDirection: 'row' }}>
                                                             <Typography variant="h6" gutterBottom>
-                                                                project - {indivProj.name}
+                                                                {indivProj.name}
                                                             </Typography>
                                                         </Box>
                                                         <Box sx={{ 

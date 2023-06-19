@@ -16,7 +16,9 @@ import {
     useMediaQuery,
     Collapse,
     Breadcrumbs,
-    Link as MuiLink
+    Link as MuiLink,
+    TextField,
+    FormControlLabel,
 } from '@mui/material';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 // import EditIcon from '@mui/icons-material/Edit';
@@ -26,6 +28,7 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 // import { db } from "~/utils/db.server";
 import { getProject } from "~/utils/project.server";
 import invariant from "tiny-invariant";
+import MultiselectPicker from '~/components/reusable-components/minor/MultislectPicker';
 
 
 type FormFields = {
@@ -69,11 +72,52 @@ const styles = {
     }
 };
 
+const validateDate = (date: string) => {
+    const regex = /^([0-9]{1,2})\/?([0-9]{1,2})?\/?([0-9]{0,4})?$/;
+    const match = date.replace(/\D/g, '').match(regex);
+    if(match === null) {
+        return '';
+    }
+    let formatted = '';
+    if(match[1]) {
+        formatted += match[1];
+        if(match[2]) {
+            formatted += '/' + match[2];
+            if(match[3]) {
+                formatted += '/' + match[3];
+            }
+        }
+    }
+    return formatted;
+} 
+const validateField = (name: string, value: string): string | null => {
+    switch (name) {
+        case "name":
+            return (value.length > 2) ? null : "name must be at least 3 characters";
+        case "type":
+            return (value.length > 4) ? null : "type must be at least 3 characters";
+        case "synopsis":
+            return (value.length > 10) ? null : "synopsis is a sentance and must be at least 10 characters";
+        case "description":
+            return (value.length > 60) ? null : "description is too short, it must be at least 60 characters";
+        case "techStack":
+            return (value?.split(',').length > 2) ? null : "tech stack cannot consist of 0 technologies";
+        case "beginDate":
+            return (value.length >= 10) ? null : "that is not a valid date, please use the format mm/dd/yyyy";
+        case "endDate":
+            return (value.length >= 10) ? null : "that is not a valid date, please use the format mm/dd/yyyy";
+        case "fundingGoal":
+            return (Number(value) >= 1) ? null : "funding goal should at least be a dollar";
+        default:
+            return null;
+    }
+}
+
 
 export default function DashboardViewProjectIdRoute() {
     const { project } = useLoaderData<typeof loader>();
     const smAndDown = useMediaQuery('(max-width: 800px)');
-    const formFieldsToUpdate = useState<FormFields>({
+    const [formFieldsToUpdate, setFormFieldsToUpdate] = useState<FormFields>({
         name: project.name,
         type: project.type,
         description: project.description,
@@ -88,6 +132,19 @@ export default function DashboardViewProjectIdRoute() {
         fundingGoal: Number(project.fundingGoal),
         fundingCurrent: Number(project.fundingCurrent),
     });
+    // const [formFieldsToUpdate, setFormFieldsToUpdate] = useState<FormFields>({});
+    const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const { name, value } = event.target;
+        let error: string | null;
+        let formattedValue;
+    
+        if(name === "beginDate" || name === "endDate") {
+            formattedValue = validateDate(value);
+        }
+
+        error = validateField(name, formattedValue !== undefined ? formattedValue : value);
+        setFormFieldsToUpdate({ ...formFieldsToUpdate, [name]: { value: formattedValue ?? value, error } });
+    };
 
     return (
         <Box sx={styles.container}>
@@ -115,45 +172,90 @@ export default function DashboardViewProjectIdRoute() {
                                     <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
                                         <Box sx={{ display: 'flex', flexDirection: 'row' }}>
                                             <Typography variant="h6" gutterBottom>
-                                                project - {project.name}
+                                                editing project - {project.name}
                                             </Typography>
                                         </Box>
                                     </Box>
                                     <Divider sx={{my: 1}} />
 
+                                    <Typography variant="body1" component="p" gutterBottom sx={{p: 2, opacity: .5}}>
+                                        edit your project information here. you should be sure of your edits as all members associated with your project will be notified and had your changes applied.
+                                        <br />
+                                        *note: navigating away will not save any changes made
+                                    </Typography>
+
                                     {/* TODO: UPDATE FORM - on form submit (check updatedAt is updated) */}
-                                    <Form method="post">
-                                        <Stack spacing={1}>
-                                            <input type="text" name={`field-${project.name}`} value={project.name} />
-                                            <input type="text" name={`field-${project.type}`} value={project.type} />
-                                            <input type="text" name={`field-${project.synopsis}`} value={project.synopsis} />
-                                            <input type="text" name={`field-${project.description}`} value={project.description} />
-                                            <input type="text" name={`field-${project.beginDate}`} value={`${project.beginDate}`} />
-                                            <input type="text" name={`field-${project.endDate}`} value={`${project.endDate}`} />
-                                            <input type="text" name={`field-${project.milestone}`} value={project.milestone} />
-                                            <input type="text" name={`field-${project.name}`} value={project.name} />
-                                            <input type="text" name={`field-${project.name}`} value={project.name} />
-
-                                        </Stack>
-                                        
-                                    </Form>
-
-                                    <Divider sx={{my: 1}} />
-                                    <Typography variant="body1">tech stack:&nbsp;</Typography>
-                                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5, my: 1 }}>
-                                        <br/>
-                                        {
-                                            project.techStack
-                                            ? 
-                                            project.techStack.split(",").map((tech: string, index: number) => (
-                                                <Chip key={`tech-${index}`} label={tech} />
-                                            ))
-                                            :
-                                            <Typography variant="body1" component="p" gutterBottom sx={{ m: 2 }}>
-                                                There should be a stack here, but there isn't. Edit this project to add one!
-                                            </Typography>
-                                        }
+                                    <Box sx={{ p: 2 }}>
+                                        <Form method="post">
+                                            <Stack spacing={2}>
+                                                <TextField 
+                                                    type="text" 
+                                                    id="project name" 
+                                                    label="name" 
+                                                    name={`field-${formFieldsToUpdate.name}`} 
+                                                    defaultValue={formFieldsToUpdate.name} 
+                                                    onChange={ handleInputChange } 
+                                                    />
+                                                <TextField 
+                                                    type="text" 
+                                                    id="type" 
+                                                    label="type" 
+                                                    name={`field-${formFieldsToUpdate.type}`} 
+                                                    defaultValue={formFieldsToUpdate.type} 
+                                                    onChange={ handleInputChange }
+                                                    />
+                                                <Divider sx={{my: 1}} />
+                                                <TextField 
+                                                    type="text" 
+                                                    id="synopsis" 
+                                                    label="synopsis" 
+                                                    name={`field-${formFieldsToUpdate.synopsis}`} 
+                                                    defaultValue={formFieldsToUpdate.synopsis} 
+                                                    onChange={ handleInputChange } 
+                                                    />
+                                                <TextField 
+                                                    type="text" 
+                                                    id="description" 
+                                                    label="description" 
+                                                    name={`field-${formFieldsToUpdate.description}`} 
+                                                    defaultValue={formFieldsToUpdate.description} 
+                                                    multiline 
+                                                    rows={3} 
+                                                    onChange={ handleInputChange }
+                                                    />
+                                                <Divider sx={{my: 1}} />
+                                                <TextField 
+                                                    type="date" 
+                                                    id="beginDate" 
+                                                    label="begin date" 
+                                                    name={`field-${formFieldsToUpdate.beginDate}`} 
+                                                    defaultValue={`${formFieldsToUpdate.beginDate}`} 
+                                                    onChange={ handleInputChange } 
+                                                    InputLabelProps={{ shrink: true }} 
+                                                    />
+                                                <TextField 
+                                                    type="date" 
+                                                    id="endDate" 
+                                                    label="end date" 
+                                                    name={`field-${formFieldsToUpdate.endDate}`} 
+                                                    defaultValue={`${formFieldsToUpdate.endDate}`} 
+                                                    onChange={ handleInputChange }
+                                                    InputLabelProps={{ shrink: true }}  
+                                                    />
+                                                <TextField 
+                                                    type="number" 
+                                                    id="milestone" 
+                                                    label="milestone" 
+                                                    name={`field-${formFieldsToUpdate.milestone}`} 
+                                                    defaultValue={formFieldsToUpdate.milestone} 
+                                                    onChange={ handleInputChange } 
+                                                    />
+                                                <Divider sx={{my: 1}} />
+                                                {/* <MultiselectPicker props={{ formFieldsToUpdate, setFormFieldsToUpdate }} /> */}
+                                            </Stack>
+                                        </Form>
                                     </Box>
+
                                     <Box 
                                         sx={{ 
                                             display: 'flex', 

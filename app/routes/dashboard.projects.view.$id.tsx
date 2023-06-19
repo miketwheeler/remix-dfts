@@ -105,7 +105,7 @@ export default function DashboardViewProjectIdRoute() {
     return (
         <Box sx={styles.container}>
             <Typography variant="h5" component="h1" gutterBottom>
-                viewing project - {project.name}
+                viewing project
             </Typography>
             
             <Breadcrumbs aria-label="projects breadcrumbs"sx={{ pl: 1}}>
@@ -135,7 +135,7 @@ export default function DashboardViewProjectIdRoute() {
                                     <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
                                         <Box sx={{ display: 'flex', flexDirection: 'row' }}>
                                             <Typography variant="h6" gutterBottom>
-                                                project - {project.name}
+                                                project name: {project.name}
                                             </Typography>
                                         </Box>
                                         <Box sx={{ 
