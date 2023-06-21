@@ -45,10 +45,10 @@ export const action = async ({ request, params }: ActionArgs) => {
     if(form.get("_action") === "delete") {
         return await deleteProject(params.id.toString());
     }
-    else if(form.get("_action") === "update") {
-        const project = await updateProject(request);
-        return json({ project });
-    }
+    // else if(form.get("_action") === "update") {
+    //     const project = await updateProject(request);
+    //     return json({ project });
+    // }
     else {
         throw new Response(`no action provided for ${params.id}`, {status: 404})
     }

@@ -1,6 +1,6 @@
 
 
-export const createProjectValidators = {
+export const projectValidators = {
     validateUrl: function validateUrl(url: string) {
         let urls = [
             "/",

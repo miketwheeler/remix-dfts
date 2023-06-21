@@ -17,6 +17,22 @@ type CreateProjectForm = {
     teamId: string;
 }
 
+type UpdateProjectForm = {
+    id: string;
+    name: string;
+    type: string;
+    synopsis: string;
+    description: string;
+    techStack: string;
+    beginDate: string;
+    endDate: string;
+    milestone: number;
+    deployed: boolean;
+    funded: boolean;
+    fundingGoal: number;
+    active: boolean;
+}
+
 
 //  CREATE
 export async function createProject({ 
@@ -62,7 +78,8 @@ export async function createProject({
 	return { 
         id: project.id, 
         // teamUpdatedProjectId: updatedTeamProjects.id, 
-        name, message: `successfully created your new project ${name}!` 
+        name, 
+        message: `successfully created your new project ${name}!` 
     };
 }
 
@@ -82,7 +99,8 @@ export async function getProjectListWhereTeamLead( request: Request ) {
                 },
                 select: {
                     id: true, name: true, type: true, synopsis: true, description: true, techStack: true, beginDate: true, endDate: true, active: true, fundingGoal: true, teamId: true
-                }
+                },
+                orderBy: { createdAt: "desc" },
             }))
             // return associatedProjects;
         }
@@ -104,16 +122,57 @@ export async function getProject(id: string) {
 }
 
 // UPDATE
-export async function updateProject(request: Request) {
-    const { id, name, type, synopsis, description, techStack, beginDate, endDate, active, fundingGoal } = await request.json();
+// export async function updateProject(request: Request) {
+//     const { id, name, type, synopsis, description, techStack, beginDate, endDate, active, fundingGoal } = await request.json();
+//     const project = await db.project.update({
+//         where: { id },
+//         data: { name, type, synopsis, description, techStack, beginDate, endDate, active, fundingGoal },
+//     });
+
+//     // need to return project(?) and status success/failed
+//     return project;
+// }
+
+export async function updateProject({
+    id, name, type, synopsis, description, techStack, beginDate, endDate, milestone, deployed, funded, fundingGoal, active
+}: UpdateProjectForm) {
+
+    const newFundingGoal = fundingGoal * 1.00; // remove $ from string, cast to number
+    // const convertDate = ( date: string ) => {
+    //     const dateArr = date.split("/");
+    //     const newDate = new Date(parseInt(dateArr[2]), parseInt(dateArr[1]), parseInt(dateArr[0]));
+    //     const returnDate = (newDate.toISOString());
+    //     return returnDate;
+    // }
+
     const project = await db.project.update({
         where: { id },
-        data: { name, type, synopsis, description, techStack, beginDate, endDate, active, fundingGoal },
+        data: { 
+            name, 
+            type, 
+            synopsis, 
+            description, 
+            techStack,
+            beginDate,
+            endDate, 
+            // beginDate: convertDate(beginDate), 
+            // endDate: convertDate(endDate), 
+            milestone: Number(milestone), 
+            deployed, 
+            funded, 
+            fundingGoal: newFundingGoal,
+            active
+        },
     });
 
     // need to return project(?) and status success/failed
-    return project;
+    return { 
+        project,
+        message: `successfully updated project ${name}!` 
+    };
 }
+
+
 
 // DELETE
 export async function deleteProject(id: string) {

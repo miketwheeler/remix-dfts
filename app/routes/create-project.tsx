@@ -14,7 +14,7 @@ import {
     Paper, 
     Stepper, Step, StepContent, StepButton,
 } from "@mui/material";
-import { createProjectValidators } from "~/validators/validators";
+import { projectValidators } from "~/validators/validators";
 import { CreateFormFields } from "~/components/reusable-components/minor/CreateFormFields";
 import { ForwardBack } from "~/components/reusable-components/minor/ForwardBackStep";
 
@@ -127,12 +127,12 @@ export const action = async ({ request }: ActionArgs) => {
         team
     };
 	const fieldErrors = {
-        name: createProjectValidators.validateProjectName(name),
-        type: createProjectValidators.validateProjectType(type),
-        synopsis: createProjectValidators.validateProjectSynopsis(synopsis),
-        description: createProjectValidators.validateProjectDescription(description),
-        techStack: createProjectValidators.validateProjectTechStack(techStack),
-        fundingGoal: createProjectValidators.validateProjectFundingGoal(Number(fundingGoal)),
+        name: projectValidators.validateProjectName(name),
+        type: projectValidators.validateProjectType(type),
+        synopsis: projectValidators.validateProjectSynopsis(synopsis),
+        description: projectValidators.validateProjectDescription(description),
+        techStack: projectValidators.validateProjectTechStack(techStack),
+        fundingGoal: projectValidators.validateProjectFundingGoal(Number(fundingGoal)),
 	};
 
 	if(Object.values(fieldErrors).some(Boolean)) {
@@ -379,9 +379,9 @@ const CreateProject: FC<FormSubmissionProps> = () => {
     //     // console.dir(`hidden form state var: ${document.getElementById("hidden-form-state")}`)
     // }, [newFormState])
 
-    useEffect(() => {
-        console.log(`complete form state: ${JSON.stringify(newFormState, null, 2)}`)
-    }, [newFormState])
+    // useEffect(() => {
+    //     console.log(`complete form state: ${JSON.stringify(newFormState, null, 2)}`)
+    // }, [newFormState])
 
 	return (
         
@@ -408,8 +408,7 @@ const CreateProject: FC<FormSubmissionProps> = () => {
                         variant="h5" 
                         sx={{my: .5, display: 'inline-flex', wrap: 'nowrap'}}
                         >
-                            project
-                            { newFormState.name?.value ? <div style={{opacity: .5}}>&nbsp; - {newFormState.name?.value}</div> : null }
+                        { newFormState.name?.value ? newFormState.name?.value : "project" }
                     </Typography>
                     <Form 
                         method="post" 

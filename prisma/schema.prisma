@@ -61,7 +61,7 @@ model Project {
   techStack       String?
   beginDate       DateTime?
   endDate         DateTime?
-  active          Boolean         @default(false)
+  active          Boolean         @default(true)
   milestone       Int             @default(0)
   deployed        Boolean         @default(false)
   funded          Boolean         @default(false)

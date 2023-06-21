@@ -1,25 +1,15 @@
-
-
-import type {
-    LoaderArgs
-} from '@remix-run/node';
+import type { LoaderArgs } from '@remix-run/node';
 import {
     Link,
     useLoaderData,
-    useParams,
-    Outlet,
     useCatch
 } from '@remix-run/react';
-import { json } from '@remix-run/node';
 import { Box, Typography, Paper,  Button, Stack, Chip, Divider, Grid, useMediaQuery} from '@mui/material';
 import VisibilityIcon from '@mui/icons-material/Visibility';
-import EditIcon from '@mui/icons-material/Edit';
-import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 
-import { db } from "~/utils/db.server";
-import { getProject } from "~/utils/project.server";
+// import { db } from "~/utils/db.server";
+// import { getProject } from "~/utils/project.server";
 import { getProjectListWhereTeamLead } from "~/utils/project.server";
-import { IconButton } from '@mui/joy';
 
 
 
@@ -37,9 +27,6 @@ const styles = {
         my: 2,
 		boxShadow: "0 0 10px 0 rgba(0,0,0,.1)",
 	},
-    // paper: {
-    //     padding: "1rem 0 2rem 2rem",
-    // }
 };
 
 
@@ -90,13 +77,13 @@ export default function DashboardProjectsIndexRoute() {
                                                                 !smAndDown
                                                                 ?
                                                                 <>
-                                                                    <Button variant="contained" size="small" color="success" component={ Link } to={ `view/${indivProj.id}` }>
+                                                                    <Button variant="contained" size="small" color="success" component={ Link } to={`view/${indivProj.id}`}>
                                                                         view
                                                                     </Button>
                                                                 </>
                                                                 :
                                                                 <>
-                                                                    <Link to={ `${indivProj.id}` }>
+                                                                    <Link to={`view/${indivProj.id}`}>
                                                                         <VisibilityIcon color="success" />
                                                                     </Link>
                                                                 </>
