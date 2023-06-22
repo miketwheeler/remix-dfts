@@ -32,6 +32,7 @@ const nav = {
 			path: "/dashboard",
 			icon: <GridViewIcon />,
 			enabled: true,
+			
 		},
 		{
 			index: 1,
@@ -142,6 +143,7 @@ const BuiltTab = ({props}: any) => {
 			// replace
 			disabled={ !props.link.enabled }
 			sx={ tabStyles }
+			tabIndex={ props.link.index }
 		/>
 	)
 }
@@ -189,7 +191,7 @@ export default function AppBarAndNav(props: any) {
 				>
 				{
 					nav.primaryLinks.map((link, index) => (
-						<BuiltTab key={ `tab-${index}` } props={{ link }} />
+						<BuiltTab key={ `tab-${index}` } props={{ link }}  />
 						)
 					)
 				}
@@ -199,7 +201,7 @@ export default function AppBarAndNav(props: any) {
 				</Typography>
 				{
 					nav.secondaryLinks.map((link, index = nav.primaryLinks.length) => (
-						<BuiltTab key={ `tab-${index + nav.primaryLinks.length }` } props={{ link }} />
+						<BuiltTab key={ `tab-${index + nav.primaryLinks.length }` } props={{ link }}  />
 						)
 					)
 				}
@@ -209,7 +211,7 @@ export default function AppBarAndNav(props: any) {
 				</Typography>
 				{
 					nav.tertiaryLinks.map((link, index = nav.primaryLinks.length + nav.secondaryLinks.length) => (
-						<BuiltTab key={ `tab-${index + nav.secondaryLinks.length }` } props={{ link }} />
+						<BuiltTab key={ `tab-${index + nav.secondaryLinks.length }` } props={{ link }}  />
 						)
 					)
 				}
@@ -225,6 +227,7 @@ export default function AppBarAndNav(props: any) {
 							component={ Link }
 							to={ '/' }
 							sx={ tabStyles }
+							
 							/>
 					: null
 				}

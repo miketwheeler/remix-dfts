@@ -3,7 +3,7 @@ import type {
     LoaderArgs, 
     ActionArgs
 } from '@remix-run/node';
-
+import { NumericFormat } from "react-number-format";
 import { useEffect, useState } from 'react';
 import {
     Form,
@@ -11,14 +11,14 @@ import {
     useActionData,
     // Link,
     useLoaderData,
-    // useSearchParams,
+    useSearchParams,
     // useParams,
 } from '@remix-run/react';
 import { json, redirect } from '@remix-run/node';
 import { 
     Box, Typography, Paper,  
-    Button, Stack, Chip, Divider, Grid,
-    // useMediaQuery,
+    Button, Stack, Divider, Grid,
+    useMediaQuery,
     // Collapse,
     Breadcrumbs,
     Link as MuiLink,
@@ -29,6 +29,7 @@ import {
     FormControl,
     FormLabel,
 } from '@mui/material';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { projectValidators } from '~/validators/validators';
 
 // import { db } from "~/utils/db.server";
@@ -37,6 +38,8 @@ import invariant from "tiny-invariant";
 import MultiselectPicker from '~/components/reusable-components/minor/MultislectPicker';
 import qs from "qs";
 import { badRequest } from '~/utils/request.server';
+
+import { convertToISOString, convertToDisplayDate } from '~/components/functions/convert-dates';
 
 
 
@@ -87,8 +90,8 @@ export const action = async ({ request, params }: ActionArgs) => {
     const description = formData.description as string;
     const synopsis = formData.synopsis as string;
     const techStack = formData.techStack as string;
-    const beginDate = formData.beginDate as string;
-    const endDate = formData.endDate as string;
+    const beginDate = formData.beginDate && convertToISOString(formData.beginDate as string);
+    const endDate = formData.endDate && convertToISOString(formData.endDate as string);
     const milestone = formData.milestone as string;
     const deployed = formData.deployed === "true" ? true : false;
     const funded = formData.funded === "true" ? true : false;
@@ -146,7 +149,7 @@ export const action = async ({ request, params }: ActionArgs) => {
         milestone: Number(milestone),
         deployed,
         funded,
-        fundingGoal: Number(fundingGoal),
+        fundingGoal: Number(fundingGoal.slice(1)), // updateProject expects numerical value and we're slicing off the $ sign
         active,
     });
 
@@ -158,7 +161,7 @@ export const action = async ({ request, params }: ActionArgs) => {
         });
     }
 
-    return redirect("/dashboard/projects" );
+    return redirect(`/dashboard/projects/view/${params.id}` );
 
 }
 
@@ -216,19 +219,18 @@ const validateField = (name: string, value: string): string | null => {
 }
 
 
-
 const UpdateProject: FC<FormSubmissionProps> = () => {
     const { project } = useLoaderData<typeof loader>();
     const actionData = useActionData<typeof action>();
-    // const smAndDown = useMediaQuery('(max-width: 800px)');
+    const smAndDown = useMediaQuery('(max-width: 800px)');
     const [formFieldsToUpdate, setFormFieldsToUpdate] = useState<FormFields>({
         name: project.name,
         type: project.type,
         description: project.description,
         synopsis: project.synopsis,
         techStack: project.techStack || "",
-        beginDate: project.beginDate || "",
-        endDate: project.endDate || "",
+        beginDate: project.beginDate ? convertToDisplayDate(project.beginDate) : "",
+        endDate: project.endDate ? convertToDisplayDate(project.endDate) : "",
         milestone: project.milestone,
         deployed: project.deployed,
         funded: project.funded,
@@ -237,7 +239,7 @@ const UpdateProject: FC<FormSubmissionProps> = () => {
     });
     // const [newFormFields, setNewFormFields] = useState<FormFields>();
 
-    // const [searchParams] = useSearchParams();
+    const [searchParams] = useSearchParams();
     // console.log("searchParams", searchParams)
 
     // const [formFieldsToUpdate, setFormFieldsToUpdate] = useState<FormFields>({});
@@ -299,8 +301,40 @@ const UpdateProject: FC<FormSubmissionProps> = () => {
                                     <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
                                         <Box sx={{ display: 'flex', flexDirection: 'row' }}>
                                             <Typography variant="h6" gutterBottom>
-                                                editing project - { project.name }
+                                                { project.name }
                                             </Typography>
+                                        </Box>
+                                        <Box sx={{ 
+                                                display: 'flex', 
+                                                flexDirection: 'row', 
+                                                gap: 1, 
+                                                justifyContent: 'flex-end',
+                                                alignItems: 'center',
+                                                maxWidth: 'fit-content',
+                                                maxHeight: 'fit-content',
+                                            }}
+                                            >
+                                            {
+                                                !smAndDown
+                                                ?
+                                                <>
+                                                <Button 
+                                                    variant="text" 
+                                                    size="small" 
+                                                    color="primary" 
+                                                    component={ Link } 
+                                                    to={`../view/${project.id}`} 
+                                                    startIcon={<ArrowBackIcon />}
+                                                    sx={{mr: 1}}
+                                                    >
+                                                    back
+                                                </Button>
+                                                </>
+                                                :
+                                                <Link to={`../view/${project.id}`}>
+                                                    <ArrowBackIcon color="primary" />
+                                                </Link>
+                                            }
                                         </Box>
                                     </Box>
                                     <Divider sx={{my: 1}} />
@@ -359,7 +393,7 @@ const UpdateProject: FC<FormSubmissionProps> = () => {
                                                     id="project-beginDate" 
                                                     label="begin date" 
                                                     name="beginDate"
-                                                    defaultValue={ `${formFieldsToUpdate.beginDate}` } 
+                                                    defaultValue={ formFieldsToUpdate.beginDate } 
                                                     onChange={ handleInputChange } 
                                                     InputLabelProps={{ shrink: true }} 
                                                     />
@@ -368,7 +402,7 @@ const UpdateProject: FC<FormSubmissionProps> = () => {
                                                     id="project-endDate" 
                                                     label="end date" 
                                                     name="endDate" 
-                                                    defaultValue={ `${formFieldsToUpdate.endDate}` } 
+                                                    defaultValue={ formFieldsToUpdate.endDate } 
                                                     onChange={ handleInputChange }
                                                     InputLabelProps={{ shrink: true }}  
                                                     />
@@ -387,7 +421,8 @@ const UpdateProject: FC<FormSubmissionProps> = () => {
                                                 <Typography variant="body1" component="p" gutterBottom sx={{p: 2, opacity: .5}}>
                                                     placeholder for tech stack selector
                                                 </Typography>
-                                                {/* <MultiselectPicker props={{ formFieldsToUpdate, setFormFieldsToUpdate }} /> */}
+
+                                                {/* <MultiselectPicker props={{ newFormState: formFieldsToUpdate, setNewFormState: setFormFieldsToUpdate }} /> */}
 
                                                 <Divider sx={{ my: 1 }} />
 
@@ -420,11 +455,13 @@ const UpdateProject: FC<FormSubmissionProps> = () => {
                                                         <FormControlLabel value={ false } control={ <Radio /> } label="no" labelPlacement='start' />
                                                     </RadioGroup>
                                                 </FormControl>
-                                                <TextField 
+                                                <NumericFormat  
                                                     type="text" 
                                                     id="project-fundingGoal" 
                                                     label="funding goal" 
                                                     name="fundingGoal" 
+                                                    customInput={TextField}
+                                                    prefix={'$'}
                                                     defaultValue={ formFieldsToUpdate.fundingGoal } 
                                                     onChange={ handleInputChange } 
                                                     />

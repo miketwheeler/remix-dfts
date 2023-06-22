@@ -15,6 +15,7 @@ import {
     useMediaQuery, Breadcrumbs, Link as MuiLink, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle
 } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import EditProjectDialog from '~/components/dialogs/EditProjectDialog';
 
@@ -79,21 +80,21 @@ export default function DashboardViewProjectIdRoute() {
 
     // modal ops
     // const handleClose = () => setModalOpen(false);
-    const handleClickOpen = async () => {
-        setModalOpen(true)
-        // return (<EditProjectDialog props={{ modalOpen, setModalOpen, project}} />)
-    };
+    // const handleClickOpen = async () => {
+    //     setModalOpen(true)
+    //     // return (<EditProjectDialog props={{ modalOpen, setModalOpen, project}} />)
+    // };
 
-    const handleSubmit = async (e: any) => {
-        e.preventDefault();
-        const areYouSure = await window.confirm("Are you sure you want to permanently delete this record?");
+    // const handleSubmit = async (e: any) => {
+    //     e.preventDefault();
+    //     const areYouSure = await window.confirm("Are you sure you want to permanently delete this record?");
 
-        if(areYouSure) {
-            setIsDeleting(true);
+    //     if(areYouSure) {
+    //         setIsDeleting(true);
             
-            if(actionData) setIsDeleting(false);
-        }
-    }
+    //         if(actionData) setIsDeleting(false);
+    //     }
+    // }
 
     useEffect(() => {
         // if(actionIsDeleting) {
@@ -135,7 +136,7 @@ export default function DashboardViewProjectIdRoute() {
                                     <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
                                         <Box sx={{ display: 'flex', flexDirection: 'row' }}>
                                             <Typography variant="h6" gutterBottom>
-                                                project name: {project.name}
+                                                {project.name}
                                             </Typography>
                                         </Box>
                                         <Box sx={{ 
@@ -153,6 +154,17 @@ export default function DashboardViewProjectIdRoute() {
                                                 ?
                                                 <>
                                                     {/* <Form method="post"> */}
+                                                    <Button 
+                                                        variant="text" 
+                                                        size="small" 
+                                                        color="primary" 
+                                                        component={ Link } 
+                                                        to={".."} 
+                                                        startIcon={<ArrowBackIcon />}
+                                                        sx={{mr: 1}}
+                                                        >
+                                                        back
+                                                    </Button>
                                                         <Button variant="contained" size="small" color="warning" component={ Link } to={ `../update/${project.id}` }>
                                                             update
                                                         </Button>
@@ -172,6 +184,9 @@ export default function DashboardViewProjectIdRoute() {
                                                 </>
                                                 :
                                                 <>
+                                                    <Link to={".."}>
+                                                        <ArrowBackIcon color="primary" />
+                                                    </Link>
                                                     <Link to={ `../update/${project.id}` }>
                                                         <EditIcon color="warning" />
                                                     </Link>

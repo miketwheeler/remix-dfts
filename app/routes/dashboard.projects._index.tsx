@@ -10,7 +10,8 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 // import { db } from "~/utils/db.server";
 // import { getProject } from "~/utils/project.server";
 import { getProjectListWhereTeamLead } from "~/utils/project.server";
-
+import { convertToDisplayDate } from '~/components/functions/convert-dates';
+import { pulseAnimation } from '~/components/functions/animations/pulse-animation';
 
 
 export async function loader({ request }: LoaderArgs) {
@@ -35,6 +36,9 @@ export default function DashboardProjectsIndexRoute() {
     const data = useLoaderData<typeof loader>();
     // const data = [] as any;
     const smAndDown = useMediaQuery('(max-width: 800px)');
+
+    // const elToPulseAnim = document && document?.getElementById('activity-notifier');
+    // pulseAnimation(elToPulseAnim, 1000, 1.2);
     
 	return (
         <Box sx={styles.container}>
@@ -61,6 +65,11 @@ export default function DashboardProjectsIndexRoute() {
                                                         <Box sx={{ display: 'flex', flexDirection: 'row' }}>
                                                             <Typography variant="h6" gutterBottom>
                                                                 {indivProj.name}
+                                                            </Typography>
+                                                        {/* </Box>
+                                                        <Box> */}
+                                                            <Typography variant="body1" id="activity-notifier" gutterBottom sx={{mt: .5, mx: 2, color: indivProj.active ? 'primary': 'secondary', }}>
+                                                                {indivProj.active ? "active" : "inactive"}
                                                             </Typography>
                                                         </Box>
                                                         <Box sx={{ 
@@ -97,7 +106,7 @@ export default function DashboardProjectsIndexRoute() {
                                                         <br /> 
                                                         synopsis: &nbsp; {indivProj.synopsis} 
                                                         <br/> 
-                                                        dates: &nbsp; {indivProj.beginDate} to {indivProj.endDate}
+                                                        dates: &nbsp; {convertToDisplayDate(indivProj.beginDate)}&nbsp; - &nbsp;{convertToDisplayDate(indivProj.endDate)}
                                                     </Typography>
 
                                                     <Divider sx={{my: 1}} />

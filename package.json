@@ -25,6 +25,7 @@
     "@remix-run/react": "^1.11.1",
     "@remix-run/serve": "^1.11.1",
     "bcryptjs": "^2.4.3",
+    "date-fns": "^2.30.0",
     "isbot": "^3.6.5",
     "latest": "^0.2.0",
     "qs": "^6.11.1",
