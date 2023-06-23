@@ -169,9 +169,9 @@ export const CreateFormFields = ({props}: any) => {
         setNewFormState({ ...newFormState, [name]: { value: formattedValue ?? value, error } });
     };
 
-    // useMemo(() => {
-    //     console.log(`all form state from create formFields: ${JSON.stringify(newFormState, null,2 )}`)
-    // }, [newFormState])
+    useMemo(() => {
+        console.log(`all form state from create formFields: ${JSON.stringify(newFormState, null,2 )}`)
+    }, [newFormState])
 
 
     return (

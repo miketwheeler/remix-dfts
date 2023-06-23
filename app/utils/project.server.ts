@@ -46,6 +46,7 @@ export async function createProject({
         const returnDate = (newDate.toISOString());
         return returnDate;
     }
+
 	const project = await db.project.create({
 		data: { 
             name, 
@@ -62,6 +63,7 @@ export async function createProject({
             }
         },
 	});
+
     if(teamId) {
         await db.team.update({
             where: {
@@ -91,6 +93,7 @@ export async function getProjectListWhereTeamLead( request: Request ) {
             teamLeadId: userId
         },
     });
+
     if(teams) {
         for(const team of teams) {
             associatedProjects.push(await db.project.findMany({
@@ -121,29 +124,12 @@ export async function getProject(id: string) {
     return project;
 }
 
-// UPDATE
-// export async function updateProject(request: Request) {
-//     const { id, name, type, synopsis, description, techStack, beginDate, endDate, active, fundingGoal } = await request.json();
-//     const project = await db.project.update({
-//         where: { id },
-//         data: { name, type, synopsis, description, techStack, beginDate, endDate, active, fundingGoal },
-//     });
-
-//     // need to return project(?) and status success/failed
-//     return project;
-// }
 
 export async function updateProject({
     id, name, type, synopsis, description, techStack, beginDate, endDate, milestone, deployed, funded, fundingGoal, active
 }: UpdateProjectForm) {
 
     const newFundingGoal = fundingGoal * 1.00; // remove $ from string, cast to number
-    // const convertDate = ( date: string ) => {
-    //     const dateArr = date.split("/");
-    //     const newDate = new Date(parseInt(dateArr[2]), parseInt(dateArr[1]), parseInt(dateArr[0]));
-    //     const returnDate = (newDate.toISOString());
-    //     return returnDate;
-    // }
 
     const project = await db.project.update({
         where: { id },
@@ -155,8 +141,6 @@ export async function updateProject({
             techStack,
             beginDate,
             endDate, 
-            // beginDate: convertDate(beginDate), 
-            // endDate: convertDate(endDate), 
             milestone: Number(milestone), 
             deployed, 
             funded, 

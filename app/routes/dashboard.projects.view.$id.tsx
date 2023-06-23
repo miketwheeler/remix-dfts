@@ -6,20 +6,21 @@ import {
     useActionData,
     Form,
     Outlet,
-    useTransition
-    // useParams,
 } from '@remix-run/react';
 import { json } from '@remix-run/node';
 import { 
-    Box, Typography, Paper, Button, Chip, Divider, Grid,
-    useMediaQuery, Breadcrumbs, Link as MuiLink, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle
+    Box, Typography, Paper, Button, Divider, Grid,
+    useMediaQuery, Breadcrumbs, Link as MuiLink,
+    Table, TableBody, TableCell, TableContainer, TableRow,
+    Dialog, DialogTitle, DialogContent, DialogActions,
 } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
-import EditProjectDialog from '~/components/dialogs/EditProjectDialog';
+import DeleteInterruptDialog from '~/components/dialogs/DeleteInterruptDialog';
+import { convertAttribute, convertHeader } from '~/components/functions/display-data';
 
-import { getProject, deleteProject, updateProject, getProjectListWhereTeamLead } from "~/utils/project.server";
+import { getProject, deleteProject, getProjectListWhereTeamLead } from "~/utils/project.server";
 // import { getUserId } from "~/utils/session.server";
 import invariant from "tiny-invariant";
 
@@ -43,13 +44,10 @@ export const action = async ({ request, params }: ActionArgs) => {
     invariant(params.id, "no id provided yet");
     const form = await request.formData();
 
+    // if(form.get("_action") === "delete") {
     if(form.get("_action") === "delete") {
-        return await deleteProject(params.id.toString());
+        return await deleteProject(params.id);
     }
-    // else if(form.get("_action") === "update") {
-    //     const project = await updateProject(request);
-    //     return json({ project });
-    // }
     else {
         throw new Response(`no action provided for ${params.id}`, {status: 404})
     }
@@ -72,39 +70,25 @@ export default function DashboardViewProjectIdRoute() {
     const actionData = useActionData<typeof action>();
     const smAndDown = useMediaQuery('(max-width: 800px)');
     const [modalOpen, setModalOpen] = useState(false);
-    const [isDeleting, setIsDeleting] = useState(false);
-    const [formData, setFormData] = useState({} as any);
-    // let transition = useTransition();
 
-    // let actionIsDeleting = transition.state === "submitting" && transition.submission.method === "DELETE";
+    const [showConfirmation, setShowConfirmation] = useState(false);
 
-    // modal ops
-    // const handleClose = () => setModalOpen(false);
-    // const handleClickOpen = async () => {
-    //     setModalOpen(true)
-    //     // return (<EditProjectDialog props={{ modalOpen, setModalOpen, project}} />)
-    // };
+    const handleDeleteConfirmation = () => {
+        setShowConfirmation(true);
+    };
+    const handleDelete = async () => {
+        await actionData;
+        setShowConfirmation(false);
+    };
 
-    // const handleSubmit = async (e: any) => {
-    //     e.preventDefault();
-    //     const areYouSure = await window.confirm("Are you sure you want to permanently delete this record?");
-
-    //     if(areYouSure) {
-    //         setIsDeleting(true);
-            
-    //         if(actionData) setIsDeleting(false);
-    //     }
-    // }
-
-    useEffect(() => {
-        // if(actionIsDeleting) {
-        //     setIsDeleting(true);
-        // }
-        console.log(isOwner.toString());
-    }, [isOwner])
+    // useEffect(() => {
+    //     console.log(`isOwner value: ${isOwner.toString()}`);
+    // }, [isOwner])
 
     return (
         <Box sx={styles.container}>
+            <DeleteInterruptDialog props={{showConfirmation, setShowConfirmation, handleDelete}} />
+
             <Typography variant="h5" component="h1" gutterBottom>
                 viewing project
             </Typography>
@@ -114,10 +98,6 @@ export default function DashboardViewProjectIdRoute() {
                 <Typography color="text.primary">view</Typography>
             </Breadcrumbs>
             <br />
-            {
-                isDeleting && <EditProjectDialog props={{ modalOpen, setModalOpen, project}} />
-            }
-            
             {
                 !project
                 ?
@@ -153,7 +133,6 @@ export default function DashboardViewProjectIdRoute() {
                                                 !smAndDown
                                                 ?
                                                 <>
-                                                    {/* <Form method="post"> */}
                                                     <Button 
                                                         variant="text" 
                                                         size="small" 
@@ -165,15 +144,15 @@ export default function DashboardViewProjectIdRoute() {
                                                         >
                                                         back
                                                     </Button>
-                                                        <Button variant="contained" size="small" color="warning" component={ Link } to={ `../update/${project.id}` }>
-                                                            update
-                                                        </Button>
-                                                    {/* </Form> */}
+                                                    <Button variant="contained" size="small" color="warning" component={ Link } to={ `../update/${project.id}` }>
+                                                        update
+                                                    </Button>
                                                     <Form method="post">
-                                                        {/* <input type="hidden" name="id" value={project.id} /> */}
                                                         <Button 
                                                             variant="contained" size="small" color="error" 
-                                                            // onSubmit={handleSubmit}
+                                                            onClick={handleDeleteConfirmation}
+                                                            type="button"
+                                                            // type="submit"
                                                             name="_action" 
                                                             value="delete" 
                                                             disabled={!isOwner}
@@ -199,31 +178,35 @@ export default function DashboardViewProjectIdRoute() {
                                     </Box>
                                     <Divider sx={{my: 1}} />
 
-                                    <Typography variant="body1">
-                                        type: &nbsp; {project.type} 
-                                        <br /> 
-                                        synopsis: &nbsp; {project.synopsis} 
-                                        <br/> 
-                                        dates: &nbsp; {project.beginDate} to {project.endDate}
-                                    </Typography>
-
-                                    <Divider sx={{my: 1}} />
-                                    <Typography variant="body1">tech stack:&nbsp;</Typography>
-                                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5, my: 1 }}>
-                                        <br/>
-                                        {
-                                            project.techStack
-                                            ? 
-                                            project.techStack.split(",").map((tech: string, index: number) => (
-                                                <Chip key={`tech-${index}`} label={tech} />
-                                            ))
-                                            :
-                                            <Typography variant="body1" component="p" gutterBottom sx={{ m: 2 }}>
-                                                There should be a stack here, but there isn't. Edit this project to add one!
-                                            </Typography>
-                                        }
-                                    </Box>
-
+                                    <TableContainer component={Box}>
+                                        <Table sx={{ minWidth: 650 }} aria-label="simple table">
+                                            <TableBody>
+                                            {
+                                                project && Object.entries(project).map((attr) => (
+                                                    <TableRow
+                                                        key={`project-attribute-${attr[0]}`}
+                                                        sx={{ '&:last-child td, &:last-child th': { border: 0 }, '&:nth-of-type(odd)': { backgroundColor: 'rgba(255, 255, 255, 0.02)'} }}
+                                                        >
+                                                            {
+                                                                (attr[0] !== "id" && attr[0] !== "teamId")
+                                                                &&
+                                                                (
+                                                                    <>
+                                                                        <TableCell component="th" scope="row" sx={{opacity: .75}}>
+                                                                            {convertHeader(attr[0])}
+                                                                        </TableCell>
+                                                                        <TableCell component="th" scope="row">
+                                                                            {convertAttribute(attr[1]?.toString())}
+                                                                        </TableCell>
+                                                                    </>
+                                                                )
+                                                            }
+                                                    </TableRow>
+                                                ))
+                                            }
+                                            </TableBody>
+                                        </Table>
+                                    </TableContainer>
                                 </Box>
                             </Grid>
                         </Grid>
@@ -231,5 +214,6 @@ export default function DashboardViewProjectIdRoute() {
                 </Paper>
             }
         </Box>
+        
     )
 }

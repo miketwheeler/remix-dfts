@@ -47,6 +47,13 @@ interface FormSubmissionProps {
     onSubmit: (formData: FormData) => Promise<void>;
 }
 
+interface MultiSelectFormState {
+    [key: string]: {
+        value: string;
+        error: string | null
+    };
+}
+
 type FormFields = {
     name: string,
     type: string,
@@ -223,6 +230,12 @@ const UpdateProject: FC<FormSubmissionProps> = () => {
     const { project } = useLoaderData<typeof loader>();
     const actionData = useActionData<typeof action>();
     const smAndDown = useMediaQuery('(max-width: 800px)');
+    const [multiSelectFormState, setMultiSelectFormState] = useState<MultiSelectFormState>({
+        techStack: {
+            value: project.techStack || "",
+            error: null,
+        }
+    });
     const [formFieldsToUpdate, setFormFieldsToUpdate] = useState<FormFields>({
         name: project.name,
         type: project.type,
@@ -237,12 +250,9 @@ const UpdateProject: FC<FormSubmissionProps> = () => {
         fundingGoal: project.fundingGoal,
         active: project.active,
     });
-    // const [newFormFields, setNewFormFields] = useState<FormFields>();
 
-    const [searchParams] = useSearchParams();
-    // console.log("searchParams", searchParams)
+    // const [searchParams] = useSearchParams();
 
-    // const [formFieldsToUpdate, setFormFieldsToUpdate] = useState<FormFields>({});
     const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = event.target;
         let error: string | null;
@@ -388,6 +398,8 @@ const UpdateProject: FC<FormSubmissionProps> = () => {
 
                                                 <Divider sx={{my: 1}} />
 
+                                                <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
+                                                <Box sx={{ display: 'flex', flexDirection: 'row', gap: 1 }}>
                                                 <TextField 
                                                     type="text" 
                                                     id="project-beginDate" 
@@ -397,6 +409,7 @@ const UpdateProject: FC<FormSubmissionProps> = () => {
                                                     onChange={ handleInputChange } 
                                                     InputLabelProps={{ shrink: true }} 
                                                     />
+                                                    <Typography variant="body1" component="p" gutterBottom sx={{opacity: .75, my: 'auto'}}>&nbsp;-&nbsp;to&nbsp;-&nbsp;</Typography>
                                                 <TextField 
                                                     type="text" 
                                                     id="project-endDate" 
@@ -406,23 +419,25 @@ const UpdateProject: FC<FormSubmissionProps> = () => {
                                                     onChange={ handleInputChange }
                                                     InputLabelProps={{ shrink: true }}  
                                                     />
+                                                </Box>
                                                 <TextField 
                                                     type="text" 
                                                     id="project-milestone" 
-                                                    label="milestone" 
+                                                    label="current milestone" 
                                                     name="milestone" 
                                                     defaultValue={ formFieldsToUpdate.milestone } 
                                                     onChange={ handleInputChange } 
                                                     />
+                                                </Box>
 
                                                 <Divider sx={{ my: 1 }} />
 
                                                 {/* TODO: tech stack selector */}
-                                                <Typography variant="body1" component="p" gutterBottom sx={{p: 2, opacity: .5}}>
-                                                    placeholder for tech stack selector
+                                                <Typography variant="body1" component="p" gutterBottom sx={{opacity: .75}}>
+                                                    edit the techstack for this project
                                                 </Typography>
 
-                                                {/* <MultiselectPicker props={{ newFormState: formFieldsToUpdate, setNewFormState: setFormFieldsToUpdate }} /> */}
+                                                <MultiselectPicker props={{ newFormState: multiSelectFormState, setNewFormState: setMultiSelectFormState }} />
 
                                                 <Divider sx={{ my: 1 }} />
 
@@ -441,30 +456,32 @@ const UpdateProject: FC<FormSubmissionProps> = () => {
                                                 </FormControl>
 
                                                 <Divider sx={{ my: 1 }} />
-
-                                                <FormControl>
-                                                    <FormLabel id="project-funded-option">is project currently being funded?</FormLabel>
-                                                    <RadioGroup
-                                                        aria-label="funded-selection"
-                                                        defaultValue={ formFieldsToUpdate.funded }
-                                                        name="funded"
-                                                        sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'flex-start' }}
-                                                        >
-                                                        <FormControlLabel value={ true } control={ <Radio /> } label="yes" labelPlacement='start' />
-                                                        <div style={{ width: '1.25rem' }}></div>
-                                                        <FormControlLabel value={ false } control={ <Radio /> } label="no" labelPlacement='start' />
-                                                    </RadioGroup>
-                                                </FormControl>
-                                                <NumericFormat  
-                                                    type="text" 
-                                                    id="project-fundingGoal" 
-                                                    label="funding goal" 
-                                                    name="fundingGoal" 
-                                                    customInput={TextField}
-                                                    prefix={'$'}
-                                                    defaultValue={ formFieldsToUpdate.fundingGoal } 
-                                                    onChange={ handleInputChange } 
-                                                    />
+                                                <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
+                                                    <FormControl>
+                                                        <FormLabel id="project-funded-option">is project currently being funded?</FormLabel>
+                                                        <RadioGroup
+                                                            aria-label="funded-selection"
+                                                            defaultValue={ formFieldsToUpdate.funded }
+                                                            name="funded"
+                                                            sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'flex-start', width: '50%', flexWrap: 'nowrap' }}
+                                                            >
+                                                            <FormControlLabel value={ true } control={ <Radio /> } label="yes" labelPlacement='start' />
+                                                            <div style={{ width: '1.25rem' }}></div>
+                                                            <FormControlLabel value={ false } control={ <Radio /> } label="no" labelPlacement='start' />
+                                                        </RadioGroup>
+                                                    </FormControl>
+                                                    <NumericFormat  
+                                                        type="text" 
+                                                        id="project-fundingGoal" 
+                                                        label="funding goal" 
+                                                        name="fundingGoal" 
+                                                        customInput={TextField}
+                                                        prefix={'$'}
+                                                        defaultValue={ formFieldsToUpdate.fundingGoal } 
+                                                        onChange={ handleInputChange } 
+                                                        sx={{width: '50%'}}
+                                                        />
+                                                </Box>
 
                                                 <Divider sx={{ my: 1 }} />
 

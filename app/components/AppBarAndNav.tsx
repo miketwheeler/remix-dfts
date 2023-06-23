@@ -143,7 +143,7 @@ const BuiltTab = ({props}: any) => {
 			// replace
 			disabled={ !props.link.enabled }
 			sx={ tabStyles }
-			tabIndex={ props.link.index }
+			// tabIndex={ props.link.index }
 		/>
 	)
 }
