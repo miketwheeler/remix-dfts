@@ -12,7 +12,6 @@ import {
     Box, Typography, Paper, Button, Divider, Grid,
     useMediaQuery, Breadcrumbs, Link as MuiLink,
     Table, TableBody, TableCell, TableContainer, TableRow,
-    Dialog, DialogTitle, DialogContent, DialogActions,
 } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
@@ -26,7 +25,7 @@ import invariant from "tiny-invariant";
 
 
 
-// LOADER
+// loads a project by id and returns the project and whether the user is the owner (for edit permissions)
 export const loader = async ({ params, request }: LoaderArgs) => {
     invariant(params.id, "no id provided yet");
     
@@ -39,12 +38,12 @@ export const loader = async ({ params, request }: LoaderArgs) => {
     return json({ isOwner: isProjectOwner, project });
 }
 
-// ACTION
+// requests a delete action for the currently viewed project -- TODO: add confirm is owner check && owner is logged in
+// NOTE: delete submission intercepted by a confimration dialog
 export const action = async ({ request, params }: ActionArgs) => {
     invariant(params.id, "no id provided yet");
     const form = await request.formData();
 
-    // if(form.get("_action") === "delete") {
     if(form.get("_action") === "delete") {
         return await deleteProject(params.id);
     }
@@ -188,11 +187,11 @@ export default function DashboardViewProjectIdRoute() {
                                                         sx={{ '&:last-child td, &:last-child th': { border: 0 }, '&:nth-of-type(odd)': { backgroundColor: 'rgba(255, 255, 255, 0.02)'} }}
                                                         >
                                                             {
-                                                                (attr[0] !== "id" && attr[0] !== "teamId")
+                                                                (attr[0] !== "id" && attr[0] !== "teamId" && attr[0] !== "updatedAt")
                                                                 &&
                                                                 (
                                                                     <>
-                                                                        <TableCell component="th" scope="row" sx={{opacity: .75}}>
+                                                                        <TableCell component="th" scope="row" sx={{opacity: .65}}>
                                                                             {convertHeader(attr[0])}
                                                                         </TableCell>
                                                                         <TableCell component="th" scope="row">

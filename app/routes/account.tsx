@@ -1,10 +1,11 @@
+import type {
+    ActionArgs,
+    LoaderArgs,
+} from "@remix-run/node";
 import  DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import EditIcon from '@mui/icons-material/Edit';
 import { Box, Paper, Stack, Button, Table, Rating, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Typography } from "@mui/material";
 import Grid from "@mui/material/Unstable_Grid2"
-import type {
-    LoaderArgs,
-} from "@remix-run/node";
 import { json } from "@remix-run/node";
 import { Link, useSearchParams, Form, useActionData } from "@remix-run/react";
 
@@ -74,18 +75,35 @@ const loginInfo = [
     },
 ]
 
-const username = "username"
 
-// requires the user to be logged in - on load, so is hack but works because of the order necessary within the login process
+// requires the user to be logged in - 
+//      on load, so is hack but works because of the order necessary 
+//      within the login process
+// TODO: account server side & loader requests need to be implemented - is spoof for now
 export async function loader({ request }: LoaderArgs) {
 	await requireUserId(request);
 
 	return json({});
 }
 
+// ACTION
+export const action = async ({ request, params }: ActionArgs) => {
+    // invariant(params.id, "no id provided yet");
+    const form = await request.formData();
+
+    if(form.get("_action") === "delete") {
+        // return await deleteAccount(params.id);
+        return null;
+    }
+    else {
+        throw new Response(`no action provided for ${params.id}`, {status: 404})
+    }
+}
+
 
 // exports the 'index' page of the member hall route - the parent of subsequent member hall content
-export default function AccountRoute() {    
+export default function AccountRoute() {   
+    
     return (
         <Box flexGrow={1} sx={{height: '100%', m: 2, mt: 2.5}}>
             <Typography variant="h4" component="h1" gutterBottom>

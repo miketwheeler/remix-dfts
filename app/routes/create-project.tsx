@@ -333,7 +333,7 @@ const CreateProject: FC<FormSubmissionProps> = () => {
     const actionData = useActionData<typeof action>();
     const loaderData = useLoaderData<typeof loader>();
 	const [searchParams] = useSearchParams();
-    const [activeStep, setActiveStep] = useState(0); // TODO: change back to 0 when compl testing
+    const [activeStep, setActiveStep] = useState(0);
 
     // const submit = useSubmit();
 

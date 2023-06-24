@@ -115,6 +115,9 @@ const tabStyles = {
 	"& .MuiTab-iconWrapper": {
 		mr: 3,
 	},
+	"&.MuiSelected": {
+		color: "primary.main"
+	}
 }
 
 const navHeaderStyle = { 
@@ -131,10 +134,12 @@ export const loader = async ({ request }: LoaderArgs) => {
 
 
 const BuiltTab = ({props}: any) => {
+	
 	return (
 		<Tab
 			id={ props.link.name }
 			component={ Link }
+			value={ props.link.index }
 			// prefetch='intent'
 			label={ props.link.name }
 			iconPosition="start"
@@ -143,7 +148,6 @@ const BuiltTab = ({props}: any) => {
 			// replace
 			disabled={ !props.link.enabled }
 			sx={ tabStyles }
-			// tabIndex={ props.link.index }
 		/>
 	)
 }
@@ -165,7 +169,7 @@ export default function AppBarAndNav(props: any) {
 	};
 
 	const handleChange = (event: React.SyntheticEvent, newValue: number) => {
-		event.preventDefault();
+		// event.preventDefault();
 		setNavTabValue(newValue);
 		if(mobileOpen)
 			handleDrawerToggle();
@@ -191,7 +195,7 @@ export default function AppBarAndNav(props: any) {
 				>
 				{
 					nav.primaryLinks.map((link, index) => (
-						<BuiltTab key={ `tab-${index}` } props={{ link }}  />
+						<BuiltTab key={ `tab-${index}` } props={{ link, navTabValue, pathValue }}  />
 						)
 					)
 				}
@@ -201,7 +205,7 @@ export default function AppBarAndNav(props: any) {
 				</Typography>
 				{
 					nav.secondaryLinks.map((link, index = nav.primaryLinks.length) => (
-						<BuiltTab key={ `tab-${index + nav.primaryLinks.length }` } props={{ link }}  />
+						<BuiltTab key={ `tab-${index + nav.primaryLinks.length }` } props={{ link, navTabValue, pathValue }}  />
 						)
 					)
 				}
@@ -211,7 +215,7 @@ export default function AppBarAndNav(props: any) {
 				</Typography>
 				{
 					nav.tertiaryLinks.map((link, index = nav.primaryLinks.length + nav.secondaryLinks.length) => (
-						<BuiltTab key={ `tab-${index + nav.secondaryLinks.length }` } props={{ link }}  />
+						<BuiltTab key={ `tab-${index + nav.secondaryLinks.length }` } props={{ link, navTabValue, pathValue }}  />
 						)
 					)
 				}

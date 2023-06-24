@@ -230,6 +230,7 @@ const UpdateProject: FC<FormSubmissionProps> = () => {
     const { project } = useLoaderData<typeof loader>();
     const actionData = useActionData<typeof action>();
     const smAndDown = useMediaQuery('(max-width: 800px)');
+    const [projectChanged, setProjectChanged] = useState(false);
     const [multiSelectFormState, setMultiSelectFormState] = useState<MultiSelectFormState>({
         techStack: {
             value: project.techStack || "",
@@ -264,8 +265,12 @@ const UpdateProject: FC<FormSubmissionProps> = () => {
 
         error = validateField(name, formattedValue !== undefined ? formattedValue : value);
 
+        projectChanged === false && setProjectChanged(true);
+
         setFormFieldsToUpdate({ ...formFieldsToUpdate, [name]: { value: formattedValue ?? value, error } });
     };
+
+    
 
     // const handleSubmit = async () => {
     //     event.preventDefault();
@@ -374,16 +379,14 @@ const UpdateProject: FC<FormSubmissionProps> = () => {
                                                     defaultValue={ formFieldsToUpdate.type } 
                                                     onChange={ handleInputChange }
                                                     />
-
                                                 <Divider sx={{my: 1}} />
-
                                                 <TextField 
                                                     type="text" 
                                                     id="project-synopsis" 
                                                     label="synopsis" 
                                                     name="synopsis"
                                                     defaultValue={ formFieldsToUpdate.synopsis } 
-                                                    onChange={ handleInputChange } 
+                                                    onChange={ handleInputChange }                                                     
                                                     />
                                                 <TextField 
                                                     type="text" 
@@ -395,9 +398,7 @@ const UpdateProject: FC<FormSubmissionProps> = () => {
                                                     rows={3} 
                                                     onChange={ handleInputChange }
                                                     />
-
                                                 <Divider sx={{my: 1}} />
-
                                                 <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
                                                 <Box sx={{ display: 'flex', flexDirection: 'row', gap: 1 }}>
                                                 <TextField 
@@ -406,7 +407,7 @@ const UpdateProject: FC<FormSubmissionProps> = () => {
                                                     label="begin date" 
                                                     name="beginDate"
                                                     defaultValue={ formFieldsToUpdate.beginDate } 
-                                                    onChange={ handleInputChange } 
+                                                    onChange={ handleInputChange }
                                                     InputLabelProps={{ shrink: true }} 
                                                     />
                                                     <Typography variant="body1" component="p" gutterBottom sx={{opacity: .75, my: 'auto'}}>&nbsp;-&nbsp;to&nbsp;-&nbsp;</Typography>
@@ -426,21 +427,15 @@ const UpdateProject: FC<FormSubmissionProps> = () => {
                                                     label="current milestone" 
                                                     name="milestone" 
                                                     defaultValue={ formFieldsToUpdate.milestone } 
-                                                    onChange={ handleInputChange } 
+                                                    onChange={ handleInputChange }
                                                     />
                                                 </Box>
-
                                                 <Divider sx={{ my: 1 }} />
-
-                                                {/* TODO: tech stack selector */}
                                                 <Typography variant="body1" component="p" gutterBottom sx={{opacity: .75}}>
                                                     edit the techstack for this project
                                                 </Typography>
-
                                                 <MultiselectPicker props={{ newFormState: multiSelectFormState, setNewFormState: setMultiSelectFormState }} />
-
                                                 <Divider sx={{ my: 1 }} />
-
                                                 <FormControl>
                                                     <FormLabel id="project-deployed-option">is project currently deployed?</FormLabel>
                                                     <RadioGroup
@@ -454,7 +449,6 @@ const UpdateProject: FC<FormSubmissionProps> = () => {
                                                         <FormControlLabel value={ false } control={ <Radio /> } label="no" labelPlacement='start' />
                                                     </RadioGroup>
                                                 </FormControl>
-
                                                 <Divider sx={{ my: 1 }} />
                                                 <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
                                                     <FormControl>
@@ -482,9 +476,7 @@ const UpdateProject: FC<FormSubmissionProps> = () => {
                                                         sx={{width: '50%'}}
                                                         />
                                                 </Box>
-
                                                 <Divider sx={{ my: 1 }} />
-
                                                 <FormControl>
                                                     <FormLabel id="edit-project-funded-option">keep project active? (deactivating removes project access for everyone but you)</FormLabel>
                                                     <RadioGroup
@@ -499,13 +491,14 @@ const UpdateProject: FC<FormSubmissionProps> = () => {
                                                     </RadioGroup>
                                                 </FormControl>
                                             </Stack>
-
+                                            {/* Submit button for the update project form */}
                                             <Box sx={{ display: 'flex',  justifyContent: 'flex-end', mt: 4 }}>
                                                 <Button 
                                                     type="submit" 
                                                     variant="contained" 
                                                     color="primary" 
                                                     // onSubmit={ ()=> handleFormSubmit() }
+                                                    disabled={!projectChanged}
                                                     >
                                                     save updates
                                                 </Button>
