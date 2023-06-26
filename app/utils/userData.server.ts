@@ -15,12 +15,18 @@ export async function getUserData(request: Request) {
                 username: true, 
                 devType: true, 
                 available: true, 
-                skills: true 
+                skills: true,
+                firstName: true,
+                lastName: true,
+                email: true,
+                bio: true,
+                createdAt: true,
+                rating: true,
             },
 		});
-		return { userData };
+		return userData ;
 	} catch {
-		console.log("There was an error fetching user data");
+		return { message: "There was an error fetching that account data or you do not have permissions to access.", status: 402 };
 	}
 }
 
@@ -35,7 +41,7 @@ export async function getUserAffiliated(request: Request) {
                     id: true, 
                     name: true, 
                     projects:  true,
-                    teamLead: true,
+                    // teamLead: true,
                 } 
             },
         },

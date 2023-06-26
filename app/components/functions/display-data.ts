@@ -1,4 +1,4 @@
-import { convertToDisplayDate, convertToISOString } from "./convert-dates";
+import { convertToDisplayDate } from "./convert-dates";
 
 
 export const convertHeader = (header: string) => {
@@ -10,6 +10,7 @@ export const convertHeader = (header: string) => {
 
 export const convertAttribute = (attribute: any) => {
     let reformatAttribute = attribute;
+
 
     if(attribute.includes(",")) {
         reformatAttribute = attribute.split(",").join(", ").toLowerCase();

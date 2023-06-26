@@ -133,6 +133,7 @@ export async function getUser(request: Request) {
 			where: { id: userId },
 			select: { id: true, username: true },
 		});
+
 		return user;
 	} catch {
 		throw await logout(request);

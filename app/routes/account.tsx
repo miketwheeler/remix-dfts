@@ -7,11 +7,11 @@ import EditIcon from '@mui/icons-material/Edit';
 import { Box, Paper, Stack, Button, Table, Rating, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Typography } from "@mui/material";
 import Grid from "@mui/material/Unstable_Grid2"
 import { json } from "@remix-run/node";
-import { Link, useSearchParams, Form, useActionData } from "@remix-run/react";
-
+import { Link, useSearchParams, Form, useActionData, useLoaderData } from "@remix-run/react";
+import { convertHeader, convertAttribute } from "~/components/functions/display-data";
 
 import { requireUserId } from "~/utils/session.server";
-
+import { getUserData, getUserAffiliated } from "~/utils/userData.server";
 
 
 const personalInfo = [
@@ -52,28 +52,28 @@ const personalInfo = [
     },
 ]
 
-const loginInfo = [
-    {
-        name: 'email',
-        type: 'email',
-        value: 'email',
-    },
-    {
-        name: 'password',
-        type: 'password',
-        value: 'password',
-    },
-    {
-        name: 'confirm password',
-        type: 'password',
-        value: 'password',
-    },
-    {
-        name: 'username',
-        type: 'text',
-        value: 'username',
-    },
-]
+// const loginInfo = [
+//     {
+//         name: 'email',
+//         type: 'email',
+//         value: 'email',
+//     },
+//     {
+//         name: 'password',
+//         type: 'password',
+//         value: 'password',
+//     },
+//     {
+//         name: 'confirm password',
+//         type: 'password',
+//         value: 'password',
+//     },
+//     {
+//         name: 'username',
+//         type: 'text',
+//         value: 'username',
+//     },
+// ]
 
 
 // requires the user to be logged in - 
@@ -83,7 +83,11 @@ const loginInfo = [
 export async function loader({ request }: LoaderArgs) {
 	await requireUserId(request);
 
-	return json({});
+    const userAcctData = await getUserData(request);
+    const userTeams = await getUserAffiliated(request);
+
+
+	return json({ userAcctData, userTeams });
 }
 
 // ACTION
@@ -103,7 +107,19 @@ export const action = async ({ request, params }: ActionArgs) => {
 
 // exports the 'index' page of the member hall route - the parent of subsequent member hall content
 export default function AccountRoute() {   
-    
+    const loadedData = useLoaderData();
+
+    // const userData = Object.entries(loadedData.userAcctData);
+    // const userData = JSON.stringify(loadedData.userAcctData, null, 2)
+    // console.log(loadedData.userAcctData)
+    const userData = Object.entries(loadedData.userAcctData);
+
+    console.log(userData)
+
+
+    // console.log(`user account loadedData: ${JSON.stringify(loadedData, null, 2)}`)
+    // console.log(`parsed usersInfo: ${usersInfo}`)
+
     return (
         <Box flexGrow={1} sx={{height: '100%', m: 2, mt: 2.5}}>
             <Typography variant="h4" component="h1" gutterBottom>
@@ -113,60 +129,40 @@ export default function AccountRoute() {
                 <Grid xs={12} md={6} sx={{maxWidth: 600, mx: 'auto'}}>
                     <div>
                         <Typography variant="h6" component="h2" gutterBottom >
-                            current account settings
+                            account settings
                         </Typography>
                         <TableContainer>
                             <Table>
-                                <TableHead>
+                                <TableHead sx={{ backgroundColor: 'rgba(255, 255, 255, 0.25)' }}>
                                     <TableRow>
-                                        <TableCell>field</TableCell>
-                                        <TableCell align="right">value</TableCell>
+                                        <TableCell sx={{ pr: 6, fontSize: '1rem' }}>setting</TableCell>
+                                        <TableCell  sx={{ pr: 0, fontSize: '1rem' }}>current value</TableCell>
                                     </TableRow>
                                 </TableHead>
                                 <TableBody>
                                     {
-                                        personalInfo.map((row) => (
-
-                                            // ROW TITLE
+                                        userData.map(([key, value]) => (
+                                            
                                             <TableRow 
-                                                key={row.name}
+                                                key={`keyItem-${Math.random()}`}
                                                 sx={{
-                                                    '&:last-child td, &:last-child th': { border: 0 }}
-                                                    }>
+                                                    '&:last-child td, &:last-child th': { border: 0 },
+                                                    '&:nth-of-type(odd)': { backgroundColor: 'rgba(255, 255, 255, 0.02)'} 
+                                                    }}>
+                                                {/* UserData: Attribute Name (is key) */}
                                                 <TableCell component="th" scope="row">
-                                                    {
-                                                        row.name === "available" 
-                                                        ? `${row.name}`
-                                                        : row.name
-                                                    }
+                                                    { convertHeader(key) }
                                                 </TableCell>
 
-                                                {/* ROW VALUE */}
-                                                <TableCell align="right" scope="row" sx={{mr: 0, pr: 0}}>
+                                                {/* UserData: Attribute Value */}
+                                                <TableCell  scope="row" sx={{mr: 0, pr: 0}}>
+                                                    {/* { typeof value } */}
                                                     {
-                                                        row.name === "rating"
-                                                        ? 
-                                                            <Rating
-                                                                name="simple-controlled"
-                                                                value={Number(row.value)}
-                                                                precision={0.1} 
-                                                                readOnly  
-                                                            />
-                                                        : row.name === "available"
-                                                        ?
-                                                            <Typography 
-                                                                variant="body2" 
-                                                                sx={{ color: row.value === true ? 'success.main' : 'error.main'}}
-                                                                >
-                                                                    {row.value.toString()}
-                                                            </Typography>
-                                                        :
-                                                        <Typography 
-                                                            variant="body2" 
-                                                            // sx={{ width: '88%'}}
-                                                            >
-                                                                {row.value}
-                                                        </Typography>
+                                                        typeof value === 'object' 
+                                                        ? null
+                                                        : key === 'rating'
+                                                        ? <Rating name="read-only" value={value && Number(value)} readOnly />
+                                                        : convertAttribute(value && value.toString())
                                                     }
                                                 </TableCell>
                                             </TableRow>
