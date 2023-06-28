@@ -1,4 +1,3 @@
-import React from 'react'
 import { 
     Button, 
     Dialog,
@@ -10,7 +9,7 @@ import {
 
 function DeleteInterruptDialog({props}) {
     // modal open state on the parent component & pass down as props (for onClose)
-    const { showConfirmation, setShowConfirmation, handleDelete } = props
+    const { showConfirmation, setShowConfirmation, handleDelete, deleteDialogSubject } = props
 
     const handleCancelDelete = () => {
         setShowConfirmation(false);
@@ -20,7 +19,7 @@ function DeleteInterruptDialog({props}) {
         <Dialog open={showConfirmation} onClose={handleCancelDelete}>
             <DialogTitle>Confirm Delete</DialogTitle>
             <DialogContent>
-                <p>Are you sure you want to permanantly delete this project?</p>
+                <p>{deleteDialogSubject}</p>
             </DialogContent>
             <DialogActions>
                 <Button onClick={handleCancelDelete} color="secondary">

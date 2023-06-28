@@ -50,6 +50,8 @@ model Team {
 
 // category - A project can have many categories
 // team & teamId - A project can only belong to 1 team
+// TODO: add createdBy field as userId
+// TODO: add some delete field (prisma docs) to retain deleted for x amount of time
 model Project {
   id              String          @id @default(uuid())
   name            String

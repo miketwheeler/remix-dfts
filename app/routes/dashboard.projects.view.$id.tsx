@@ -68,7 +68,8 @@ export default function DashboardViewProjectIdRoute() {
     const { project, isOwner } = useLoaderData<typeof loader>();
     const actionData = useActionData<typeof action>();
     const smAndDown = useMediaQuery('(max-width: 800px)');
-    const [modalOpen, setModalOpen] = useState(false);
+    // const [modalOpen, setModalOpen] = useState(false);
+    const deleteDialogSubject = `Are you sure you want to permanently delete this project? There is no going back from this.`;
 
     const [showConfirmation, setShowConfirmation] = useState(false);
 
@@ -86,7 +87,7 @@ export default function DashboardViewProjectIdRoute() {
 
     return (
         <Box sx={styles.container}>
-            <DeleteInterruptDialog props={{showConfirmation, setShowConfirmation, handleDelete}} />
+            <DeleteInterruptDialog props={{showConfirmation, setShowConfirmation, handleDelete, deleteDialogSubject}} />
 
             <Typography variant="h5" component="h1" gutterBottom>
                 viewing project
@@ -105,9 +106,9 @@ export default function DashboardViewProjectIdRoute() {
                 </Typography>
                 :
                 <Paper key={`project-${project.name}`} sx={{ minWidth: 334 }}>
-                    {
+                    {/* {
                         modalOpen && <Outlet context={{ modalOpen, setModalOpen, project }} />
-                    }
+                    } */}
                     <Box>
                         <Grid container spacing={1}>
                             <Grid item xs={12}>
@@ -162,6 +163,7 @@ export default function DashboardViewProjectIdRoute() {
                                                 </>
                                                 :
                                                 <>
+                                                {/* TODO: These need to be IconButtons and follow the full size variants above */}
                                                     <Link to={".."}>
                                                         <ArrowBackIcon color="primary" />
                                                     </Link>

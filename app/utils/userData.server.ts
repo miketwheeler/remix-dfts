@@ -47,5 +47,16 @@ export async function getUserAffiliated(request: Request) {
         },
     })
 
-    return { usersTeams }    
+    //TODO: should add distinct attribute to db.project -> projectCreator: userId
+    // const usersProjects = await db.user.findUnique({
+    //     where: { id: user?.id },
+    //     select: {
+    //         projects: {
+    //             select: {
+
+    //             }
+    //         }
+    // })
+
+    return usersTeams;  
 }
